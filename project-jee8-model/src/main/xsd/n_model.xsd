@@ -1,0 +1,39 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:complexType name="trajet">
+		<xsd:sequence>
+			<xsd:element name="id_train" type="xsd:int"></xsd:element>
+			<xsd:element name="etat_trajet" type="xsd:int"></xsd:element>
+			
+			<xsd:element name="gares_concernees">
+		        <xsd:complexType>
+		          <xsd:sequence>
+		            <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+		              <xsd:complexType>
+		                <xsd:sequence>
+		                  <xsd:element name="id_gare" minOccurs="0" type="xsd:int"/>
+		                  <xsd:sequence>
+		                  	<xsd:element name="horaire_depart" type="xsd:date"></xsd:element>
+							<xsd:element name="horaire_arrivee" type="xsd:date"></xsd:element>
+		                  </xsd:sequence>
+		                </xsd:sequence>
+		              </xsd:complexType>
+		            </xsd:element>
+		          </xsd:sequence>
+		        </xsd:complexType>
+		      </xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="incident">
+		<xsd:sequence>
+			<xsd:element name="id_incident" type="xsd:int"></xsd:element>
+			<xsd:element name="heure_incident" type="xsd:date"></xsd:element>
+			<xsd:element name="duree_incident" type="xsd:int"></xsd:element>
+			<xsd:element name="type_incident" type="xsd:string"></xsd:element>
+			<xsd:element name="etat_incident" type="xsd:string"></xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+
+</xsd:schema>
