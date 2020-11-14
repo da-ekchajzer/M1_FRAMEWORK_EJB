@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 public class IncidentEndPoint {
 
 	@Consumes(value = {MediaType.APPLICATION_XML})
+	@Path("{train_id}")
 	@POST
 	public Response createIncident(@PathParam("train_id") int trainId) {
 		return null;

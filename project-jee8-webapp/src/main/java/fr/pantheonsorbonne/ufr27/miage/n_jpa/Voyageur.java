@@ -23,7 +23,6 @@ public class Voyageur {
 	String nom;
 	String prenom;
 	
-	// Un voyageur a 1 seul voyage
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="VOYAGE_ID")
 	Voyage voyage;
