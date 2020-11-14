@@ -12,17 +12,17 @@ import javax.ws.rs.core.Response;
 public class IncidentEndPoint {
 
 	@Consumes(value = {MediaType.APPLICATION_XML})
-	@Path("{train_id}")
+	@Path("{trainId}")
 	@POST
-	public Response createIncident(@PathParam("train_id") int trainId) {
+	public Response createIncident(@PathParam("trainId") int trainId) {
 		return null;
 
 	}
 	
 	@Consumes(value = {MediaType.APPLICATION_XML})
-	@Path("{train_id, etat_incident}")
+	@Path("{trainId, etatIncident}")
 	@PUT
-	public Response UpdateIncident(@PathParam("train_id") int trainId) {
+	public Response UpdateIncident(@PathParam("trainId") int trainId) {
 		return null;
 	}
 }

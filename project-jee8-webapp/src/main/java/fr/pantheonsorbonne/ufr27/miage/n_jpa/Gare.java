@@ -16,6 +16,24 @@ public class Gare {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getNom() {
+		return nom;
+	}
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+	public String[] getCoordonnees() {
+		return coordonnees;
+	}
+	public void setCoordonnees(String[] coordonnees) {
+		this.coordonnees = coordonnees;
+	}
 	String nom;
 	String[] coordonnees;
 	

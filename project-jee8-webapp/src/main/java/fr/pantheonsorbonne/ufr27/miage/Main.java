@@ -4,11 +4,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
 
+import javax.enterprise.inject.New;
+import javax.enterprise.inject.se.SeContainer;
+import javax.enterprise.inject.se.SeContainerInitializer;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -30,6 +35,9 @@ import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentAckQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Customer;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
+import fr.pantheonsorbonne.ufr27.miage.n_service.BDDFillerService;
 import fr.pantheonsorbonne.ufr27.miage.service.GymService;
 import fr.pantheonsorbonne.ufr27.miage.service.InvoicingService;
 import fr.pantheonsorbonne.ufr27.miage.service.MailingService;
@@ -48,6 +56,10 @@ import fr.pantheonsorbonne.ufr27.miage.service.impl.UserServiceImpl;
 public class Main {
 
 	public static final String BASE_URI = "http://localhost:8080/";
+	
+
+	@Inject
+	private EntityManager manager;
 
 	public static HttpServer startServer() {
 
@@ -105,11 +117,18 @@ public class Main {
 		pc.getEM();
 		pc.launchH2WS();
 
+		
+		BDDFillerService filler = new BDDFillerService();
+		filler.fill();
+		
 		System.out.println(String.format(
 				"Jersey app started with WADL available at " + "%sapplication.wadl\nHit enter to stop it...",
 				BASE_URI));
+		
 		System.in.read();
-		server.stop();
 
+
+		server.stop();
 	}
+
 }

@@ -20,7 +20,7 @@ public abstract class Train {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
-	String type_train;
+	String typeTrain;
 	int capacite;
 	
 }

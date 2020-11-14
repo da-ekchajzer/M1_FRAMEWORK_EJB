@@ -19,8 +19,8 @@ public class Incident {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
-	String type_incident;
-	Date heure_debut;
+	String typeIncident;
+	Date heureDebut;
 	int duree;
 	int etat;
 	
