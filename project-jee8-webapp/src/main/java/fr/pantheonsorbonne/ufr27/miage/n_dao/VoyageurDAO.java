@@ -14,12 +14,11 @@ public class VoyageurDAO {
 
 	@Inject
 	EntityManager em;
-	
-	public List<Voyageur> getAllVoyageursByVoyage(Voyage v) {
-		return em.createNativeQuery("SELECT voyageur "
-				+ "FROM VOYAGEUR voyageur "
-				+ "WHERE voyageur.VOYAGE_ID = ? ")
+
+	@SuppressWarnings("unchecked")
+	public List<Voyageur> getVoyageursByVoyage(Voyage v) {
+		return (List<Voyageur>) em.createNativeQuery("SELECT v.* " + "FROM VOYAGEUR v " + "WHERE v.VOYAGE_ID = ? ")
 				.setParameter(1, v.getId()).getResultList();
 	}
-	
+
 }

@@ -2,7 +2,6 @@ package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,35 +10,37 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 public class Itineraire {
 
-	public Itineraire() {}
-	
-	public Itineraire(Train train, List<Voyageur> voyageurs, List<Arret> garesDesservies) {
-		
+	public Itineraire() {
 	}
-	
+
+	public Itineraire(Train train, List<Voyageur> voyageurs, List<Arret> garesDesservies) {
+
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="TRAIN_ID")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "TRAIN_ID")
 	Train train;
 	List<Voyageur> voyageurs;
 	List<Arret> garesDesservies;
 	int etat;
-	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="INCIDENT_ID")
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "INCIDENT_ID")
 	private Incident incident;
 
 	public int getId() {
@@ -65,7 +66,7 @@ public class Itineraire {
 	public List<Arret> getGaresDesservies() {
 		return garesDesservies;
 	}
-	
+
 	public void setGaresDesservies(List<Arret> garesDesservies) {
 		this.garesDesservies = garesDesservies;
 	}
@@ -85,34 +86,9 @@ public class Itineraire {
 	public void setIncident(Incident incident) {
 		this.incident = incident;
 	}
-	
+
 	public void addGare(Gare gare, Date heureArriveeEnGare, Date heureDepartDeGare) {
 		this.garesDesservies.add(new Arret(gare, heureArriveeEnGare, heureDepartDeGare));
 	}
-	
-	@Entity
-	public static class Arret {
-		
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		int id;
-		
-		Gare gareArret;
-		Date heureArriveeEnGare;
-		Date heureDepartDeGare;
-		
-		public Arret() {}
-		
-		public Arret(Gare gare, Date heureArriveeEnGare, Date heureDepartDeGare) {
-			this.gareArret = gare;
-			this.heureArriveeEnGare = heureArriveeEnGare;
-			this.heureDepartDeGare = heureDepartDeGare;
-		}
-		
-	}
-	
-	
-	
-	
-	
+
 }
