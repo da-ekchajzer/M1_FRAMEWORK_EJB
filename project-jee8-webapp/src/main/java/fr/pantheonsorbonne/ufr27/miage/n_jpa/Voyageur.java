@@ -13,7 +13,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter @Setter @ToString
 public class Voyageur {
 	
 	@Id
@@ -23,9 +22,42 @@ public class Voyageur {
 	String nom;
 	String prenom;
 	
+	public Voyageur() {}
+	
+	public Voyageur(String prenom, String nom) {
+		this.prenom = prenom;
+		this.nom = nom;
+	}
+	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="VOYAGE_ID")
 	Voyage voyage;
+
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	public Voyage getVoyage() {
+		return voyage;
+	}
+
+	public void setVoyage(Voyage voyage) {
+		this.voyage = voyage;
+	}
+	
+	
 	
 	
 	
