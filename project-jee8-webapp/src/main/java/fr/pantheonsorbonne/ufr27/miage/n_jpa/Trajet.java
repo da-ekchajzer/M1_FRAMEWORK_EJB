@@ -1,10 +1,15 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import lombok.Getter;
@@ -17,16 +22,40 @@ public class Trajet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
-
-	@OneToOne
-	Train train;
+	
 	@OneToOne
 	Gare gareDepart;
 	@OneToOne
 	Gare gareArrivee;
-	@OneToOne
-	Voyage voyage;
-	@OneToOne
-	Itineraire trajet;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="ITINERAIRE_ID")
+	Itineraire itineraire;
+	
+	public Trajet() {}
+	
+	public Trajet(Gare gareDepart, Gare gareArrivee) {
+		this.gareDepart = gareDepart;
+		this.gareArrivee = gareArrivee;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	public Gare getGareDepart() {
+		return gareDepart;
+	}
+	public void setGareDepart(Gare gareDepart) {
+		this.gareDepart = gareDepart;
+	}
+	public Gare getGareArrivee() {
+		return gareArrivee;
+	}
+	public void setGareArrivee(Gare gareArrivee) {
+		this.gareArrivee = gareArrivee;
+	}
+	
+	
+	
 	
 }

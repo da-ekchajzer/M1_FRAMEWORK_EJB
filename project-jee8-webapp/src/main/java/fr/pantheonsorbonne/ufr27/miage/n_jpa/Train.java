@@ -1,12 +1,9 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +17,8 @@ public abstract class Train {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
-	String typeTrain;
-	int capacite;
-	
+	public int getId() {
+		return id;
+	}
+
 }
