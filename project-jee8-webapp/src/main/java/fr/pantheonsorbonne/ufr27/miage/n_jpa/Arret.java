@@ -1,6 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,13 +22,13 @@ public class Arret {
 	int id;
 
 	Gare gareArret;
-	Date heureArriveeEnGare;
-	Date heureDepartDeGare;
+	LocalDateTime heureArriveeEnGare;
+	LocalDateTime heureDepartDeGare;
 
 	public Arret() {
 	}
 
-	public Arret(Gare gare, Date heureArriveeEnGare, Date heureDepartDeGare) {
+	public Arret(Gare gare, LocalDateTime heureArriveeEnGare, LocalDateTime heureDepartDeGare) {
 		this.gareArret = gare;
 		this.heureArriveeEnGare = heureArriveeEnGare;
 		this.heureDepartDeGare = heureDepartDeGare;

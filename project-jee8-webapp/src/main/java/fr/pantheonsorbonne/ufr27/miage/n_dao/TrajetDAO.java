@@ -9,12 +9,19 @@ import javax.persistence.EntityManager;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 
 @ManagedBean
 public class TrajetDAO {
 
 	@Inject
 	EntityManager em;
+
+	@SuppressWarnings("unchecked")
+	public List<Trajet> getTrajetsByVoyage(Voyage v) {
+		return (List<Trajet>) em.createNativeQuery("SELECT t.* " + "FROM VOYAGE v, TRAJET t " + "WHERE t.VOYAGE_ID = ?")
+				.setParameter(1, v.getId()).getResultList();
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<Trajet> getTrajetsByItineraire(Itineraire itineraire) {

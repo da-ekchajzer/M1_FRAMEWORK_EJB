@@ -14,8 +14,9 @@ public class TrainAvecResa extends Train {
 	
 	public TrainAvecResa() {}
 	
-	public TrainAvecResa(List<Voyageur> voyageursAyantReserves) {
+	public TrainAvecResa(List<Voyageur> voyageursAyantReserves, String marque) {
 		this.voyageursAyantReserves = voyageursAyantReserves;
+		this.marque = marque;
 	}
 	
 }
