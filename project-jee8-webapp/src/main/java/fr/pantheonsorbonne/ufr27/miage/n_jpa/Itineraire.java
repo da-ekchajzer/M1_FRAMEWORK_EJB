@@ -1,7 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -24,6 +24,12 @@ public class Itineraire {
 
 	public Itineraire() {
 	}
+	
+	public Itineraire(Train train) {
+		this.train = train;
+		this.garesDesservies = new ArrayList<Arret>();
+	}
+
 
 	public Itineraire(Train train, List<Arret> garesDesservies) {
 		this.train = train;
@@ -89,8 +95,8 @@ public class Itineraire {
 		this.incident = incident;
 	}
 
-	public void addGare(Gare gare, LocalDateTime heureArriveeEnGare, LocalDateTime heureDepartDeGare) {
-		this.garesDesservies.add(new Arret(gare, heureArriveeEnGare, heureDepartDeGare));
+	public void addArret(Arret a) {
+		this.garesDesservies.add(a);
 	}
 
 }

@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.EntityManager;
 
@@ -13,10 +16,12 @@ import org.jvnet.hk2.annotations.Service;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainSansResa;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 
 @Service
@@ -44,40 +49,18 @@ public class BDDFillerService {
 			em.persist(g);
 		}
 
-		// --------------------------------- Remplissage de la table Voyageur
-
-		String[] prenomsVoyageurs = { "Mariah", "Marc", "Sophia", "Alyssia", "Antoine", "Doudouh", "Lucie", "Lucas",
-				"David", "Ben", "Maria", "Lucas", "Sophie", "Jean-Mi", "Jean", "Abdel", "Tatiana", "Charlotte",
-				"Charlotte", "Abdel", "Ben", "Ben", "Mathieu", "Louis", "Jean-Luc", "Luc", "Jean", "Sophia", "Marc",
-				"Manuel" };
-
-		String[] nomsVoyageurs = { "Dupont", "Dupont", "Durand", "Martin", "Bernard", "Thomas", "Petit", "Grand",
-				"Robert", "Richard", "Richard", "Dubois", "Petit", "Petit", "Moreau", "Laurent", "Simon", "Michel",
-				"Lefevre", "Legrand", "Lefebvre", "Leroy", "Roux", "Leroi", "Morel", "Fournier", "Gerard", "Poirier",
-				"Pommier", "Rossignol" };
-
-		List<Voyageur> voyageursAyantReservesTrain3 = new ArrayList<>();
-		List<Voyageur> voyageursAyantReservesTrain4 = new ArrayList<>();
-		List<Voyageur> voyageursAyantReservesTrain5 = new ArrayList<>();
-//		for (int i = 0; i < prenomsVoyageurs.length; i++) {
-//			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
-//			if (i < 10)
-//				voyageursAyantReservesTrain3.add(v);
-//			else if (i >= 10 && i < 20)
-//				voyageursAyantReservesTrain4.add(v);
-//			else
-//				voyageursAyantReservesTrain5.add(v);
-//			em.persist(v);
-//		}
-
 		// --------------------------------- Remplissage de la table Train
-		Train train1 = new TrainSansResa("TER");
+		Train train1 = new TrainAvecResa("TGV");
 		Train train2 = new TrainSansResa("TER");
-		Train train3 = new TrainAvecResa(voyageursAyantReservesTrain3, "OUIGO");
-		Train train4 = new TrainAvecResa(voyageursAyantReservesTrain4, "TGV");
-		Train train5 = new TrainAvecResa(voyageursAyantReservesTrain5, "TGV");
+		Train train3 = new TrainAvecResa("OUIGO");
+		Train train4 = new TrainAvecResa("OUIGO");
+		Train train5 = new TrainSansResa("TER");
+		Train train6 = new TrainAvecResa("TGV");
+		Train train7 = new TrainSansResa("TER");
+		Train train8 = new TrainAvecResa("TGV");
+		Train train9 = new TrainAvecResa("TGV");
 
-		Train[] trains = { train1, train2, train3, train4, train5 };
+		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
 		for (Train t : trains)
 			em.persist(t);
 
@@ -149,41 +132,92 @@ public class BDDFillerService {
 
 		// --------------------------------- Remplissage de la table Itinéraire
 
-		// Itineraire itineraire1
+		Itineraire itineraire1 = new Itineraire(train1);
+		itineraire1.addArret(arret1);
+		itineraire1.addArret(arret2);
+		itineraire1.addArret(arret3);
+		itineraire1.addArret(arret4);
+
+		Itineraire itineraire2 = new Itineraire(train2);
+		itineraire2.addArret(arret1_bis);
+		itineraire2.addArret(arret2_bis);
+		itineraire2.addArret(arret3_bis);
+		itineraire2.addArret(arret4_bis);
+
+		Itineraire itineraire3 = new Itineraire(train3);
+		itineraire3.addArret(arret5);
+		itineraire3.addArret(arret6);
+		itineraire3.addArret(arret7);
+
+		Itineraire itineraire4 = new Itineraire(train4);
+		itineraire4.addArret(arret5_bis);
+		itineraire4.addArret(arret6_bis);
+		itineraire4.addArret(arret7_bis);
+
+		Itineraire itineraire5 = new Itineraire(train5);
+		itineraire5.addArret(arret8);
+		itineraire5.addArret(arret9);
+		itineraire5.addArret(arret10);
+		itineraire5.addArret(arret11);
+
+		Itineraire itineraire6 = new Itineraire(train6);
+		itineraire6.addArret(arret12);
+		itineraire6.addArret(arret13);
+		itineraire6.addArret(arret14);
+
+		Itineraire itineraire7 = new Itineraire(train7);
+		itineraire7.addArret(arret15);
+		itineraire7.addArret(arret16);
+		itineraire7.addArret(arret17);
+
+		Itineraire itineraire8 = new Itineraire(train8);
+		itineraire8.addArret(arret18);
+		itineraire8.addArret(arret19);
+
+		Itineraire itineraire9 = new Itineraire(train9);
+		itineraire9.addArret(arret18_bis);
+		itineraire9.addArret(arret19_bis);
+
+		Itineraire[] itineraires = { itineraire1, itineraire2, itineraire3, itineraire4, itineraire5, itineraire6,
+				itineraire7, itineraire8, itineraire9 };
+
+		for (Itineraire i : itineraires)
+			em.persist(i);
 
 		// --------------------------------- Remplissage de la table Trajet
 
-		Trajet trajet1 = new Trajet(gares.get("Paris - Gare de Lyon"), gares.get("Avignon-Centre"));
-		Trajet trajet2 = new Trajet(gares.get("Avignon-Centre"), gares.get("Aix en Provence"));
-		Trajet trajet3 = new Trajet(gares.get("Aix en Provence"), gares.get("Marseille - St Charles"));
+		Trajet trajet1 = new Trajet(gares.get("Paris - Gare de Lyon"), gares.get("Avignon-Centre"), itineraire1);
+		Trajet trajet2 = new Trajet(gares.get("Avignon-Centre"), gares.get("Aix en Provence"), itineraire1);
+		Trajet trajet3 = new Trajet(gares.get("Aix en Provence"), gares.get("Marseille - St Charles"), itineraire1);
 
-		Trajet trajet1_bis = new Trajet(gares.get("Perpignan"), gares.get("Sete"));
-		Trajet trajet2_bis = new Trajet(gares.get("Sete"), gares.get("Narbonne"));
-		Trajet trajet3_bis = new Trajet(gares.get("Narbonne"), gares.get("Marseille - St Charles"));
-
-		// Changement
-		Trajet trajet4 = new Trajet(gares.get("Marseille - St Charles"), gares.get("Dijon-Ville"));
-		Trajet trajet5 = new Trajet(gares.get("Dijon-Ville"), gares.get("Lyon - Pardieu"));
-
-		Trajet trajet4_bis = new Trajet(gares.get("Lyon - Pardieu"), gares.get("Dijon-Ville"));
-		Trajet trajet5_bis = new Trajet(gares.get("Dijon-Ville"), gares.get("Marseille - St Charles"));
+		Trajet trajet1_bis = new Trajet(gares.get("Perpignan"), gares.get("Sete"), itineraire2);
+		Trajet trajet2_bis = new Trajet(gares.get("Sete"), gares.get("Narbonne"), itineraire2);
+		Trajet trajet3_bis = new Trajet(gares.get("Narbonne"), gares.get("Marseille - St Charles"), itineraire2);
 
 		// Changement
-		Trajet trajet6 = new Trajet(gares.get("Marseille - St Charles"), gares.get("Narbonne"));
-		Trajet trajet7 = new Trajet(gares.get("Narbonne"), gares.get("Sete"));
-		Trajet trajet8 = new Trajet(gares.get("Sete"), gares.get("Perpignan"));
+		Trajet trajet4 = new Trajet(gares.get("Marseille - St Charles"), gares.get("Dijon-Ville"), itineraire3);
+		Trajet trajet5 = new Trajet(gares.get("Dijon-Ville"), gares.get("Lyon - Pardieu"), itineraire3);
 
-		Trajet trajet9 = new Trajet(gares.get("Paris - Montparnasse"), gares.get("Tours"));
-		Trajet trajet10 = new Trajet(gares.get("Tours"), gares.get("Bordeaux - Saint-Jean"));
-
-		// Changement
-		Trajet trajet11 = new Trajet(gares.get("Bordeaux - Saint-Jean"), gares.get("Pessac"));
-		Trajet trajet12 = new Trajet(gares.get("Pessac"), gares.get("Arcachon-Centre"));
-
-		Trajet trajet13 = new Trajet(gares.get("Nantes"), gares.get("Paris - Montparnasse"));
+		Trajet trajet4_bis = new Trajet(gares.get("Lyon - Pardieu"), gares.get("Dijon-Ville"), itineraire4);
+		Trajet trajet5_bis = new Trajet(gares.get("Dijon-Ville"), gares.get("Marseille - St Charles"), itineraire4);
 
 		// Changement
-		Trajet trajet14 = new Trajet(gares.get("Paris - Montparnasse"), gares.get("Bordeaux - Saint-Jean"));
+		Trajet trajet6 = new Trajet(gares.get("Marseille - St Charles"), gares.get("Narbonne"), itineraire5);
+		Trajet trajet7 = new Trajet(gares.get("Narbonne"), gares.get("Sete"), itineraire5);
+		Trajet trajet8 = new Trajet(gares.get("Sete"), gares.get("Perpignan"), itineraire5);
+
+		Trajet trajet9 = new Trajet(gares.get("Paris - Montparnasse"), gares.get("Tours"), itineraire6);
+		Trajet trajet10 = new Trajet(gares.get("Tours"), gares.get("Bordeaux - Saint-Jean"), itineraire6);
+
+		// Changement
+		Trajet trajet11 = new Trajet(gares.get("Bordeaux - Saint-Jean"), gares.get("Pessac"), itineraire7);
+		Trajet trajet12 = new Trajet(gares.get("Pessac"), gares.get("Arcachon-Centre"), itineraire7);
+
+		Trajet trajet13 = new Trajet(gares.get("Nantes"), gares.get("Paris - Montparnasse"), itineraire8);
+
+		// Changement
+		Trajet trajet14 = new Trajet(gares.get("Paris - Montparnasse"), gares.get("Bordeaux - Saint-Jean"),
+				itineraire9);
 
 		Trajet[] trajets = { trajet1, trajet2, trajet3, trajet4, trajet5, trajet6, trajet7, trajet8, trajet9, trajet10,
 				trajet11, trajet12, trajet13, trajet14 };
@@ -192,7 +226,89 @@ public class BDDFillerService {
 			em.persist(t);
 
 		// --------------------------------- Remplissage de la table Voyage
+		List<Trajet> voyageTrajet1 = new LinkedList<Trajet>();
+		voyageTrajet1.add(trajet1);
+		voyageTrajet1.add(trajet2);
+		voyageTrajet1.add(trajet3);
+		Voyage voyage1 = new Voyage(voyageTrajet1);
 
+		List<Trajet> voyageTrajet2 = new LinkedList<Trajet>();
+		voyageTrajet2.add(trajet1_bis);
+		voyageTrajet2.add(trajet2_bis);
+		voyageTrajet2.add(trajet3_bis);
+		voyageTrajet2.add(trajet4);
+		voyageTrajet2.add(trajet5);
+		Voyage voyage2 = new Voyage(voyageTrajet2);
+
+		List<Trajet> voyageTrajet3 = new LinkedList<Trajet>();
+		voyageTrajet3.add(trajet4_bis);
+		voyageTrajet3.add(trajet5_bis);
+		voyageTrajet3.add(trajet6);
+		voyageTrajet3.add(trajet7);
+		voyageTrajet3.add(trajet8);
+		Voyage voyage3 = new Voyage(voyageTrajet3);
+
+		List<Trajet> voyageTrajet4 = new LinkedList<Trajet>();
+		voyageTrajet4.add(trajet9);
+		voyageTrajet4.add(trajet10);
+		voyageTrajet4.add(trajet11);
+		voyageTrajet4.add(trajet12);
+		Voyage voyage4 = new Voyage(voyageTrajet4);
+
+		List<Trajet> voyageTrajet5 = new LinkedList<Trajet>();
+		voyageTrajet5.add(trajet13);
+		voyageTrajet5.add(trajet14);
+		Voyage voyage5 = new Voyage(voyageTrajet5);
+
+		List<Trajet> voyageTrajet6 = new LinkedList<Trajet>();
+		voyageTrajet6.add(trajet2_bis);
+		voyageTrajet6.add(trajet3_bis);
+		voyageTrajet6.add(trajet4);
+		Voyage voyage6 = new Voyage(voyageTrajet6);
+
+		List<Trajet> voyageTrajet7 = new LinkedList<Trajet>();
+		voyageTrajet7.add(trajet10);
+		voyageTrajet7.add(trajet11);
+		Voyage voyage7 = new Voyage(voyageTrajet7);
+
+		Voyage[] voyages = { voyage1, voyage2, voyage3, voyage4, voyage5, voyage6, voyage7 };
+
+		for (Voyage v : voyages)
+			em.persist(v);
+
+
+
+		// --------------------------------- Remplissage de la table Voyageur
+
+		String[] prenomsVoyageurs = { "Mariah", "Marc", "Sophia", "Alyssia", "Antoine", "Doudouh", "Lucie", "Lucas",
+				"David", "Ben", "Maria", "Lucas", "Sophie", "Jean-Mi", "Jean", "Abdel", "Tatiana", "Charlotte",
+				"Charlotte", "Abdel", "Ben", "Ben", "Mathieu", "Louis", "Jean-Luc", "Luc", "Jean", "Sophia", "Marc",
+				"Manuel", "Abdel"};
+
+		String[] nomsVoyageurs = { "Dupont", "Dupont", "Durand", "Martin", "Bernard", "Thomas", "Petit", "Grand",
+				"Robert", "Richard", "Richard", "Dubois", "Petit", "Petit", "Moreau", "Laurent", "Simon", "Michel",
+				"Lefevre", "Legrand", "Lefebvre", "Leroy", "Roux", "Leroi", "Morel", "Fournier", "Gerard", "Poirier",
+				"Pommier", "Rossignol", "Benamara"};
+
+
+		for (int i = 0; i < prenomsVoyageurs.length; i++) {
+			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
+			if (i < 5)
+				voyage1.addVoyageur(v);
+			else if (i >= 5 && i < 10)
+				voyage2.addVoyageur(v);
+			else if (i >= 10 && i < 15)
+				voyage3.addVoyageur(v);
+			else if (i >= 15 && i < 20)
+				voyage4.addVoyageur(v);
+			else if (i >= 20 && i < 25)
+				voyage5.addVoyageur(v);
+			else if (i >= 25 && i < 30)
+				voyage6.addVoyageur(v);
+			else
+				voyage7.addVoyageur(v);
+			em.persist(v);
+		}
 		em.getTransaction().commit();
 	}
 }

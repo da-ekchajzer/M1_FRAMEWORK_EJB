@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import lombok.Getter;
@@ -14,8 +15,8 @@ public class TrainAvecResa extends Train {
 	
 	public TrainAvecResa() {}
 	
-	public TrainAvecResa(List<Voyageur> voyageursAyantReserves, String marque) {
-		this.voyageursAyantReserves = voyageursAyantReserves;
+	public TrainAvecResa(String marque) {
+		this.voyageursAyantReserves = new ArrayList<Voyageur>();
 		this.marque = marque;
 	}
 	

@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -20,36 +21,49 @@ import lombok.ToString;
 @ToString
 public class Voyage {
 
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
-
-	Gare gareDepart;
-	Gare gareArrivee;
 
 	// Un Trajet fait partie de plusieurs Voyages
 	// Un Voyage est composé de plusieurs Trajets
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	List<Trajet> trajets;
 
+	List<Voyageur> voyageurs;
+	
+	public Voyage() {}
+	
+	public Voyage(List<Trajet> trajets) {
+		this.trajets = trajets;
+		this.voyageurs = new ArrayList<Voyageur>();
+	}
+	
+	public void addVoyageur(Voyageur v) {
+		voyageurs.add(v);
+	}
+	
+	
+	public List<Trajet> getTrajets() {
+		return trajets;
+	}
+
+	public void setTrajets(List<Trajet> trajets) {
+		this.trajets = trajets;
+	}
+
+	public List<Voyageur> getVoyageurs() {
+		return voyageurs;
+	}
+
+	public void setVoyageurs(List<Voyageur> voyageurs) {
+		this.voyageurs = voyageurs;
+	}
+
 	public int getId() {
 		return id;
 	}
 
-	public Gare getGareDepart() {
-		return gareDepart;
-	}
-
-	public void setGareDepart(Gare gareDepart) {
-		this.gareDepart = gareDepart;
-	}
-
-	public Gare getGareArrivee() {
-		return gareArrivee;
-	}
-
-	public void setGareArrivee(Gare gareArrivee) {
-		this.gareArrivee = gareArrivee;
-	}
 
 }

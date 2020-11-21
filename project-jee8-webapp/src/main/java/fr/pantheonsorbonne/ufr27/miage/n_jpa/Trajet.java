@@ -31,9 +31,10 @@ public class Trajet {
 	
 	public Trajet() {}
 	
-	public Trajet(Gare gareDepart, Gare gareArrivee) {
+	public Trajet(Gare gareDepart, Gare gareArrivee, Itineraire itineraire) {
 		this.gareDepart = gareDepart;
 		this.gareArrivee = gareArrivee;
+		this.itineraire = itineraire;
 	}
 	
 	public int getId() {
