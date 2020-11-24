@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_resource;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -8,21 +9,33 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
+
 @Path("incident/")
 public class IncidentEndPoint {
 
-	@Consumes(value = {MediaType.APPLICATION_XML})
+	@Inject
+	ServiceIncident service;
+
+	@Consumes(value = { MediaType.APPLICATION_XML })
 	@Path("{trainId}")
 	@POST
-	public Response createIncident(@PathParam("trainId") int trainId) {
-		return null;
+	public Response creerIncident(@PathParam("trainId") int trainId, IncidentJAXB inci) {
+		if (service.creerIncident(trainId, inci)) {
+			return Response.noContent().build();
+		}
+		return Response.serverError().build();
 
 	}
-	
-	@Consumes(value = {MediaType.APPLICATION_XML})
+
+	@Consumes(value = { MediaType.APPLICATION_XML })
 	@Path("{trainId, etatIncident}")
 	@PUT
-	public Response UpdateIncident(@PathParam("trainId") int trainId) {
-		return null;
+	public Response majIncident(@PathParam("trainId") int trainId, @PathParam("etatIncident") int etatIncident) {
+		if(service.majIncident(trainId, etatIncident)) {
+			return Response.noContent().build();
+		}
+		return Response.serverError().build();
 	}
 }

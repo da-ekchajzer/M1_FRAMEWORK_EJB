@@ -8,5 +8,5 @@ public interface ServiceItineraire {
 	public Boolean ItineraireExist(int idTrain);
 	public ItineraireJAXB getInitineraire(int idTrain);
 	
-	public void majItineraire(int idTrain, ArretJAXB a);
+	public boolean majItineraire(int idTrain, ArretJAXB a);
 }

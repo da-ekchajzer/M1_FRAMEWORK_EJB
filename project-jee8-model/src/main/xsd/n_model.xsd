@@ -2,7 +2,6 @@
 
 	<xsd:complexType name="itineraireJAXB">
 		<xsd:sequence>
-			<xsd:element name="id_train" type="xsd:int"></xsd:element>
 			<xsd:element name="etat_itineraire" type="xsd:int"></xsd:element>
 			<xsd:element name="arrets" type="arretJAXB"
 				maxOccurs="unbounded" />
@@ -11,7 +10,7 @@
 
 	<xsd:complexType name="arretJAXB">
 		<xsd:sequence>
-			<xsd:element name="id_arret" type="xsd:int"></xsd:element>
+			<xsd:element name="gare" type="xsd:int"></xsd:element>
 			<xsd:element name="gare" type="xsd:string"></xsd:element>
 			<xsd:element name="heureArrive" type="xsd:date"></xsd:element>
 			<xsd:element name="heureDepart" type="xsd:date"></xsd:element>
@@ -20,11 +19,9 @@
 
 	<xsd:complexType name="incidentJAXB">
 		<xsd:sequence>
-			<xsd:element name="id_incident" type="xsd:int"></xsd:element>
 			<xsd:element name="heure_incident" type="xsd:date"></xsd:element>
-			<xsd:element name="duree_incident" type="xsd:int"></xsd:element>
-			<xsd:element name="type_incident" type="xsd:string"></xsd:element>
-			<xsd:element name="etat_incident" type="xsd:string"></xsd:element>
+			<xsd:element name="type_incident" type="xsd:int"></xsd:element>
+			<xsd:element name="etat_incident" type="xsd:int"></xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 

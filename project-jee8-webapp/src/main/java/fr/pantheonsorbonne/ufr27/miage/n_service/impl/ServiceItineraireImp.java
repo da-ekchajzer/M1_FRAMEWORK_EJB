@@ -21,11 +21,11 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		return null;
 	}
 
-
 	@Override
-	public void majItineraire(int idTrain, ArretJAXB a) {
+	public boolean majItineraire(int idTrain, ArretJAXB a) {
 		// TODO Auto-generated method stub
-		
+		return false;
+
 	}
 
 }

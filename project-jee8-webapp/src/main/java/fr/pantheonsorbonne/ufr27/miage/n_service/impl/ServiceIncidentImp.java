@@ -12,8 +12,10 @@ public class ServiceIncidentImp implements ServiceIncident {
 	}
 
 	@Override
-	public void majIncident(int idIncident, int etatIncident) {
+	public boolean majIncident(int idIncident, int etatIncident) {
 		// TODO Auto-generated method stub
+		return false;
+		
 	}
 
 }
