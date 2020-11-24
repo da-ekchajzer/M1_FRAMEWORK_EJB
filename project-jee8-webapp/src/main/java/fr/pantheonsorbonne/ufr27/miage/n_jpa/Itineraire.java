@@ -24,7 +24,7 @@ import lombok.ToString;
 @NamedQueries({
 	@NamedQuery(name="Itineraire.getNbArretsByItineraire", query="SELECT COUNT(i) FROM Itineraire i WHERE i.id = :id"),
 	@NamedQuery(name="Itineraire.getAllArretsByItineraire", query="SELECT i FROM Itineraire i WHERE i.id = :id"),
-	@NamedQuery(name="Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :id and i.etat = :etat")
+	@NamedQuery(name="Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :idTrain and i.etat = :etat")
 })
 public class Itineraire {
 

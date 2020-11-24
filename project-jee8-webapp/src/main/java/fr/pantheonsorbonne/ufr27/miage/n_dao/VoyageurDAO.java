@@ -17,7 +17,7 @@ public class VoyageurDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<Voyageur> getVoyageursByVoyage(Voyage v) {
-		return (List<Voyageur>) em.createNativeQuery("SELECT v.* " + "FROM VOYAGEUR v " + "WHERE v.VOYAGE_ID = ? ")
+		return (List<Voyageur>) em.createNativeQuery("SELECT v " + "FROM VOYAGEUR v " + "WHERE v.VOYAGE_ID = ? ")
 				.setParameter(1, v.getId()).getResultList();
 	}
 

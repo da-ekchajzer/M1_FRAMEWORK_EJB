@@ -21,7 +21,7 @@ public class Arret {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
-	Gare gareArret;
+	Gare gare;
 	LocalDateTime heureArriveeEnGare;
 	LocalDateTime heureDepartDeGare;
 
@@ -29,8 +29,40 @@ public class Arret {
 	}
 
 	public Arret(Gare gare, LocalDateTime heureArriveeEnGare, LocalDateTime heureDepartDeGare) {
-		this.gareArret = gare;
+		this.gare = gare;
 		this.heureArriveeEnGare = heureArriveeEnGare;
+		this.heureDepartDeGare = heureDepartDeGare;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Gare getGare() {
+		return gare;
+	}
+
+	public void setGare(Gare gare) {
+		this.gare = gare;
+	}
+
+	public LocalDateTime getHeureArriveeEnGare() {
+		return heureArriveeEnGare;
+	}
+
+	public void setHeureArriveeEnGare(LocalDateTime heureArriveeEnGare) {
+		this.heureArriveeEnGare = heureArriveeEnGare;
+	}
+
+	public LocalDateTime getHeureDepartDeGare() {
+		return heureDepartDeGare;
+	}
+
+	public void setHeureDepartDeGare(LocalDateTime heureDepartDeGare) {
 		this.heureDepartDeGare = heureDepartDeGare;
 	}
 }
