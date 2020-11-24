@@ -5,19 +5,12 @@ import java.util.List;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.TypedQuery;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 
 @ManagedBean
-@NamedQueries({
-	@NamedQuery(name="IncidentDAO.findAll", query="SELECT i FROM Incident i"),
-	@NamedQuery(name="IncidentDAO.getNbIncidents", query="SELECT COUNT(i) FROM Incident i"),
-	@NamedQuery(name="IncidentDAO.getIncidentById", query="SELECT i FROM Incident i WHERE i.ID = ?")
-})
 public class IncidentDAO {
 
 	@Inject
@@ -28,13 +21,13 @@ public class IncidentDAO {
 	
 	public List<Incident> getAllIncidents() {
 		TypedQuery<Incident> query =
-			      em.createNamedQuery("IncidentDAO.findAll", Incident.class);
+			      em.createNamedQuery("Incident.findAllIncidents", Incident.class);
 		return query.getResultList();
 	}
 
 	public int getNbIncidents() {
 		TypedQuery<Long> query =
-			      em.createNamedQuery("IncidentDAO.getNbIncidents", Long.class);
+			      em.createNamedQuery("Incident.getNbIncidents", Long.class);
 		return query.getSingleResult().intValue();
 	}
 	
@@ -61,7 +54,7 @@ public class IncidentDAO {
 		}
 		
 		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
-		Itineraire itineraire = itineraireDAO.getItineraireEnCoursByEtatAndIdTrain(1, idTrain);
+		Itineraire itineraire = itineraireDAO.getItineraireByEtatAndIdTrain(1, idTrain);
 		
 		// Ajout de l'INCIDENT_ID dans l'Itineraire associé au train
 		itineraireDAO.ajouterIncidentItineraire(itineraire.getId(), incident.getId());
@@ -73,11 +66,11 @@ public class IncidentDAO {
 	
 	public void updateEtatIncident(int idTrain, int etat) {
 		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
-		Itineraire itineraire = itineraireDAO.getItineraireEnCoursByEtatAndIdTrain(1, idTrain);
+		Itineraire itineraire = itineraireDAO.getItineraireByEtatAndIdTrain(1, idTrain);
 	
 		// Récupération de l'incident associé à l'itinéraire itineraire
 		Incident incident = em.createNamedQuery("IncidentDAO.getIncidentById", Incident.class)
-				.setParameter(1, itineraire.getIncident())
+				.setParameter("id", itineraire.getIncident().getId())
 				.getSingleResult();
 		
 		// MàJ de l'état de l'incident associé au train
