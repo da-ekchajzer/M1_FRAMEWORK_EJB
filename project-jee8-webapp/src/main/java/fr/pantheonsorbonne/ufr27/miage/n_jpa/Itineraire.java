@@ -46,6 +46,9 @@ public class Itineraire {
 	List<Voyageur> voyageurs;
 	List<Arret> garesDesservies;
 	int etat;
+	
+	Arret arretActuel;
+	
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "INCIDENT_ID")
