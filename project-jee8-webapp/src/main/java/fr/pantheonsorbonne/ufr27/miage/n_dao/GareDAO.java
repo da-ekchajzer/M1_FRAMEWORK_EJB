@@ -16,7 +16,7 @@ public class GareDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<Gare> getGaresByNom(String nom) {
-		return (List<Gare>) em.createNativeQuery("SELECT * " + "FROM GARE " + "WHERE NOM = ?").setParameter(1, nom)
+		return (List<Gare>) em.createNativeQuery("SELECT g " + "FROM GARE g " + "WHERE g.NOM = ?").setParameter(1, nom)
 				.getResultList();
 	}
 }

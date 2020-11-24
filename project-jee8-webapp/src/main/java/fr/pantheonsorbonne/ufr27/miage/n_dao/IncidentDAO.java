@@ -33,7 +33,7 @@ public class IncidentDAO {
 	
 	
 	public boolean creerIncident(int idTrain, Incident incident) {		
-		// On récupére le nb d'Incidents en BD avant l'insertion
+		// On récupère le nb d'Incidents en BD avant l'insertion
 		int nbIncidentsAvantAjout = this.getNbIncidents();
 		
 		// Creation de l'incident
@@ -44,7 +44,7 @@ public class IncidentDAO {
 				.setParameter(3, incident.getHeureDebut())
 				.setParameter(4, incident.getTypeIncident());
 		
-		// On récupére le nb d'Incidents en BD après l'insertion
+		// On récupère le nb d'Incidents en BD après l'insertion
 		int nbIncidentsApresAjout = this.getNbIncidents();
 				
 		// On vérifie que l'insertion a été effectuée
@@ -56,7 +56,7 @@ public class IncidentDAO {
 		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
 		Itineraire itineraire = itineraireDAO.getItineraireByEtatAndIdTrain(1, idTrain);
 		
-		// Ajout de l'INCIDENT_ID dans l'Itineraire associé au train
+		// Ajout de l'INCIDENT_ID dans l'itinéraire associé au train
 		itineraireDAO.ajouterIncidentItineraire(itineraire.getId(), incident.getId());
 		
 		return true;
@@ -68,16 +68,18 @@ public class IncidentDAO {
 		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
 		Itineraire itineraire = itineraireDAO.getItineraireByEtatAndIdTrain(1, idTrain);
 	
-		// Récupération de l'incident associé à l'itinéraire itineraire
+		// Récupération de l'incident associé à l'itinéraire itinéraire
 		Incident incident = em.createNamedQuery("IncidentDAO.getIncidentById", Incident.class)
 				.setParameter("id", itineraire.getIncident().getId())
 				.getSingleResult();
 		
 		// MàJ de l'état de l'incident associé au train
+		em.getTransaction().begin();
 		em.createNativeQuery("UPDATE INCIDENT "
 				+ "SET ETAT = ? "
 				+ "WHERE ID = ?")
 					.setParameter(1, etat)
-					.setParameter(2, incident.getId());
+					.setParameter(2, incident.getId()).executeUpdate();
+		em.getTransaction().commit();
 	}
 }
