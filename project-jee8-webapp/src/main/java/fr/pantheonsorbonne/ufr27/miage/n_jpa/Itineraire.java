@@ -1,6 +1,5 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NamedQueries({
+	@NamedQuery(name="Itineraire.getNbArretsByItineraire", query="SELECT COUNT(i) FROM Itineraire i WHERE i.id = :id"),
+	@NamedQuery(name="Itineraire.getAllArretsByItineraire", query="SELECT i FROM Itineraire i WHERE i.id = :id"),
+	@NamedQuery(name="Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :id and i.etat = :etat")
+})
 public class Itineraire {
 
 	public Itineraire() {
