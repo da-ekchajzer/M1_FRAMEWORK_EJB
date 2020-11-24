@@ -30,7 +30,7 @@ import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentAckQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
-import fr.pantheonsorbonne.ufr27.miage.n_service.BDDFillerService;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.BDDFillerServiceImpl;
 import fr.pantheonsorbonne.ufr27.miage.service.GymService;
 import fr.pantheonsorbonne.ufr27.miage.service.InvoicingService;
 import fr.pantheonsorbonne.ufr27.miage.service.MailingService;
@@ -108,7 +108,7 @@ public class Main {
 		pc.launchH2WS();
 
 		
-		BDDFillerService filler = new BDDFillerService(pc.getEM());
+		BDDFillerServiceImpl filler = new BDDFillerServiceImpl(pc.getEM());
 		filler.fill();
 		
 		System.out.println(String.format(
