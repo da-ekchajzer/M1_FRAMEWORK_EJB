@@ -43,7 +43,7 @@ public class Train implements Runnable {
 			actionTrain();
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -63,7 +63,7 @@ public class Train implements Runnable {
 		case 1:
 			updateItineraire(GatewayInfocentre.getItineraire(this.idTrain));
 
-			if (arrets.get(curentIdArret + 1).getheureArrive().isBefore(LocalDateTime.now())) {
+			if (arrets.get(curentIdArret + 1).getheureArrive().isAfter(LocalDateTime.now())) {
 				curentIdArret++;
 				GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
 			}
@@ -80,6 +80,7 @@ public class Train implements Runnable {
 				etatTrain = 1;
 				GatewayInfocentre.updateIncident(incident.getXMLIncident().getEtatIncident(), this.idTrain);
 			}
+			GatewayInfocentre.updateIncident(incident.getXMLIncident().getEtatIncident(), this.idTrain);
 			break;
 		}
 	}
