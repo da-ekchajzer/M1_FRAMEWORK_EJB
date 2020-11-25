@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 
 @ManagedBean
 public class ArretDAO {
@@ -19,21 +21,17 @@ public class ArretDAO {
 
 	public boolean removeArretFromItineraire(int idTrain, Arret arret) {
 		// On récupère l'itinéraire associé au train
-		int idItineraire = this.itineraireDAO.getItineraireByEtatAndIdTrain(idTrain, 1).getId();
+		int idItineraire = em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
+				.setParameter("idTrain", idTrain).setParameter("etat", CodeEtatItinieraire.EN_COURS).getSingleResult().getId();
 
 		int nbArretsAvantSuppression = this.getNbArretsByItineraire(idItineraire);
 
 		// On supprime dans la table ITINERAIRE_ARRET à l'aide du couple idItineraire - idArret
 		em.getTransaction().begin();
-		em.createNativeQuery("DELETE FROM ITINERAIRE_ARRET "
-				+ "WHERE ITINERAIRE_ID = ? "
-				+ "AND GARESDESSERVIES_ID = ?")
-					.setParameter(1, idItineraire)
-					.setParameter(2, arret.getId()).executeUpdate();
+		em.remove(arret);
 		em.getTransaction().commit();
-
-		int nbArretsApresSuppression = this.getNbArretsByItineraire(idItineraire);
-		return nbArretsApresSuppression == nbArretsAvantSuppression - 1;
+		
+		return this.getNbArretsByItineraire(idItineraire) == nbArretsAvantSuppression - 1;
 	}
 
 	public List<Arret> getAllArretsByItineraire(int idItineraire) {
