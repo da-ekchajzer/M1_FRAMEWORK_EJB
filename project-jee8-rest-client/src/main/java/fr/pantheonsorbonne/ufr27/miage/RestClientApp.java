@@ -95,8 +95,7 @@ public class RestClientApp
 								ccinfo.setCcv(123);
 								ccinfo.setNumber("1212126126216");
 								ccinfo.setValidityDate("10/22");
-								Response paymentResponse = target.path("payment").path("" + user.getId()).request()
-										.post(Entity.xml(ccinfo));
+								Response paymentResponse = target.path("payment").path("" + user.getId()).request().post(Entity.xml(ccinfo));
 								if (!paymentResponse.getStatusInfo().getFamily().equals(Family.SUCCESSFUL)) {
 									throw new RuntimeException("failed to pay");
 								}

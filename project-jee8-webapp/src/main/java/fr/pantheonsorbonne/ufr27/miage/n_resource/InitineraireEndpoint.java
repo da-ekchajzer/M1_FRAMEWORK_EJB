@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 
 
@@ -26,17 +27,20 @@ public class InitineraireEndpoint {
 	@Path("{trainId}")
 	@GET
 	public Response getItineraire(@PathParam("trainId") int trainId) {
-		if(service.ItineraireExist(trainId)) {
-			return Response.ok(service.getInitineraire(trainId)).build();
+		System.out.println("== Infocentre - getItineraire ==\nidTrain : "+ trainId);
+		
+		ItineraireJAXB itineraireJAXB = service.getInitineraire(trainId);
+		if(itineraireJAXB != null) {
+			return Response.ok(itineraireJAXB).build();
 		}
 		return Response.ok(null).build();
-		
 	}
 	
 	@Consumes(value = {MediaType.APPLICATION_XML})
 	@Path("{trainId}")
 	@PUT
 	public Response majArret(@PathParam("trainId") int trainId, ArretJAXB arretActuel) {
+		System.out.println("== Infocentre - majArret ==\nidTrain : "+ trainId);
 		if(service.majItineraire(trainId, arretActuel)) {
 			return Response.noContent().build();
 		}

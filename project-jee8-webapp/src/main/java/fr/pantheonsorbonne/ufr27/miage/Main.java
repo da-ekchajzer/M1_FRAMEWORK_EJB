@@ -30,7 +30,19 @@ import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentAckQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajInfoGare;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceUtilisateur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.BDDFillerServiceImpl;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceIncidentImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceItineraireImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajDecideurImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajExecuteurImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajInfoGareImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceUtilisateurImp;
 import fr.pantheonsorbonne.ufr27.miage.service.GymService;
 import fr.pantheonsorbonne.ufr27.miage.service.InvoicingService;
 import fr.pantheonsorbonne.ufr27.miage.service.MailingService;
@@ -62,16 +74,13 @@ public class Main {
 					protected void configure() {
 
 						bind(GymServiceImpl.class).to(GymService.class);
-
 						bind(PaymentServiceImpl.class).to(PaymentService.class);
 						bind(InvoicingServiceImpl.class).to(InvoicingService.class);
 						bind(InvoiceDAO.class).to(InvoiceDAO.class);
 						bind(UserServiceImpl.class).to(UserService.class);
 						bind(MailingServiceImpl.class).to(MailingService.class);
 						bind(PaymentDAO.class).to(PaymentDAO.class);
-						bindFactory(EMFFactory.class).to(EntityManagerFactory.class).in(Singleton.class);
-						bindFactory(EMFactory.class).to(EntityManager.class).in(RequestScoped.class);
-						bindFactory(ConnectionFactorySupplier.class).to(ConnectionFactory.class).in(Singleton.class);
+						
 						bindFactory(PaymentAckQueueSupplier.class).to(Queue.class).named("PaymentAckQueue")
 								.in(Singleton.class);
 						bindFactory(PaymentQueueSupplier.class).to(Queue.class).named("PaymentQueue")
@@ -79,6 +88,17 @@ public class Main {
 
 						bind(PaymentValidationAckownledgerBean.class).to(PaymentValidationAckownledgerBean.class)
 								.in(Singleton.class);
+						
+						bindFactory(EMFFactory.class).to(EntityManagerFactory.class).in(Singleton.class);
+						bindFactory(EMFactory.class).to(EntityManager.class).in(RequestScoped.class);
+						bindFactory(ConnectionFactorySupplier.class).to(ConnectionFactory.class).in(Singleton.class);
+						
+						bind(ServiceIncidentImp.class).to(ServiceIncident.class);
+						bind(ServiceItineraireImp.class).to(ServiceItineraire.class);
+						bind(ServiceMajDecideurImp.class).to(ServiceMajDecideur.class);
+						bind(ServiceMajExecuteurImp.class).to(ServiceMajExecuteur.class);
+						bind(ServiceMajInfoGareImp.class).to(ServiceMajInfoGare.class);
+						bind(ServiceUtilisateurImp.class).to(ServiceUtilisateur.class);
 
 					}
 
