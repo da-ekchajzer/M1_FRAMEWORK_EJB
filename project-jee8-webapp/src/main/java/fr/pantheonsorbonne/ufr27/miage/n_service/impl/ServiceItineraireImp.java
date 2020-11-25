@@ -14,7 +14,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	ServiceUtilisateur serviceUtilisateur;
 
 	@Override
-	public ItineraireJAXB getInitineraire(int idTrain) {
+	public ItineraireJAXB getItineraire(int idTrain) {
 		// TODO appeler le DAO
 		return null;
 	}

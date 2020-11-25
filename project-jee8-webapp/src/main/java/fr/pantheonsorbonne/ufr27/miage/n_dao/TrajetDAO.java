@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 
 @ManagedBean
 public class TrajetDAO {
@@ -17,33 +16,21 @@ public class TrajetDAO {
 	@Inject
 	EntityManager em;
 
-	@SuppressWarnings("unchecked")
-	public List<Trajet> getTrajetsByVoyage(Voyage v) {
-		return (List<Trajet>) em.createNativeQuery("SELECT t " + "FROM VOYAGE v, TRAJET t " + "WHERE t.VOYAGE_ID = ?")
-				.setParameter(1, v.getId()).getResultList();
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<Trajet> getTrajetsByItineraire(Itineraire itineraire) {
-		return (List<Trajet>) em
-				.createNativeQuery("SELECT t " + "FROM VOYAGE v, TRAJET t " + "WHERE t.ITINERAIRE_ID = ?")
-				.setParameter(1, itineraire.getId()).getResultList();
+		return (List<Trajet>) em.createNamedQuery("Trajet.getTrajetsByItineraire", Trajet.class)
+				.setParameter("idItineraire", itineraire.getId()).getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Trajet> getTrajetsByNomGareDepart(Gare gareDepart) {
+	public List<Trajet> getTrajetsByNomGareDeDepart(Gare gareDepart) {
 		return (List<Trajet>) em
-				.createNativeQuery(
-						"SELECT t " + "FROM TRAJET t, GARE g " + "WHERE t.GAREDEPART_ID = ? " + "AND g.NOM = ?")
-				.setParameter(1, gareDepart.getId()).setParameter(2, gareDepart.getNom()).getResultList();
+				.createNamedQuery("Trajet.getTrajetsByNomGareDeDepart", Trajet.class)
+				.setParameter("nom", gareDepart.getNom()).getResultList();
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public List<Trajet> getTrajetsByNomGareArrivee(Gare gareArrivee) {
 		return (List<Trajet>) em
-				.createNativeQuery(
-						"SELECT t " + "FROM TRAJET t, GARE g " + "WHERE t.GAREARRIVEE_ID = ? " + "AND g.NOM = ?")
-				.setParameter(1, gareArrivee.getId()).setParameter(2, gareArrivee.getNom()).getResultList();
+				.createNamedQuery("Trajet.getTrajetsByNomGareArrivee", Trajet.class)
+				.setParameter("nom", gareArrivee.getNom()).getResultList();
 	}
 
 	public void deleteTrajet(Trajet trajet) {

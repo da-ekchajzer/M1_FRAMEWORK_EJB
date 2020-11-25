@@ -36,6 +36,9 @@ public class VoyageurDAO {
 
 		Itineraire itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
+		em.getTransaction().begin();
+		// TODO
+
 		for (Voyageur voyageur : itineraire.getVoyageurs()) {
 			if (voyageur.getVoyage().getGareDeDepart().equals(arret.getGare())
 					&& LocalDateTime.now().isBefore(arret.getHeureDepartDeGare())) {
@@ -47,8 +50,6 @@ public class VoyageurDAO {
 			}
 		}
 
-		em.getTransaction().begin();
-		// TODO
 		em.getTransaction().commit();
 	}
 }
