@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +18,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NamedQueries({
+		@NamedQuery(name = "Voyageur.getVoyageursByVoyage", query = "SELECT v FROM Voyageur v WHERE v.voyage.id = :id"),
+
+})
 public class Voyageur {
 
 	@Id

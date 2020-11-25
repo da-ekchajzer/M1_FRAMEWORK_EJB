@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +15,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NamedQueries({
+	@NamedQuery(name = "Train.getTrainById", query = "SELECT t FROM Train t WHERE t.id = :id")
+
+})
 public abstract class Train {
 
 	@Id

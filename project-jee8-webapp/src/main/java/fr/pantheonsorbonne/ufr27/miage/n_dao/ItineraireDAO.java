@@ -21,9 +21,23 @@ public class ItineraireDAO {
 	@Inject
 	ArretDAO arretDao;
 
+	public Itineraire getItineraireById(int idItineraire) {
+		return em.createNamedQuery("Itineraire.getItineraireById", Itineraire.class).setParameter("id", idItineraire)
+				.getSingleResult();
+	}
+
+	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
+		return em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
+				.setParameter("idTrain", idTrain).setParameter("etat", etat).getSingleResult();
+	}
+
+	public List<Itineraire> getAllItinerairesByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
+		return (List<Itineraire>) em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
+				.setParameter("idTrain", idTrain).setParameter("etat", etat).getResultList();
+	}
+
 	public void ajouterIncidentItineraire(int idItineraire, int idIncident) {
-		Itineraire itineraire = em.createNamedQuery("Itineraire.getItineraireById", Itineraire.class)
-				.setParameter("id", idItineraire).getSingleResult();
+		Itineraire itineraire = getItineraireById(idItineraire);
 
 		Incident incident = em.createNamedQuery("IncidentDAO.getIncidentById", Incident.class)
 				.setParameter("id", idIncident).getSingleResult();
@@ -34,20 +48,14 @@ public class ItineraireDAO {
 	}
 
 	public Itineraire recupItineraireEnCoursOuLeProchain(int idTrain) {
-		Itineraire itineraire = em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-				.setParameter("idTrain", idTrain).setParameter("etat", CodeEtatItinieraire.EN_COURS).getSingleResult();
+		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
 		if (itineraire == null) {
-			itineraire = em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-					.setParameter("idTrain", idTrain).setParameter("etat", CodeEtatItinieraire.EN_INCIDENT)
-					.getSingleResult();
+			itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_INCIDENT);
 		}
 
 		if (itineraire == null) {
-			List<Itineraire> itineraires = em
-					.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-					.setParameter("idTrain", idTrain).setParameter("etat", CodeEtatItinieraire.EN_ATTENTE)
-					.getResultList();
+			List<Itineraire> itineraires = getAllItinerairesByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_ATTENTE);
 
 			List<Arret> arrets = new ArrayList<Arret>();
 
@@ -69,18 +77,16 @@ public class ItineraireDAO {
 	}
 
 	public void majEtatItineraire(int idItineraire, int newEtat) {
-		Itineraire itineraire = em.createNamedQuery("Itineraire.getItineraireById", Itineraire.class)
-				.setParameter("id", idItineraire).getSingleResult();
-		
+		Itineraire itineraire = getItineraireById(idItineraire);
+
 		em.getTransaction().begin();
 		itineraire.setEtat(newEtat);
 		em.getTransaction().commit();
 	}
 
 	public void updateArretActuel(int idTrain, Arret arret) {
-		Itineraire itineraire = em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-				.setParameter("idTrain", idTrain).setParameter("etat", CodeEtatItinieraire.EN_COURS).getSingleResult();
-		
+		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+
 		em.getTransaction().begin();
 		itineraire.setArretActuel(arret);
 		em.getTransaction().commit();

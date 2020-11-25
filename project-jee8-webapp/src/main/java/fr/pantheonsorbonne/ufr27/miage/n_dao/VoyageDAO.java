@@ -16,20 +16,14 @@ public class VoyageDAO {
 	EntityManager em;
 
 	// On cherche par le nom de la gare ou par une gare carrément ?
-	@SuppressWarnings("unchecked")
 	public List<Voyage> getVoyagesByNomGareDepart(Gare gareDepart) {
-		return (List<Voyage>) em
-				.createNativeQuery(
-						"SELECT v " + "FROM VOYAGE v, GARE g " + "WHERE v.GAREDEPART_ID = g.ID " + "AND g.NOM = ?")
-				.setParameter(1, gareDepart.getNom()).getResultList();
+		return (List<Voyage>) em.createNamedQuery("Voyage.getVoyagesByGareDeDepart", Voyage.class)
+				.setParameter("nom", gareDepart.getNom()).getResultList();
 	}
 
 	// On cherche par le nom de la gare ou par une gare carrément ?
-	@SuppressWarnings("unchecked")
 	public List<Voyage> getVoyagesByNomGareArrivee(Gare gareArrivee) {
-		return (List<Voyage>) em
-				.createNativeQuery(
-						"SELECT v " + "FROM VOYAGE v, GARE g " + "WHERE v.GAREARRIVEE_ID = g.ID " + "AND g.NOM = ?")
-				.setParameter(1, gareArrivee.getNom()).getResultList();
+		return (List<Voyage>) em.createNamedQuery("Voyage.getVoyagesByGareArrivee", Voyage.class)
+				.setParameter("nom", gareArrivee.getNom()).getResultList();
 	}
 }
