@@ -29,7 +29,7 @@ public class InitineraireEndpoint {
 	public Response getItineraire(@PathParam("trainId") int trainId) {
 		System.out.println("== Infocentre - getItineraire ==\nidTrain : "+ trainId);
 		
-		ItineraireJAXB itineraireJAXB = service.getInitineraire(trainId);
+		ItineraireJAXB itineraireJAXB = service.getItineraire(trainId);
 		if(itineraireJAXB != null) {
 			return Response.ok(itineraireJAXB).build();
 		}
