@@ -33,7 +33,7 @@ public class Arret {
 		this.heureArriveeEnGare = heureArriveeEnGare;
 		this.heureDepartDeGare = heureDepartDeGare;
 	}
-	
+
 	public int getId() {
 		return id;
 	}

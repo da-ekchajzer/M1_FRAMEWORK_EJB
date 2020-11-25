@@ -23,9 +23,9 @@ import lombok.ToString;
 @ToString
 @NamedQueries({
 		@NamedQuery(name = "Itineraire.getItineraireById", query = "SELECT i FROM Itineraire i WHERE i.id = :id"),
-		@NamedQuery(name = "Itineraire.getNbArretsByItineraire", query = "SELECT COUNT(i) FROM Itineraire i WHERE i.id = :id"),
-		@NamedQuery(name = "Itineraire.getAllArretsByItineraire", query = "SELECT i FROM Itineraire i WHERE i.id = :id"),
-		@NamedQuery(name = "Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :idTrain and i.etat = :etat") })
+		@NamedQuery(name = "Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :idTrain and i.etat = :etat"),
+		
+})
 public class Itineraire {
 
 	public Itineraire() {
@@ -101,7 +101,6 @@ public class Itineraire {
 	public void setIncident(Incident incident) {
 		this.incident = incident;
 	}
-	
 
 	public Arret getArretActuel() {
 		return arretActuel;
@@ -114,13 +113,13 @@ public class Itineraire {
 	public void addArret(Arret a) {
 		this.garesDesservies.add(a);
 	}
-	
+
 	public enum CodeEtatItinieraire {
-		
+
 		EN_ATTENTE(0), EN_COURS(1), EN_INCIDENT(2), FIN(-1);
-		
+
 		private int code;
-		
+
 		private CodeEtatItinieraire(int code) {
 			this.code = code;
 		}
@@ -129,5 +128,5 @@ public class Itineraire {
 			return code;
 		}
 	}
-	
+
 }
