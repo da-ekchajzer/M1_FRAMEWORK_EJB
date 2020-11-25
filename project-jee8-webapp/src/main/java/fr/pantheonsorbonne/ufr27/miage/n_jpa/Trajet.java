@@ -14,43 +14,58 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 public class Trajet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
-	
+
 	@OneToOne
 	Gare gareDepart;
 	@OneToOne
 	Gare gareArrivee;
-	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="ITINERAIRE_ID")
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ITINERAIRE_ID")
 	Itineraire itineraire;
-	
-	public Trajet() {}
-	
+
+	public Trajet() {
+	}
+
 	public Trajet(Gare gareDepart, Gare gareArrivee, Itineraire itineraire) {
 		this.gareDepart = gareDepart;
 		this.gareArrivee = gareArrivee;
 		this.itineraire = itineraire;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
+
 	public Gare getGareDepart() {
 		return gareDepart;
 	}
+
 	public void setGareDepart(Gare gareDepart) {
 		this.gareDepart = gareDepart;
 	}
+
 	public Gare getGareArrivee() {
 		return gareArrivee;
 	}
+
 	public void setGareArrivee(Gare gareArrivee) {
 		this.gareArrivee = gareArrivee;
+	}
+
+	public Itineraire getItineraire() {
+		return itineraire;
+	}
+
+	public void setItineraire(Itineraire itineraire) {
+		this.itineraire = itineraire;
 	}
 	
 }

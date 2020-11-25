@@ -64,6 +64,5 @@ public class Voyage {
 	public int getId() {
 		return id;
 	}
-
-
+	
 }

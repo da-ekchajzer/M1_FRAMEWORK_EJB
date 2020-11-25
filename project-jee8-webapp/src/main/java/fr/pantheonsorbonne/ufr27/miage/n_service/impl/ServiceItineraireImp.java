@@ -27,5 +27,14 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		return false;
 
 	}
+	
+	//-----------------Modifs Sophia ----------------//
+	
+	@SuppressWarnings("unused")
+	private void updateArret(int idTrain) {
+		// TODO Auto-generated method stub
+		// Recuperer l'arret auquel on se situe et maj le nom de l'arret
+	}
+	
 
 }
