@@ -1,6 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -22,20 +22,19 @@ import lombok.ToString;
 @Setter
 @ToString
 @NamedQueries({
-	@NamedQuery(name="Itineraire.getNbArretsByItineraire", query="SELECT COUNT(i) FROM Itineraire i WHERE i.id = :id"),
-	@NamedQuery(name="Itineraire.getAllArretsByItineraire", query="SELECT i FROM Itineraire i WHERE i.id = :id"),
-	@NamedQuery(name="Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :idTrain and i.etat = :etat")
-})
+		@NamedQuery(name = "Itineraire.getItineraireById", query = "SELECT i FROM Itineraire i WHERE i.id = :id"),
+		@NamedQuery(name = "Itineraire.getNbArretsByItineraire", query = "SELECT COUNT(i) FROM Itineraire i WHERE i.id = :id"),
+		@NamedQuery(name = "Itineraire.getAllArretsByItineraire", query = "SELECT i FROM Itineraire i WHERE i.id = :id"),
+		@NamedQuery(name = "Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :idTrain and i.etat = :etat") })
 public class Itineraire {
 
 	public Itineraire() {
 	}
-	
+
 	public Itineraire(Train train) {
 		this.train = train;
-		this.garesDesservies = new ArrayList<Arret>();
+		this.garesDesservies = new LinkedList<Arret>();
 	}
-
 
 	public Itineraire(Train train, List<Arret> garesDesservies) {
 		this.train = train;
@@ -52,9 +51,8 @@ public class Itineraire {
 	List<Voyageur> voyageurs;
 	List<Arret> garesDesservies;
 	int etat;
-	
+
 	Arret arretActuel;
-	
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "INCIDENT_ID")
@@ -103,9 +101,33 @@ public class Itineraire {
 	public void setIncident(Incident incident) {
 		this.incident = incident;
 	}
+	
+
+	public Arret getArretActuel() {
+		return arretActuel;
+	}
+
+	public void setArretActuel(Arret arretActuel) {
+		this.arretActuel = arretActuel;
+	}
 
 	public void addArret(Arret a) {
 		this.garesDesservies.add(a);
 	}
+	
+	public enum CodeEtatItinieraire {
+		
+		EN_ATTENTE(0), EN_COURS(1), EN_INCIDENT(2), FIN(-1);
+		
+		private int code;
+		
+		private CodeEtatItinieraire(int code) {
+			this.code = code;
+		}
 
+		public int getCode() {
+			return code;
+		}
+	}
+	
 }

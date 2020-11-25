@@ -36,7 +36,7 @@ public class Voyageur {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "VOYAGE_ID")
 	Voyage voyage;
-	
+
 	public int getId() {
 		return id;
 	}
