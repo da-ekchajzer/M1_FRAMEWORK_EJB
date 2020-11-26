@@ -5,6 +5,7 @@ import java.sql.Time;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
@@ -12,6 +13,8 @@ import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 public class ServiceIncidentImp implements ServiceIncident {
 	@Inject
 	ServiceMajDecideur serviceMajDecideur;
+	
+
 	
 	@Override
 	public boolean creerIncident(int idTrain, IncidentJAXB inc) {

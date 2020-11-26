@@ -1,26 +1,26 @@
 package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 
+import javax.inject.Inject;
+
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceUtilisateur;
 
 public class ServiceUtilisateurImp implements ServiceUtilisateur{
 
-	@Override
-	public void ajoutItineraireUtilisateurs(int idTrain) {
-		// TODO Auto-generated method stub
-		
-	}
+	@Inject
+	VoyageurDAO voyageurDAO;
+
 
 	@Override
-	public void retireItineraireUtilisateurs(int idTrain) {
-		// TODO Auto-generated method stub
-		
+	public void initUtilisateursItineraire(int idTrain) {
+		voyageurDAO.mettreVoyageursDansItineraire(idTrain);
 	}
 
+	
 	@Override
 	public void majUtilisateursTrain(int idTrain, Arret arret) {
-		// TODO Auto-generated method stub
-		
+		voyageurDAO.majVoyageursDansTrainAvecResa(idTrain, arret);
 	}
 
 }

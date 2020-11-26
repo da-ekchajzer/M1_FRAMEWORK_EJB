@@ -93,12 +93,14 @@ public class Main {
 						bindFactory(EMFactory.class).to(EntityManager.class).in(RequestScoped.class);
 						bindFactory(ConnectionFactorySupplier.class).to(ConnectionFactory.class).in(Singleton.class);
 						
+					
 						bind(ServiceIncidentImp.class).to(ServiceIncident.class);
 						bind(ServiceItineraireImp.class).to(ServiceItineraire.class);
 						bind(ServiceMajDecideurImp.class).to(ServiceMajDecideur.class);
 						bind(ServiceMajExecuteurImp.class).to(ServiceMajExecuteur.class);
 						bind(ServiceMajInfoGareImp.class).to(ServiceMajInfoGare.class);
 						bind(ServiceUtilisateurImp.class).to(ServiceUtilisateur.class);
+						
 
 					}
 

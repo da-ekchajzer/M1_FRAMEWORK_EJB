@@ -17,7 +17,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 
 
 @Path("itineraire/")
-public class InitineraireEndpoint {
+public class ItineraireEndpoint {
 	
 	@Inject
 	ServiceItineraire service;

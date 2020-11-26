@@ -39,7 +39,7 @@ public class Train implements Runnable {
 	@Override
 	public void run() {
 		while (etatTrain != -1) {
-
+			System.out.println("[" + idTrain + "] - EtatTrain : " + etatTrain);
 			actionTrain();
 			
 			try {
@@ -71,7 +71,7 @@ public class Train implements Runnable {
 				etatTrain = 0;
 			}
 
-			genererRandomIncident();
+			//genererRandomIncident();
 			break;
 
 		case 2:

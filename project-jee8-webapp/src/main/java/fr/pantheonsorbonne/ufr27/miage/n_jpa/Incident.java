@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -26,8 +27,8 @@ public class Incident {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
-	String typeIncident;
-	Date heureDebut;
+	int typeIncident;
+	LocalDateTime heureDebut;
 	int duree;
 	int etat;
 	
@@ -44,19 +45,19 @@ public class Incident {
 		return id;
 	}
 
-	public String getTypeIncident() {
+	public int getTypeIncident() {
 		return typeIncident;
 	}
 
-	public void setTypeIncident(String typeIncident) {
+	public void setTypeIncident(int typeIncident) {
 		this.typeIncident = typeIncident;
 	}
 
-	public Date getHeureDebut() {
+	public LocalDateTime getHeureDebut() {
 		return heureDebut;
 	}
 
-	public void setHeureDebut(Date heureDebut) {
+	public void setHeureDebut(LocalDateTime heureDebut) {
 		this.heureDebut = heureDebut;
 	}
 
