@@ -36,7 +36,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	}
 
 	private void updateArret(int idTrain, Arret a) {
-		itineraireDAO.updateArretActuel(idTrain, a);
+		itineraireDAO.majArretActuel(idTrain, a);
 	}
 
 
