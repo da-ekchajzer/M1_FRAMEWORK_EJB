@@ -91,5 +91,56 @@ public class ItineraireDAO {
 		itineraire.setArretActuel(arret);
 		em.getTransaction().commit();
 	}
+	
+	/**
+	 * @author Mathieu
+	 * 26/11/2020 (Matin)
+	 * 
+	 * La méthode était dans ArretDAO je l'ai juste déplacé
+	 * 
+	 * TODO : Si on suppr l'arrêt juste comme ça, 
+	 * ça le suppr pour tous les itinéraires qui l'ont dans leur liste, c'est OK ?
+	 * 
+	 * @param idTrain
+	 * @param arret
+	 * @return
+	 */
+	public boolean supprimerArret(int idTrain, Arret arret) {
+		// On récupère l'itinéraire associé au train
+		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+
+		int nbArretsAvantSuppression = itineraire.getGaresDesservies().size();
+
+		// On supprime l'arrêt de l'itinéraire
+		em.getTransaction().begin();
+		em.remove(arret);
+		em.getTransaction().commit();
+
+		return itineraire.getGaresDesservies().size() == nbArretsAvantSuppression - 1;
+	}
+	
+	/**
+	 * @author Mathieu
+	 * 26/11/2020 (Matin)
+	 * 
+	 * @param idTrain
+	 * @param idArret
+	 * @return
+	 */
+	public boolean ajouterUnArretDansUnItineraire(int idTrain, int idArret) {
+		// On récupère l'itinéraire associé au train
+		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+
+		int nbArretsAvantSuppression = itineraire.getGaresDesservies().size();
+
+		// On ajoute l'arrêt à l'itinéraire
+		// TODO : Comment on a la position de l'arrêt à ajouter dans la liste ?
+
+		return itineraire.getGaresDesservies().size() == nbArretsAvantSuppression + 1;
+	}
+	
+	public void delayTrain(int idTrain, int horaire) {
+		// TODO
+	}
 
 }
