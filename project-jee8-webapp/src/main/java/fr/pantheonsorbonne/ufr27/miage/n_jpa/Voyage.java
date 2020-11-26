@@ -24,7 +24,8 @@ import lombok.ToString;
 @ToString
 @NamedQueries({
 		@NamedQuery(name = "Voyage.getVoyagesByGareDeDepart", query = "SELECT v FROM Voyage v, Gare g WHERE v.gareDeDepart.id = g.id AND g.nom = :nom"),
-		@NamedQuery(name = "Voyage.getVoyagesByGareArrivee", query = "SELECT v FROM Voyage v, Gare g WHERE v.gareArrivee.id = g.id AND g.nom = :nom")
+		@NamedQuery(name = "Voyage.getVoyagesByGareArrivee", query = "SELECT v FROM Voyage v, Gare g WHERE v.gareArrivee.id = g.id AND g.nom = :nom"),
+		@NamedQuery(name = "Voyage.getAllVoyages", query = "SELECT v FROM Voyage v")
 
 })
 public class Voyage {
