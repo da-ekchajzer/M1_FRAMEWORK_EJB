@@ -30,6 +30,14 @@ import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentAckQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.ArretDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.GareDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
@@ -80,7 +88,7 @@ public class Main {
 						bind(UserServiceImpl.class).to(UserService.class);
 						bind(MailingServiceImpl.class).to(MailingService.class);
 						bind(PaymentDAO.class).to(PaymentDAO.class);
-						
+
 						bindFactory(PaymentAckQueueSupplier.class).to(Queue.class).named("PaymentAckQueue")
 								.in(Singleton.class);
 						bindFactory(PaymentQueueSupplier.class).to(Queue.class).named("PaymentQueue")
@@ -88,20 +96,28 @@ public class Main {
 
 						bind(PaymentValidationAckownledgerBean.class).to(PaymentValidationAckownledgerBean.class)
 								.in(Singleton.class);
+
+						// ---
 						
 						bindFactory(EMFFactory.class).to(EntityManagerFactory.class).in(Singleton.class);
 						bindFactory(EMFactory.class).to(EntityManager.class).in(RequestScoped.class);
 						bindFactory(ConnectionFactorySupplier.class).to(ConnectionFactory.class).in(Singleton.class);
 						
-					
 						bind(ServiceIncidentImp.class).to(ServiceIncident.class);
 						bind(ServiceItineraireImp.class).to(ServiceItineraire.class);
 						bind(ServiceMajDecideurImp.class).to(ServiceMajDecideur.class);
 						bind(ServiceMajExecuteurImp.class).to(ServiceMajExecuteur.class);
 						bind(ServiceMajInfoGareImp.class).to(ServiceMajInfoGare.class);
 						bind(ServiceUtilisateurImp.class).to(ServiceUtilisateur.class);
-						
 
+						bind(ArretDAO.class).to(ArretDAO.class);
+						bind(GareDAO.class).to(GareDAO.class);
+						bind(IncidentDAO.class).to(IncidentDAO.class);
+						bind(ItineraireDAO.class).to(ItineraireDAO.class);
+						bind(TrainDAO.class).to(TrainDAO.class);
+						bind(TrajetDAO.class).to(TrajetDAO.class);
+						bind(VoyageDAO.class).to(VoyageDAO.class);
+						bind(VoyageurDAO.class).to(VoyageurDAO.class);
 					}
 
 				});
@@ -129,16 +145,14 @@ public class Main {
 		pc.getEM();
 		pc.launchH2WS();
 
-		
 		BDDFillerServiceImpl filler = new BDDFillerServiceImpl(pc.getEM());
 		filler.fill();
-		
+
 		System.out.println(String.format(
 				"Jersey app started with WADL available at " + "%sapplication.wadl\nHit enter to stop it...",
 				BASE_URI));
-		
-		System.in.read();
 
+		System.in.read();
 
 		server.stop();
 	}

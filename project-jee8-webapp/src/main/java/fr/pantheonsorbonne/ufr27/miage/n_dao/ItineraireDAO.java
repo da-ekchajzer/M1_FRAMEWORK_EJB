@@ -1,6 +1,9 @@
 package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.ManagedBean;
@@ -8,9 +11,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 
 @ManagedBean
 public class ItineraireDAO {
@@ -20,6 +25,9 @@ public class ItineraireDAO {
 
 	@Inject
 	ArretDAO arretDao;
+
+	@Inject
+	TrajetDAO trajetDAO;
 
 	public Itineraire getItineraireById(int idItineraire) {
 		return em.createNamedQuery("Itineraire.getItineraireById", Itineraire.class).setParameter("id", idItineraire)
@@ -84,28 +92,15 @@ public class ItineraireDAO {
 		em.getTransaction().commit();
 	}
 
-	public void updateArretActuel(int idTrain, Arret arret) {
+	public void majArretActuel(int idTrain, Arret arret) {
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
 		em.getTransaction().begin();
 		itineraire.setArretActuel(arret);
 		em.getTransaction().commit();
 	}
-	
-	/**
-	 * @author Mathieu
-	 * 26/11/2020 (Matin)
-	 * 
-	 * La méthode était dans ArretDAO je l'ai juste déplacé
-	 * 
-	 * TODO : Si on suppr l'arrêt juste comme ça, 
-	 * ça le suppr pour tous les itinéraires qui l'ont dans leur liste, c'est OK ?
-	 * 
-	 * @param idTrain
-	 * @param arret
-	 * @return
-	 */
-	public boolean supprimerArret(int idTrain, Arret arret) {
+
+	public boolean supprimerArretDansUnItineraire(int idTrain, Arret arret) {
 		// On récupère l'itinéraire associé au train
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
@@ -113,34 +108,72 @@ public class ItineraireDAO {
 
 		// On supprime l'arrêt de l'itinéraire
 		em.getTransaction().begin();
+		itineraire.getGaresDesservies().remove(arret);
 		em.remove(arret);
 		em.getTransaction().commit();
 
 		return itineraire.getGaresDesservies().size() == nbArretsAvantSuppression - 1;
 	}
-	
-	/**
-	 * @author Mathieu
-	 * 26/11/2020 (Matin)
-	 * 
-	 * @param idTrain
-	 * @param idArret
-	 * @return
+
+	/*
+	 * TODO : ajouter ce cas de figure dans le BDDFillerServiceImpl
 	 */
-	public boolean ajouterUnArretDansUnItineraire(int idTrain, int idArret) {
+	public boolean ajouterUnArretDansUnItineraire(int idTrain, Arret arret) {
+		// On récupère l'itinéraire associé au train
+		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		
+		Gare gare = arret.getGare();
+
+		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraire);
+
+		int nbArretsAvantAjout = itineraire.getGaresDesservies().size();
+
+		em.getTransaction().begin();
+		
+		// On ajoute l'arrêt à l'itinéraire
+		for (int i = 0; i < trajets.size(); i++) {
+			if (gare.equals(trajets.get(i).getGareArrivee())) {
+				if (i == trajets.size() - 1) {
+					// arrêt qu'on s'ajoute à la fin
+					itineraire.addArret(arret);
+				} else {
+					// arrêt qu'on ajoute en cours d'itinéraire
+					List<Arret> arretsDeTransition = new LinkedList<Arret>();
+					int length = itineraire.getGaresDesservies().size();
+					for (int j = i + 1; j < length; j++) {
+						arretsDeTransition.add(itineraire.getGaresDesservies().remove(j));
+					}
+					itineraire.addArret(arret);
+					itineraire.getGaresDesservies().addAll(arretsDeTransition);
+				}
+			}
+		}
+		
+		em.getTransaction().commit();
+
+		return itineraire.getGaresDesservies().size() == nbArretsAvantAjout + 1;
+	}
+
+	public void retarderTrain(int idTrain, int tempsRetard, ChronoUnit chronoUnitType) {
 		// On récupère l'itinéraire associé au train
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
-		int nbArretsAvantSuppression = itineraire.getGaresDesservies().size();
+		Arret arretActuel = itineraire.getArretActuel();
+		
+		em.getTransaction().begin();
 
-		// On ajoute l'arrêt à l'itinéraire
-		// TODO : Comment on a la position de l'arrêt à ajouter dans la liste ?
+		if (LocalDateTime.now().isBefore(arretActuel.getHeureDepartDeGare())) {
+			arretActuel.setHeureDepartDeGare(arretActuel.getHeureDepartDeGare().plus(tempsRetard, chronoUnitType));
+		}
 
-		return itineraire.getGaresDesservies().size() == nbArretsAvantSuppression + 1;
-	}
-	
-	public void delayTrain(int idTrain, int horaire) {
-		// TODO
+		for (Arret a : itineraire.getGaresDesservies()) {
+			if (a.getHeureArriveeEnGare().isAfter(arretActuel.getHeureArriveeEnGare())) {
+				a.setHeureArriveeEnGare(a.getHeureArriveeEnGare().plus(tempsRetard, chronoUnitType));
+				a.setHeureDepartDeGare(a.getHeureDepartDeGare().plus(tempsRetard, chronoUnitType));
+			}
+		}
+		
+		em.getTransaction().commit();
 	}
 
 }

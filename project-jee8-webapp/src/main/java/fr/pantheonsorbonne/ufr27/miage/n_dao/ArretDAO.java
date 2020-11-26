@@ -10,8 +10,4 @@ public class ArretDAO {
 	@Inject
 	EntityManager em;
 
-	@Inject
-	ItineraireDAO itineraireDAO;
-
-
 }

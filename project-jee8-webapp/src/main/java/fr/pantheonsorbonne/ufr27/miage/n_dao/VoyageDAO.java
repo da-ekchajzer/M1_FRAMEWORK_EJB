@@ -28,35 +28,23 @@ public class VoyageDAO {
 		return (List<Voyage>) em.createNamedQuery("Voyage.getVoyagesByGareArrivee", Voyage.class)
 				.setParameter("nom", gareArrivee.getNom()).getResultList();
 	}
-	
-	/**
-	 * @author Mathieu
-	 * 26/11/2020 (Matin)
-	 * 
-	 */
+
 	public List<Voyage> getAllVoyages() {
 		return (List<Voyage>) em.createNamedQuery("Voyage.getAllVoyages", Voyage.class).getResultList();
 	}
-	
-	/**
-	 * @author Mathieu
-	 * 26/11/2020 (Matin)
-	 * 
-	 * On vérifie pour chaque voyage s'il est composé d'un des trajets de la liste
-	 * passées en paramètre
-	 * Si oui, on le met dans la liste des voyages qu'on renvoie
-	 * @param trajets
-	 * @return
-	 */
-	public List<Voyage> getVoyagesComposesByUnTrajet(List<Trajet> trajets) {
+
+	public List<Voyage> getVoyagesComposedByAtLeastOneTrajetOf(List<Trajet> trajets) {
 		List<Voyage> allVoyages = this.getAllVoyages();
 		List<Voyage> resVoyages = new ArrayList<Voyage>();
-		
-		for(Trajet t : trajets) {
-			for(Voyage v : allVoyages) {
-				if(v.getTrajets().contains(t)) resVoyages.add(v); 
+
+		for (Trajet t : trajets) {
+			for (Voyage v : allVoyages) {
+				if (v.getTrajets().contains(t)) {
+					resVoyages.add(v);
+				}
 			}
 		}
+
 		return resVoyages;
 	}
 }
