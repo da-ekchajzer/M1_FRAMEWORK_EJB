@@ -16,7 +16,7 @@ import lombok.ToString;
 @Entity
 @Getter @Setter @ToString
 @NamedQueries({
-	@NamedQuery(name="Incident.findAllIncidents", query="SELECT i FROM Incident i"),
+	@NamedQuery(name="Incident.getAllIncidents", query="SELECT i FROM Incident i"),
 	@NamedQuery(name="Incident.getNbIncidents", query="SELECT COUNT(i) FROM Incident i"),
 	@NamedQuery(name="Incident.getIncidentById", query="SELECT i FROM Incident i WHERE i.id = :id")
 })

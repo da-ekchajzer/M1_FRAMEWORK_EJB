@@ -7,7 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,14 +18,20 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NamedQueries({
+		@NamedQuery(name = "Trajet.getTrajetsByItineraire", query = "SELECT t FROM Trajet t, Itineraire i WHERE t.itineraire.id = :idItineraire"),
+		@NamedQuery(name = "Trajet.getTrajetsByNomGareDeDepart", query = "SELECT t FROM Trajet t, Gare g WHERE g.nom = :nom"),
+		@NamedQuery(name = "Trajet.getTrajetsByNomGareArrivee", query = "SELECT t FROM Trajet t, Gare g WHERE g.nom = :nom")
+
+})
 public class Trajet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
-	@OneToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	Gare gareDepart;
-	@OneToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	Gare gareArrivee;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -67,5 +74,5 @@ public class Trajet {
 	public void setItineraire(Itineraire itineraire) {
 		this.itineraire = itineraire;
 	}
-	
+
 }

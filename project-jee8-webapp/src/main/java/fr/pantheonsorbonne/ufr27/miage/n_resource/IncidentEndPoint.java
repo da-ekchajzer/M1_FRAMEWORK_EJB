@@ -21,9 +21,9 @@ public class IncidentEndPoint {
 	@Consumes(value = { MediaType.APPLICATION_XML })
 	@Path("{trainId}")
 	@POST
-	public Response creerIncident(@PathParam("trainId") int trainId, IncidentJAXB inci) {
+	public Response creerIncident(@PathParam("trainId") int trainId, IncidentJAXB incident) {
 		System.out.println("== Infocentre - creerIncident ==\nidTrain : "+ trainId);
-		if (service.creerIncident(trainId, inci)) {
+		if (service.creerIncident(trainId, incident)) {
 			return Response.noContent().build();
 		}
 		return Response.serverError().build();

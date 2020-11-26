@@ -21,13 +21,18 @@ public class IncidentDAO {
 	ItineraireDAO itineraireDAO;
 
 	public List<Incident> getAllIncidents() {
-		TypedQuery<Incident> query = em.createNamedQuery("Incident.findAllIncidents", Incident.class);
+		TypedQuery<Incident> query = em.createNamedQuery("Incident.getAllIncidents", Incident.class);
 		return query.getResultList();
 	}
 
 	public int getNbIncidents() {
 		TypedQuery<Long> query = em.createNamedQuery("Incident.getNbIncidents", Long.class);
 		return query.getSingleResult().intValue();
+	}
+
+	public Incident getIncidentById(int idIncident) {
+		return em.createNamedQuery("Incident.getIncidentById", Incident.class).setParameter("id", idIncident)
+				.getSingleResult();
 	}
 
 	public boolean creerIncident(int idTrain, Incident incident) {
@@ -49,8 +54,7 @@ public class IncidentDAO {
 		}
 
 		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
-		Itineraire itineraire = em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-				.setParameter("idTrain", idTrain).setParameter("etat", CodeEtatItinieraire.EN_COURS).getSingleResult();
+		Itineraire itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
 		// Ajout de l'INCIDENT_ID dans l'itinéraire associé au train
 		itineraireDAO.ajouterIncidentItineraire(itineraire.getId(), incident.getId());
@@ -61,12 +65,10 @@ public class IncidentDAO {
 
 	public void updateEtatIncident(int idTrain, int etat) {
 		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
-		Itineraire itineraire = em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-				.setParameter("idTrain", idTrain).setParameter("etat", CodeEtatItinieraire.EN_COURS).getSingleResult();
+		Itineraire itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
 		// Récupération de l'incident associé à l'itinéraire itinéraire
-		Incident incident = em.createNamedQuery("IncidentDAO.getIncidentById", Incident.class)
-				.setParameter("id", itineraire.getIncident().getId()).getSingleResult();
+		Incident incident = getIncidentById(itineraire.getIncident().getId());
 
 		// MàJ de l'état de l'incident associé au train
 		em.getTransaction().begin();
