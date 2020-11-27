@@ -1,9 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_mapper;
 
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 
 public class IncidentMapper {

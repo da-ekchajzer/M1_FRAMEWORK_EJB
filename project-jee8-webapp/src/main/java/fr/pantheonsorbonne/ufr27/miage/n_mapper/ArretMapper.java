@@ -3,7 +3,7 @@ package fr.pantheonsorbonne.ufr27.miage.n_mapper;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import fr.pantheonsorbonne.ufr27.miage.n_mapper.MapperUtils;
+
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ObjectFactory;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;

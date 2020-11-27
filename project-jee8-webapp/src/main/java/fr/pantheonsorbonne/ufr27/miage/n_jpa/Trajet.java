@@ -37,7 +37,7 @@ public class Trajet implements Comparable<Trajet> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ITINERAIRE_ID")
 	Itineraire itineraire;
-	
+
 	int numero;
 
 	public Trajet() {
@@ -77,7 +77,7 @@ public class Trajet implements Comparable<Trajet> {
 	public void setItineraire(Itineraire itineraire) {
 		this.itineraire = itineraire;
 	}
-	
+
 	public int getNumero() {
 		return numero;
 	}
@@ -88,14 +88,25 @@ public class Trajet implements Comparable<Trajet> {
 
 	@Override
 	public int compareTo(Trajet trajet2) {
-		// TODO Auto-generated method stub
 		if (this.numero > trajet2.getNumero()) {
 			return 1;
-		}
-		else if (this.numero < trajet2.getNumero()) {
+		} else if (this.numero < trajet2.getNumero()) {
 			return -1;
 		}
 		return 0;
 	}
 
+	public boolean isBefore(Trajet trajet2) {
+		if (this.compareTo(trajet2) >= 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isAfter(Trajet trajet2) {
+		if (this.compareTo(trajet2) <= 0) {
+			return false;
+		}
+		return true;
+	}
 }

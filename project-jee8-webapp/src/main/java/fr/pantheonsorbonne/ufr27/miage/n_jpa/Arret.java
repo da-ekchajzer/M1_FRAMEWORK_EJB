@@ -15,7 +15,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Arret {
+public class Arret implements Comparable<Arret> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -60,5 +60,29 @@ public class Arret {
 
 	public void setHeureDepartDeGare(LocalDateTime heureDepartDeGare) {
 		this.heureDepartDeGare = heureDepartDeGare;
+	}
+
+	@Override
+	public int compareTo(Arret arret2) {
+		if (this.heureDepartDeGare.isAfter(arret2.getHeureDepartDeGare())) {
+			return 1;
+		} else if (this.heureDepartDeGare.isBefore(arret2.getHeureDepartDeGare())) {
+			return -1;
+		}
+		return 0;
+	}
+	
+	public boolean isBefore(Arret arret2) {
+		if (this.compareTo(arret2) >= 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isAfter(Arret arret2) {
+		if (this.compareTo(arret2) <= 0) {
+			return false;
+		}
+		return true;
 	}
 }
