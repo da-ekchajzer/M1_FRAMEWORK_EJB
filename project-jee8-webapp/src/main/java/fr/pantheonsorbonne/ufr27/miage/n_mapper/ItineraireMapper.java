@@ -19,7 +19,8 @@ public class ItineraireMapper {
 			arretsJAXB.add(ArretMapper.mapArretToArretJAXB(itineraire.getGaresDesservies().get(i)));
 		}
 		
-		initeraireJAXB.setArrets(arretsJAXB);
+		//Il faut trouver le moyen de générer le setter automatiquement dans initeraireJAXB
+		//initeraireJAXB.setArrets(arretsJAXB);
 		initeraireJAXB.setEtatItineraire(itineraire.getEtat());
 		
 		return initeraireJAXB;
