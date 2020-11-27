@@ -4,7 +4,6 @@ import javax.inject.Inject;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
-import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.ArretMapper;

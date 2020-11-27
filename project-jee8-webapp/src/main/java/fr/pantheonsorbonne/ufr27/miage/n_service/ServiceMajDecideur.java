@@ -1,9 +1,9 @@
 package fr.pantheonsorbonne.ufr27.miage.n_service;
 
-import java.sql.Time;
+import java.time.LocalTime;
 
 public interface ServiceMajDecideur {
-	public void decideMajTrainCreation(int idTrain, Time estimationTempsRetard);
-	public void decideMajTrainEnCours(int idTrain, Time estimationTempsRetardEnCours);
+	public void decideMajTrainCreation(int idTrain, LocalTime estimationTempsRetard);
+	public void decideMajTrainEnCours(int idTrain, LocalTime estimationTempsRetardEnCours);
 	public void decideMajTrainFin(int idTrain);
 }

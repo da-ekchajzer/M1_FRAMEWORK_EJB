@@ -1,6 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 
-import java.sql.Time;
+import java.time.LocalTime;
 
 import javax.inject.Inject;
 
@@ -19,7 +19,7 @@ public class ServiceMajExecuteurImp implements fr.pantheonsorbonne.ufr27.miage.n
 	}
 
 	@Override
-	public void retarderTrain(Train train, Time tempsRetard) {
+	public void retarderTrain(Train train, LocalTime tempsRetard) {
 		// TODO Auto-generated method stub
 		serviceMajDecideur.decideMajTrainEnCours(train.getId(), tempsRetard);
 	}

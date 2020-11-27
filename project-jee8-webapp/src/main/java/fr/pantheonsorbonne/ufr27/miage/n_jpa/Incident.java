@@ -1,7 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -77,6 +77,59 @@ public class Incident {
 		this.etat = etat;
 	}
 	
+	public enum CodeEtatIncident {
+
+		EN_COURS(1), RESOLU(0);
+
+		private int code;
+
+		private CodeEtatIncident(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+	}
 	
-	
+	public enum CodeTypeIncident {
+
+		ANIMAL_SUR_VOIE(1), ARBRE_SUR_VOIE(2), MALAISE_PASSAGER(3), FEUILLE_MOUILLIE_SUR_VOIE(4), PANNE_ELECTRIQUE(5), PERSONNE_SUR_VOIE(6);
+
+		private int code;
+
+		private CodeTypeIncident(int code) {
+			this.code = code;
+		}
+
+		public static LocalTime getTempEstimation(int code) {
+			switch (code) {
+			case 1:
+				return LocalTime.of(0, 5);
+
+			case 2:
+				return LocalTime.of(3, 0);
+			
+			case 3:
+				return LocalTime.of(1, 0);
+			
+			case 4:
+				return LocalTime.of(1, 30);
+			
+			case 5:
+				return LocalTime.of(2, 0);
+				
+			case 6:
+				return LocalTime.of(0, 30);
+			
+			default:
+				return LocalTime.of(0, 0);
+			}
+
+		}
+		
+		public int getCode() {
+			return code;
+		}
+	}
 }

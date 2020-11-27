@@ -19,7 +19,7 @@ public class ItineraireMapper {
 			arretsJAXB.add(ArretMapper.mapArretToArretJAXB(itineraire.getGaresDesservies().get(i)));
 		}
 		
-//		initeraireJAXB.setArrets(arretsJAXB);
+		initeraireJAXB.setArrets(arretsJAXB);
 		initeraireJAXB.setEtatItineraire(itineraire.getEtat());
 		
 		return initeraireJAXB;
