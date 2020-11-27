@@ -30,7 +30,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	public boolean majItineraire(int idTrain, ArretJAXB a) {
 		Arret arret = ArretMapper.mapArretJAXBToArret(a);
 		updateArret(idTrain, arret);
-		serviceUtilisateur.majUtilisateursTrain(idTrain, arret);
+		serviceUtilisateur.majUtilisateursTrain(idTrain);
 		return true;
 	}
 

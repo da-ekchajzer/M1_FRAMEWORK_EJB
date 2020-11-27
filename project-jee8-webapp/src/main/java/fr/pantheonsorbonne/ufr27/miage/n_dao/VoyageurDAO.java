@@ -2,7 +2,11 @@ package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -39,30 +43,58 @@ public class VoyageurDAO {
 				.setParameter("id", v.getId()).getResultList();
 	}
 
-	public void majVoyageursDansTrainAvecResa(int idTrain, Arret arret) {
+	public void majVoyageursDansTrainAvecResa(int idTrain) {
 		TrainAvecResa train = (TrainAvecResa) trainDAO.getTrainById(idTrain);
 
 		Itineraire itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		Set<Trajet> trajetsItineraire = new TreeSet<Trajet>(trajetDAO.getTrajetsByItineraire(itineraire));
+		Set<Trajet> trajetsVoyageur;
+		Iterator<Trajet> it;
+		Trajet t, nextTrajet = null;
 
 		em.getTransaction().begin();
 		// TODO
 
-		for (Voyageur voyageur : itineraire.getVoyageurs()) {
-			// TODO : Faut faire une boucle sur les gares de départ des trajets
-			if (voyageur.getVoyage().getGareDeDepart().equals(arret.getGare())
-					&& LocalDateTime.now().isBefore(arret.getHeureDepartDeGare())) {
-				train.addVoyageurInTrain(voyageur);
+		for (Trajet trajet : trajetsItineraire) {
+			if (itineraire.getArretActuel().getGare().equals(trajet.getGareDepart())) {
+				nextTrajet = trajet;
+				break;
 			}
+		}
 
-			// TODO : Faut pas vérifier la gare d'arrivée des trajets d'un voyage plutôt ?? - Oui il faut faire ça
-			// TODO : Faut faire une boucle sur les gares d'arrivées des trajets
-			if (voyageur.getVoyage().getGareArrivee().equals(arret.getGare())) {
-				train.getVoyageurs().remove(voyageur);
-				if (voyageur.getVoyage().getGareArrivee().equals(arret.getGare())) {
+		for (Voyageur voyageur : itineraire.getVoyageurs()) {
+			trajetsVoyageur = new TreeSet<Trajet>(voyageur.getVoyage().getTrajets());
+			it = trajetsVoyageur.iterator();
+
+			while (it.hasNext()) {
+				t = it.next();
+				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && !t.equals(nextTrajet)) {
+					train.getVoyageurs().remove(voyageur);
 					itineraire.getVoyageurs().remove(voyageur);
 				}
 			}
+			if (voyageur.getVoyage().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
+				itineraire.getVoyageurs().remove(voyageur);
+			}
+
 		}
+		
+//		 TODO : Faut faire une boucle sur les gares de départ des trajets
+//		if (voyageur.getVoyage().getGareDeDepart().equals(arret.getGare())
+//				&& LocalDateTime.now().isBefore(arret.getHeureDepartDeGare())) {
+//			train.addVoyageurInTrain(voyageur);
+//		}
+
+		// TODO : Faut pas vérifier la gare d'arrivée des trajets d'un voyage plutôt ??
+		// - Oui il faut faire ça - tester sur la derniere gare de l'itineraire
+
+		// TODO : Faut faire une boucle sur les gares d'arrivées des trajets
+//			for (Trajet t : voyageur.getVoyage().getTrajets()) {
+//				if (arret.getGare().equals(t.getGareArrivee())) {
+//					train.getVoyageurs().remove(voyageur);
+//				}
+//			}
+
 		em.getTransaction().commit();
 	}
 
@@ -86,10 +118,10 @@ public class VoyageurDAO {
 		}
 
 		em.getTransaction().begin();
-		
+
 		// On ajoute les voyageurs dans l'itinéraire
 		itineraire.setVoyageurs(voyageursToAdd);
-		
+
 		em.getTransaction().commit();
 	}
 

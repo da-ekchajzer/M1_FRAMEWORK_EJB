@@ -24,7 +24,7 @@ import lombok.ToString;
 		@NamedQuery(name = "Trajet.getTrajetsByNomGareArrivee", query = "SELECT t FROM Trajet t, Gare g WHERE g.nom = :nom")
 
 })
-public class Trajet {
+public class Trajet implements Comparable<Trajet> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
@@ -37,14 +37,17 @@ public class Trajet {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ITINERAIRE_ID")
 	Itineraire itineraire;
+	
+	int numero;
 
 	public Trajet() {
 	}
 
-	public Trajet(Gare gareDepart, Gare gareArrivee, Itineraire itineraire) {
+	public Trajet(Gare gareDepart, Gare gareArrivee, Itineraire itineraire, int numero) {
 		this.gareDepart = gareDepart;
 		this.gareArrivee = gareArrivee;
 		this.itineraire = itineraire;
+		this.numero = numero;
 	}
 
 	public int getId() {
@@ -73,6 +76,26 @@ public class Trajet {
 
 	public void setItineraire(Itineraire itineraire) {
 		this.itineraire = itineraire;
+	}
+	
+	public int getNumero() {
+		return numero;
+	}
+
+	public void setNumero(int numero) {
+		this.numero = numero;
+	}
+
+	@Override
+	public int compareTo(Trajet trajet2) {
+		// TODO Auto-generated method stub
+		if (this.numero > trajet2.getNumero()) {
+			return 1;
+		}
+		else if (this.numero < trajet2.getNumero()) {
+			return -1;
+		}
+		return 0;
 	}
 
 }

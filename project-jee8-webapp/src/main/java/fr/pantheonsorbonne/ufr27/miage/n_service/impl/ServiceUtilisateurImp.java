@@ -3,7 +3,6 @@ package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceUtilisateur;
 
 public class ServiceUtilisateurImp implements ServiceUtilisateur{
@@ -19,8 +18,8 @@ public class ServiceUtilisateurImp implements ServiceUtilisateur{
 
 	
 	@Override
-	public void majUtilisateursTrain(int idTrain, Arret arret) {
-		voyageurDAO.majVoyageursDansTrainAvecResa(idTrain, arret);
+	public void majUtilisateursTrain(int idTrain) {
+		voyageurDAO.majVoyageursDansTrainAvecResa(idTrain);
 	}
 
 }
