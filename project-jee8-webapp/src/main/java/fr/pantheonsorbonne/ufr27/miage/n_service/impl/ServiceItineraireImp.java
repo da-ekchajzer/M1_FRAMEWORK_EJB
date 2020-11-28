@@ -3,11 +3,11 @@ package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 import javax.inject.Inject;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
-import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.ArretMapper;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.ItineraireMapper;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceUtilisateur;
 
@@ -17,12 +17,12 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	ServiceUtilisateur serviceUtilisateur;
 	
 	@Inject
-	ItineraireDAO itineraireDAO;
+	ItineraireRepository itineraireRepository;
 
 	@Override
 	public ItineraireJAXB getItineraire(int idTrain) {
 		serviceUtilisateur.initUtilisateursItineraire(idTrain);
-		Itineraire itineraire = itineraireDAO.recupItineraireEnCoursOuLeProchain(idTrain);
+		Itineraire itineraire = itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain);
 		return ItineraireMapper.mapItineraireToItineraireJAXB(itineraire);
 	}
 
@@ -35,7 +35,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	}
 
 	private void updateArret(int idTrain, Arret a) {
-		itineraireDAO.majArretActuel(idTrain, a);
+		itineraireRepository.majArretActuel(idTrain, a);
 	}
 
 

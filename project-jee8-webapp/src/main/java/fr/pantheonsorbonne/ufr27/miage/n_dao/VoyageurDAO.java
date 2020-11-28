@@ -1,7 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -12,11 +11,13 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
 
 @ManagedBean
 public class VoyageurDAO {
@@ -25,31 +26,24 @@ public class VoyageurDAO {
 	EntityManager em;
 
 	@Inject
-	TrainDAO trainDAO;
+	ItineraireRepository itineraireRepository;
 
 	@Inject
-	ItineraireDAO itineraireDAO;
+	TrajetRepository trajetRepository;
 
 	@Inject
-	TrajetDAO trajetDAO;
-
-	@Inject
-	VoyageDAO voyageDAO;
+	VoyageRepository voyageRepository;
 
 	public List<Voyageur> getVoyageursByVoyage(Voyage v) {
 		return (List<Voyageur>) em.createNamedQuery("Voyageur.getVoyageursByVoyage", Voyageur.class)
 				.setParameter("id", v.getId()).getResultList();
 	}
 
-	public void majVoyageursDansTrainAvecResa(int idTrain) {
-		TrainAvecResa train = (TrainAvecResa) trainDAO.getTrainById(idTrain);
-
-		Itineraire itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		Set<Trajet> trajetsItineraire = new TreeSet<Trajet>(trajetDAO.getTrajetsByItineraire(itineraire));
+	public void majVoyageursDansTrainAvecResa(TrainAvecResa train, Itineraire itineraire, Set<Trajet> trajetsItineraire) {
 		Set<Trajet> trajetsVoyageur;
 		Iterator<Trajet> it;
 		Trajet t, nextTrajet = null;
-
+		
 		em.getTransaction().begin();
 		// TODO : est-ce que les voyageurs dans ajoutés dans la liste de l'itinéraire au
 		// moment de leur réservation ?
@@ -84,34 +78,15 @@ public class VoyageurDAO {
 				itineraire.getVoyageurs().remove(voyageur);
 			}
 		}
-
 		em.getTransaction().commit();
 	}
 
-	public void mettreVoyageursDansItineraire(int idTrain) {
-		// Récupérer l'itinéraire en cours associé au train
-		Itineraire itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-
-		// Récupérer tous les trajets associés à cet itinéraire
-		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraire);
-
-		// Récupérer tous les voyages constitués d'un de ces trajets
-		// Pour cela, on récupère tous les voyages puis on vérifie s'ils possèdent un
-		// des trajets
-		List<Voyage> voyages = voyageDAO.getVoyagesComposedByAtLeastOneTrajetOf(trajets);
-
-		// On récupère l'ensemble des voyageurs à ajouter dans l'itinéraire
-		List<Voyageur> voyageursToAdd = new ArrayList<Voyageur>();
-
-		for (Voyage v : voyages) {
-			voyageursToAdd.addAll(v.getVoyageurs());
-		}
-
+	
+	
+	public void mettreVoyageursDansItineraire(Itineraire itineraire, List<Voyageur> voyageursToAdd) {
 		em.getTransaction().begin();
-
 		// On ajoute les voyageurs dans l'itinéraire
 		itineraire.setVoyageurs(voyageursToAdd);
-
 		em.getTransaction().commit();
 	}
 

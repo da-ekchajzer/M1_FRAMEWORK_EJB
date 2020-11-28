@@ -2,7 +2,6 @@ package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,12 +22,6 @@ public class ItineraireDAO {
 	@Inject
 	EntityManager em;
 
-	@Inject
-	ArretDAO arretDao;
-
-	@Inject
-	TrajetDAO trajetDAO;
-
 	public Itineraire getItineraireById(int idItineraire) {
 		return em.createNamedQuery("Itineraire.getItineraireById", Itineraire.class).setParameter("id", idItineraire)
 				.getSingleResult();
@@ -43,93 +36,35 @@ public class ItineraireDAO {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
 				.setParameter("idTrain", idTrain).setParameter("etat", etat).getResultList();
 	}
-
-	public void ajouterIncidentItineraire(int idItineraire, int idIncident) {
-		Itineraire itineraire = getItineraireById(idItineraire);
-
-		Incident incident = em.createNamedQuery("IncidentDAO.getIncidentById", Incident.class)
-				.setParameter("id", idIncident).getSingleResult();
-
+	
+	public void associerIncidentItineraire(Itineraire itineraire, Incident incident) {
 		em.getTransaction().begin();
 		itineraire.setIncident(incident);
 		em.getTransaction().commit();
 	}
 
-	public Itineraire recupItineraireEnCoursOuLeProchain(int idTrain) {
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-
-		if (itineraire == null) {
-			itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_INCIDENT);
-		}
-
-		if (itineraire == null) {
-			List<Itineraire> itineraires = getAllItinerairesByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_ATTENTE);
-
-			List<Arret> arrets = new ArrayList<Arret>();
-
-			for (Itineraire i : itineraires) {
-				arrets.add(i.getGaresDesservies().get(0));
-			}
-
-			itineraire = itineraires.get(0);
-
-			for (int n = 0; n < itineraires.size(); n++) {
-				if (arrets.get(n).getHeureDepartDeGare()
-						.isBefore(itineraire.getGaresDesservies().get(0).getHeureDepartDeGare()))
-					itineraire = itineraires.get(n);
-			}
-		}
-
-		return itineraire;
-
-	}
-
-	public void majEtatItineraire(int idItineraire, int newEtat) {
-		Itineraire itineraire = getItineraireById(idItineraire);
-
+	public void majEtatItineraire(Itineraire itineraire, int newEtat) {
 		em.getTransaction().begin();
 		itineraire.setEtat(newEtat);
 		em.getTransaction().commit();
 	}
 
-	public void majArretActuel(int idTrain, Arret arret) {
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-
+	public void majArretActuel(Itineraire itineraire, Arret arret) {
 		em.getTransaction().begin();
 		itineraire.setArretActuel(arret);
 		em.getTransaction().commit();
 	}
-
-	public boolean supprimerArretDansUnItineraire(int idTrain, Arret arret) {
-		// On récupère l'itinéraire associé au train
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-
-		int nbArretsAvantSuppression = itineraire.getGaresDesservies().size();
-
+	
+	public void supprimerArretDansUnItineraire(Itineraire itineraire, Arret arret) {
 		// On supprime l'arrêt de l'itinéraire
 		em.getTransaction().begin();
 		itineraire.getGaresDesservies().remove(arret);
 		em.remove(arret);
 		em.getTransaction().commit();
-
-		return itineraire.getGaresDesservies().size() == nbArretsAvantSuppression - 1;
 	}
-
-	/*
-	 * TODO : ajouter ce cas de figure dans le BDDFillerServiceImpl
-	 */
-	public boolean ajouterUnArretDansUnItineraire(int idTrain, Arret arret) {
-		// On récupère l'itinéraire associé au train
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		
-		Gare gare = arret.getGare();
-
-		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraire);
-
-		int nbArretsAvantAjout = itineraire.getGaresDesservies().size();
-
+	
+	public void ajouterUnArretDansUnItineraire(Itineraire itineraire, Arret arret, Gare gare, List<Trajet> trajets) {
 		em.getTransaction().begin();
-		
 		// On ajoute l'arrêt à l'itinéraire
 		for (int i = 0; i < trajets.size(); i++) {
 			if (gare.equals(trajets.get(i).getGareArrivee())) {
@@ -148,18 +83,10 @@ public class ItineraireDAO {
 				}
 			}
 		}
-		
 		em.getTransaction().commit();
-
-		return itineraire.getGaresDesservies().size() == nbArretsAvantAjout + 1;
 	}
 
-	public void retarderTrain(int idTrain, int tempsRetard, ChronoUnit chronoUnitType) {
-		// On récupère l'itinéraire associé au train
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-
-		Arret arretActuel = itineraire.getArretActuel();
-		
+	public void retarderTrain(int tempsRetard, ChronoUnit chronoUnitType, Arret arretActuel, Itineraire itineraire) {		
 		em.getTransaction().begin();
 
 		if (LocalDateTime.now().isBefore(arretActuel.getHeureDepartDeGare())) {
