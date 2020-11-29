@@ -1,6 +1,5 @@
 package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.ManagedBean;
@@ -8,7 +7,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 
 @ManagedBean
@@ -31,20 +29,5 @@ public class VoyageDAO {
 
 	public List<Voyage> getAllVoyages() {
 		return (List<Voyage>) em.createNamedQuery("Voyage.getAllVoyages", Voyage.class).getResultList();
-	}
-
-	public List<Voyage> getVoyagesComposedByAtLeastOneTrajetOf(List<Trajet> trajets) {
-		List<Voyage> allVoyages = this.getAllVoyages();
-		List<Voyage> resVoyages = new ArrayList<Voyage>();
-
-		for (Trajet t : trajets) {
-			for (Voyage v : allVoyages) {
-				if (v.getTrajets().contains(t)) {
-					resVoyages.add(v);
-				}
-			}
-		}
-
-		return resVoyages;
 	}
 }
