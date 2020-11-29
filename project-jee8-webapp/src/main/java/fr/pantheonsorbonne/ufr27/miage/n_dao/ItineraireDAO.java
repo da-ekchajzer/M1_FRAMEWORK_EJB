@@ -27,16 +27,22 @@ public class ItineraireDAO {
 				.getSingleResult();
 	}
 
-	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
-		return em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-				.setParameter("idTrain", idTrain).setParameter("etat", etat).getSingleResult();
+	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat)
+			throws MulitpleResultsNotExpectedException {
+		List<Itineraire> itineraires = getAllItinerairesByTrainEtEtat(idTrain, etat);
+		if (itineraires.isEmpty()) {
+			return null;
+		} else if (itineraires.size() > 1) {
+			throw new MulitpleResultsNotExpectedException("Expected only one 'Itineraire'");
+		}
+		return itineraires.get(0);
 	}
 
 	public List<Itineraire> getAllItinerairesByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-				.setParameter("idTrain", idTrain).setParameter("etat", etat).getResultList();
+				.setParameter("idTrain", 16).setParameter("etat", 1).getResultList();
 	}
-	
+
 	public void associerIncidentItineraire(Itineraire itineraire, Incident incident) {
 		em.getTransaction().begin();
 		itineraire.setIncident(incident);
@@ -54,7 +60,7 @@ public class ItineraireDAO {
 		itineraire.setArretActuel(arret);
 		em.getTransaction().commit();
 	}
-	
+
 	public void supprimerArretDansUnItineraire(Itineraire itineraire, Arret arret) {
 		// On supprime l'arrêt de l'itinéraire
 		em.getTransaction().begin();
@@ -62,7 +68,7 @@ public class ItineraireDAO {
 		em.remove(arret);
 		em.getTransaction().commit();
 	}
-	
+
 	public void ajouterUnArretDansUnItineraire(Itineraire itineraire, Arret arret, Gare gare, List<Trajet> trajets) {
 		em.getTransaction().begin();
 		// On ajoute l'arrêt à l'itinéraire
@@ -86,7 +92,7 @@ public class ItineraireDAO {
 		em.getTransaction().commit();
 	}
 
-	public void retarderTrain(int tempsRetard, ChronoUnit chronoUnitType, Arret arretActuel, Itineraire itineraire) {		
+	public void retarderTrain(int tempsRetard, ChronoUnit chronoUnitType, Arret arretActuel, Itineraire itineraire) {
 		em.getTransaction().begin();
 
 		if (LocalDateTime.now().isBefore(arretActuel.getHeureDepartDeGare())) {
@@ -99,8 +105,21 @@ public class ItineraireDAO {
 				a.setHeureDepartDeGare(a.getHeureDepartDeGare().plus(tempsRetard, chronoUnitType));
 			}
 		}
-		
+
 		em.getTransaction().commit();
+	}
+
+	public class MulitpleResultsNotExpectedException extends Exception {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6747179329715195790L;
+
+		public MulitpleResultsNotExpectedException(String message) {
+			super(message);
+		}
+
 	}
 
 }

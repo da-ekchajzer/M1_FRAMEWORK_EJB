@@ -7,6 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
@@ -26,10 +27,19 @@ public class ItineraireRepository {
 	TrajetRepository trajetRepository;
 	
 	public Itineraire recupItineraireEnCoursOuLeProchain(int idTrain) {
-		Itineraire itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		Itineraire itineraire = null;
+		try {
+			itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		} catch (MulitpleResultsNotExpectedException e) {
+			e.printStackTrace();
+		}
 
 		if (itineraire == null) {
-			itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_INCIDENT);
+			try {
+				itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_INCIDENT);
+			} catch (MulitpleResultsNotExpectedException e) {
+				e.printStackTrace();
+			}
 		}
 
 		if (itineraire == null) {
@@ -57,7 +67,12 @@ public class ItineraireRepository {
 	}
 
 	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
-		return itineraireDAO.getItineraireByTrainEtEtat(idTrain, etat);
+		try {
+			return itineraireDAO.getItineraireByTrainEtEtat(idTrain, etat);
+		} catch (MulitpleResultsNotExpectedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public List<Itineraire> getAllItinerairesByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
