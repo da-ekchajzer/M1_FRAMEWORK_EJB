@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
@@ -45,12 +44,6 @@ public class ItineraireDAO {
 	public List<Itineraire> getAllItinerairesByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
 				.setParameter("idTrain", idTrain).setParameter("etat", etat.getCode()).getResultList();
-	}
-
-	public void associerIncidentItineraire(Itineraire itineraire, Incident incident) {
-		em.getTransaction().begin();
-		itineraire.setIncident(incident);
-		em.getTransaction().commit();
 	}
 
 	public void majEtatItineraire(Itineraire itineraire, int newEtat) {
