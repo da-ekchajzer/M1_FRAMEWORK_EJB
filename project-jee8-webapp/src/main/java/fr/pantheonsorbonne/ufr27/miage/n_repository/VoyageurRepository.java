@@ -18,33 +18,33 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 public class VoyageurRepository {
 
 	@Inject
+	VoyageurDAO voyageurDAO;
+
+	@Inject
 	VoyageRepository voyageRepository;
-	
+
 	@Inject
 	ItineraireRepository itineraireRepository;
-	
+
 	@Inject
 	TrajetRepository trajetRepository;
-	
+
 	@Inject
 	TrainRepository trainRepository;
-	
-	@Inject
-	VoyageurDAO voyageurDAO;
 
 	public List<Voyageur> getVoyageursByVoyage(Voyage v) {
 		return voyageurDAO.getVoyageursByVoyage(v);
 	}
-	
+
 	public void majVoyageursDansTrainAvecResa(int idTrain) {
 		TrainAvecResa train = (TrainAvecResa) trainRepository.getTrainById(idTrain);
 
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 		Set<Trajet> trajetsItineraire = new TreeSet<Trajet>(trajetRepository.getTrajetsByItineraire(itineraire));
-		
+
 		voyageurDAO.majVoyageursDansTrainAvecResa(train, itineraire, trajetsItineraire);
 	}
-	
+
 	public void mettreVoyageursDansItineraire(int idTrain) {
 		// Récupérer l'itinéraire en cours associé au train
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
@@ -65,5 +65,5 @@ public class VoyageurRepository {
 		}
 		voyageurDAO.mettreVoyageursDansItineraire(itineraire, voyageursToAdd);
 	}
-	
+
 }

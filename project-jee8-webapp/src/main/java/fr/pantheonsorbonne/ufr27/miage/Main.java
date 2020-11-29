@@ -34,13 +34,10 @@ import fr.pantheonsorbonne.ufr27.miage.n_dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
-import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.GareRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
@@ -167,6 +164,7 @@ public class Main {
 
 		BDDFillerServiceImpl filler = new BDDFillerServiceImpl(pc.getEM());
 		filler.fill();
+		
 		System.out.println(String.format(
 				"Jersey app started with WADL available at " + "%sapplication.wadl\nHit enter to stop it...",
 				BASE_URI));

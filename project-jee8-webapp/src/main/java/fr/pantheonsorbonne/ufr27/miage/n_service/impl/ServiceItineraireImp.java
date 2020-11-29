@@ -15,14 +15,18 @@ public class ServiceItineraireImp implements ServiceItineraire {
 
 	@Inject
 	ServiceUtilisateur serviceUtilisateur;
-	
+
 	@Inject
 	ItineraireRepository itineraireRepository;
 
 	@Override
 	public ItineraireJAXB getItineraire(int idTrain) {
-		serviceUtilisateur.initUtilisateursItineraire(idTrain);
 		Itineraire itineraire = itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain);
+		if (itineraire != null) {
+			System.out.println("== itineraire n'est pas nul ==");
+			// Il faut update l'itinéraire de état = 0 à état = 1 !
+			serviceUtilisateur.initUtilisateursItineraire(idTrain);
+		}
 		return ItineraireMapper.mapItineraireToItineraireJAXB(itineraire);
 	}
 
@@ -37,6 +41,5 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	private void updateArret(int idTrain, Arret a) {
 		itineraireRepository.majArretActuel(idTrain, a);
 	}
-
 
 }

@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 
 @ManagedBean
 public class IncidentDAO {
@@ -36,11 +37,17 @@ public class IncidentDAO {
 		em.persist(incident);
 		em.getTransaction().commit();
 	}
-	
+
 	public void majEtatIncidentEnBD(Incident incident, int etat) {
 		// MàJ de l'état de l'incident associé au train
 		em.getTransaction().begin();
 		incident.setEtat(etat);
+		em.getTransaction().commit();
+	}
+
+	public void associerIncidentItineraire(Itineraire itineraire, Incident incident) {
+		em.getTransaction().begin();
+		itineraire.setIncident(incident);
 		em.getTransaction().commit();
 	}
 

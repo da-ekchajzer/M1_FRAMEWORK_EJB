@@ -1,7 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_repository;
 
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
@@ -22,12 +20,12 @@ public class ItineraireRepository {
 	ItineraireDAO itineraireDAO;
 	
 	@Inject
-	IncidentRepository incidentRepository;
-	
-	@Inject
 	TrajetRepository trajetRepository;
 	
 	public Itineraire recupItineraireEnCoursOuLeProchain(int idTrain) {
+		
+		System.out.println("== recupItineraireEnCoursOuLeProchain ==");
+		
 		Itineraire itineraire = null;
 		try {
 			itineraire = itineraireDAO.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
@@ -78,12 +76,6 @@ public class ItineraireRepository {
 
 	public List<Itineraire> getAllItinerairesByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
 		return itineraireDAO.getAllItinerairesByTrainEtEtat(idTrain, etat);
-	}
-
-	public void ajouterIncidentItineraire(int idItineraire, int idIncident) {
-		Itineraire itineraire = getItineraireById(idItineraire);
-		Incident incident = incidentRepository.getIncidentById(idIncident);
-		itineraireDAO.associerIncidentItineraire(itineraire, incident);
 	}
 
 	public void majEtatItineraire(int idItineraire, int newEtat) {
