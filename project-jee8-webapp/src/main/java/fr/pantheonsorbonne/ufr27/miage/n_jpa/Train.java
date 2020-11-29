@@ -1,8 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -22,14 +20,16 @@ import lombok.ToString;
 public abstract class Train {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 
-	public int getId() {
-		return id;
-	}
-
 	String marque;
+	
+	public Train() {}
+	
+	public Train(int id, String marque) {
+		this.id = id;
+		this.marque = marque;
+	}
 
 	public String getMarque() {
 		return marque;
@@ -37,6 +37,10 @@ public abstract class Train {
 
 	public void setMarque(String marque) {
 		this.marque = marque;
+	}
+	
+	public int getId() {
+		return id;
 	}
 
 }

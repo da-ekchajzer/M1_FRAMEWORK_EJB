@@ -1,6 +1,4 @@
-package testSansIncidents;
-
-import static org.junit.jupiter.api.Assertions.*;
+package fr.pantheonsorbonne.ufr27.miage.tests.utils;
 
 import java.net.URI;
 import java.util.Locale;
@@ -17,8 +15,6 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.linking.DeclarativeLinkingFeature;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import fr.pantheonsorbonne.ufr27.miage.conf.EMFFactory;
@@ -41,13 +37,20 @@ import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.GareRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageurRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajInfoGare;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceUtilisateur;
-import fr.pantheonsorbonne.ufr27.miage.n_service.impl.BDDFillerServiceImpl;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceIncidentImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceItineraireImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajDecideurImp;
@@ -65,15 +68,15 @@ import fr.pantheonsorbonne.ufr27.miage.service.impl.MailingServiceImpl;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.PaymentServiceImpl;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.UserServiceImpl;
 
-class TestItineraire {
-	
+public class TestUtils {
 	public static final String BASE_URI = "http://localhost:8080/";
+	public static HttpServer serveur;
+	
+	private static HttpServer startRessources() {
 
-	public static HttpServer startServer() {
-
-		final ResourceConfig rc = new ResourceConfig()//
-				.packages(true, "fr.pantheonsorbonne.ufr27.miage")//
-				.register(DeclarativeLinkingFeature.class)//
+		final ResourceConfig rc = new ResourceConfig()
+				.packages(true, "fr.pantheonsorbonne.ufr27.miage")
+				.register(DeclarativeLinkingFeature.class)
 				.register(JMSProducer.class).register(ExceptionMapper.class).register(PersistenceConf.class)
 				.register(new AbstractBinder() {
 
@@ -117,34 +120,40 @@ class TestItineraire {
 						bind(TrajetDAO.class).to(TrajetDAO.class);
 						bind(VoyageDAO.class).to(VoyageDAO.class);
 						bind(VoyageurDAO.class).to(VoyageurDAO.class);
+						
+						bind(ArretRepository.class).to(ArretRepository.class);
+						bind(GareRepository.class).to(GareRepository.class);
+						bind(IncidentRepository.class).to(IncidentRepository.class);
+						bind(ItineraireRepository.class).to(ItineraireRepository.class);
+						bind(TrainRepository.class).to(TrainRepository.class);
+						bind(TrajetRepository.class).to(TrajetRepository.class);
+						bind(VoyageRepository.class).to(VoyageRepository.class);
+						bind(VoyageurRepository.class).to(VoyageurRepository.class);
 					}
 
 				});
 
 		return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
 	}
-
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
+	
+	public static EntityManager startServer() {
 		Locale.setDefault(Locale.ENGLISH);
 		SLF4JBridgeHandler.removeHandlersForRootLogger();
 		SLF4JBridgeHandler.install();
-		final HttpServer server = startServer();
+		serveur = startRessources();
 
 		BrokerUtils.startBroker();
 
 		PersistenceConf pc = new PersistenceConf();
-		pc.getEM();
 		pc.launchH2WS();
-
-		BDDFillerServiceImpl filler = new BDDFillerServiceImpl(pc.getEM());
-		filler.fill();
+		
+		return(pc.getEM());
 
 	}
-
-	@Test
-	void test() {
-		assertTrue(true);
+	
+	@SuppressWarnings("deprecation")
+	public static void stopServer() {
+		serveur.stop();
 	}
-
+	
 }

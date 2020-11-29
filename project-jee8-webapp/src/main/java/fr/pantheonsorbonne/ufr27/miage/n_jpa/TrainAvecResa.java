@@ -18,9 +18,9 @@ public class TrainAvecResa extends Train {
 	public TrainAvecResa() {
 	}
 
-	public TrainAvecResa(String marque) {
+	public TrainAvecResa(int id, String marque) {
+		super(id, marque);
 		this.voyageurs = new ArrayList<Voyageur>();
-		this.marque = marque;
 	}
 
 	public List<Voyageur> getVoyageurs() {

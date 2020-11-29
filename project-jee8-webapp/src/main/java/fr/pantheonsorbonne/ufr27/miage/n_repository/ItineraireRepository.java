@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_repository;
 
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,13 +123,13 @@ public class ItineraireRepository {
 		return itineraire.getGaresDesservies().size() == nbArretsAvantAjout + 1;
 	}
 	
-	public void retarderTrain(int idTrain, int tempsRetard, ChronoUnit chronoUnitType) {
+	public void retarderTrain(int idTrain, LocalTime tempsRetard) {
 		// On récupère l'itinéraire associé au train
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
 		Arret arretActuel = itineraire.getArretActuel();
 		
-		itineraireDAO.retarderTrain(tempsRetard, chronoUnitType, arretActuel, itineraire);
+		itineraireDAO.retarderTrain(tempsRetard, arretActuel, itineraire);
 	}
 
 }

@@ -1,6 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +30,9 @@ public class ItineraireDAO {
 
 	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat)
 			throws MulitpleResultsNotExpectedException {
+		
+		System.out.println("== getItineraireByTrainEtEtat ==");
+		
 		List<Itineraire> itineraires = getAllItinerairesByTrainEtEtat(idTrain, etat);
 		if (itineraires.isEmpty()) {
 			return null;
@@ -40,7 +44,7 @@ public class ItineraireDAO {
 
 	public List<Itineraire> getAllItinerairesByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
-				.setParameter("idTrain", 16).setParameter("etat", 1).getResultList();
+				.setParameter("idTrain", idTrain).setParameter("etat", etat.getCode()).getResultList();
 	}
 
 	public void associerIncidentItineraire(Itineraire itineraire, Incident incident) {
@@ -92,17 +96,17 @@ public class ItineraireDAO {
 		em.getTransaction().commit();
 	}
 
-	public void retarderTrain(int tempsRetard, ChronoUnit chronoUnitType, Arret arretActuel, Itineraire itineraire) {
+	public void retarderTrain(LocalTime tempsRetard, Arret arretActuel, Itineraire itineraire) {
 		em.getTransaction().begin();
 
 		if (LocalDateTime.now().isBefore(arretActuel.getHeureDepartDeGare())) {
-			arretActuel.setHeureDepartDeGare(arretActuel.getHeureDepartDeGare().plus(tempsRetard, chronoUnitType));
+			arretActuel.setHeureDepartDeGare(arretActuel.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
 		}
 
 		for (Arret a : itineraire.getGaresDesservies()) {
 			if (a.getHeureArriveeEnGare().isAfter(arretActuel.getHeureArriveeEnGare())) {
-				a.setHeureArriveeEnGare(a.getHeureArriveeEnGare().plus(tempsRetard, chronoUnitType));
-				a.setHeureDepartDeGare(a.getHeureDepartDeGare().plus(tempsRetard, chronoUnitType));
+				a.setHeureArriveeEnGare(a.getHeureArriveeEnGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
+				a.setHeureDepartDeGare(a.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
 			}
 		}
 

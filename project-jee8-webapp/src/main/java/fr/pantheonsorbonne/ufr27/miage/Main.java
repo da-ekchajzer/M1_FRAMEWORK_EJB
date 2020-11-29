@@ -34,10 +34,21 @@ import fr.pantheonsorbonne.ufr27.miage.n_dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.GareRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageurRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
@@ -118,6 +129,15 @@ public class Main {
 						bind(TrajetDAO.class).to(TrajetDAO.class);
 						bind(VoyageDAO.class).to(VoyageDAO.class);
 						bind(VoyageurDAO.class).to(VoyageurDAO.class);
+						
+						bind(ArretRepository.class).to(ArretRepository.class);
+						bind(GareRepository.class).to(GareRepository.class);
+						bind(IncidentRepository.class).to(IncidentRepository.class);
+						bind(ItineraireRepository.class).to(ItineraireRepository.class);
+						bind(TrainRepository.class).to(TrainRepository.class);
+						bind(TrajetRepository.class).to(TrajetRepository.class);
+						bind(VoyageRepository.class).to(VoyageRepository.class);
+						bind(VoyageurRepository.class).to(VoyageurRepository.class);
 					}
 
 				});
@@ -147,7 +167,6 @@ public class Main {
 
 		BDDFillerServiceImpl filler = new BDDFillerServiceImpl(pc.getEM());
 		filler.fill();
-
 		System.out.println(String.format(
 				"Jersey app started with WADL available at " + "%sapplication.wadl\nHit enter to stop it...",
 				BASE_URI));
