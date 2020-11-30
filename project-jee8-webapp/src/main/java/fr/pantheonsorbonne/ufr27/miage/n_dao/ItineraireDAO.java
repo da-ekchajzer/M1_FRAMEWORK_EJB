@@ -46,9 +46,9 @@ public class ItineraireDAO {
 				.setParameter("idTrain", idTrain).setParameter("etat", etat.getCode()).getResultList();
 	}
 
-	public void majEtatItineraire(Itineraire itineraire, int newEtat) {
+	public void majEtatItineraire(Itineraire itineraire, CodeEtatItinieraire newEtat) {
 		em.getTransaction().begin();
-		itineraire.setEtat(newEtat);
+		itineraire.setEtat(newEtat.getCode());
 		em.getTransaction().commit();
 	}
 

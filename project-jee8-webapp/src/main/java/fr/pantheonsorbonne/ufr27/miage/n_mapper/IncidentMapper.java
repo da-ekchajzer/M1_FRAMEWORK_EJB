@@ -9,7 +9,7 @@ public class IncidentMapper {
 		Incident indicident = new Incident();
 	
 		indicident.setEtat(i.getEtatIncident());
-		indicident.setHeureDebut(MapperUtils.xmlGregorianCalendar2LocalDateTime(i.getHeureIncident()));
+		indicident.setHeureDebut(MapperUtils.xmlGregorianCalendarToLocalDateTime(i.getHeureIncident()));
 		indicident.setTypeIncident(i.getTypeIncident());
 		return indicident;
 	}

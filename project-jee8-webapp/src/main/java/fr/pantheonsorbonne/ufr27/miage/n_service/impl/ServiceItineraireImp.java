@@ -5,6 +5,7 @@ import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.ArretMapper;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.ItineraireMapper;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
@@ -25,7 +26,10 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		if (itineraire != null) {
 			System.out.println("== itineraire n'est pas nul ==");
 			// Il faut update l'itinéraire de état = 0 à état = 1 !
-			serviceUtilisateur.initUtilisateursItineraire(idTrain);
+			if (itineraire.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
+				itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_COURS);
+				serviceUtilisateur.initUtilisateursItineraire(idTrain);
+			}
 		}
 		return ItineraireMapper.mapItineraireToItineraireJAXB(itineraire);
 	}

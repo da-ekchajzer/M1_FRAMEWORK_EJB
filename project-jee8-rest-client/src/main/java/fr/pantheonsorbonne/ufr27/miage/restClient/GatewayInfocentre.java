@@ -20,6 +20,7 @@ public class GatewayInfocentre {
 		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri()).request()
 				.get(Response.class);
 		ItineraireJAXB itineraireJAXB = null;
+		System.out.println(resp.getStatusInfo().getFamily().toString());
 		if (resp.getStatusInfo().getFamily().equals(Family.SUCCESSFUL)) {
 			if (resp.hasEntity()) {
 				itineraireJAXB = resp.readEntity(ItineraireJAXB.class);
