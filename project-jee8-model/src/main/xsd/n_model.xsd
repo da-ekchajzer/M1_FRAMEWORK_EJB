@@ -1,5 +1,11 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
+<xsd:element name="itineraireJAXB" type="itineraireJAXB"></xsd:element>
+<xsd:element name="arretJAXB" type="arretJAXB"></xsd:element>
+<xsd:element name="incidentJAXB" type="incidentJAXB"></xsd:element>
+
+
+
 	<xsd:complexType name="itineraireJAXB">
 		<xsd:sequence>
 			<xsd:element name="etat_itineraire" type="xsd:int"></xsd:element>
