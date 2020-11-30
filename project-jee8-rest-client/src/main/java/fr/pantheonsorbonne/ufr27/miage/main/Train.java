@@ -123,6 +123,9 @@ public class Train implements Runnable {
 	}
 
 	public static LocalDateTime xmlGregorianCalendar2LocalDateTime(XMLGregorianCalendar xgc) {
+		if(xgc == null) {
+			return null;
+		}
 		final int offsetSeconds = xgc.toGregorianCalendar().toZonedDateTime().getOffset().getTotalSeconds();
 		final LocalDateTime localDateTime = xgc.toGregorianCalendar().toZonedDateTime().toLocalDateTime();
 		return localDateTime.minusSeconds(offsetSeconds);

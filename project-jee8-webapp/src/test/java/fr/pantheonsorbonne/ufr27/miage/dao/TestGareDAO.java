@@ -44,7 +44,6 @@ public class TestGareDAO {
 
 	@Test
 	public void testGetGaresByNom() {
-		GareDAO gareDAO = new GareDAO();
 		List<Gare> gares = gareDAO.getGaresByNom("Avignon-Centre");
 		assertEquals(1, gares.size());
 		assertEquals("Avignon-Centre", gares.get(0).getNom());
