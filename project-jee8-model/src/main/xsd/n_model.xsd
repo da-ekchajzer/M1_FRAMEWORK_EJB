@@ -17,8 +17,8 @@
 	<xsd:complexType name="arretJAXB">
 		<xsd:sequence>
 			<xsd:element name="gare" type="xsd:string"></xsd:element>
-			<xsd:element name="heureArrive" type="xsd:date"></xsd:element>
-			<xsd:element name="heureDepart" type="xsd:date"></xsd:element>
+			<xsd:element name="heureArrivee" type="xsd:dateTime"></xsd:element>
+			<xsd:element name="heureDepart" type="xsd:dateTime"></xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 

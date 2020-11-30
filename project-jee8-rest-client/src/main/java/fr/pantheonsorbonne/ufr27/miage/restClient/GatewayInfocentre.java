@@ -29,10 +29,11 @@ public class GatewayInfocentre {
 		return itineraireJAXB;
 	}
 
-	public static void sendCurrenArret(ArretJAXB arretJAXB, int idTrain) {
+	public static void sendCurrenArret(ArretJAXB arretJAXB, int idTrain) {	
 		WebTarget webTarget = client.target("http://localhost:8080");
-		Response resp = webTarget.path("itineraire").path("" + idTrain).request().accept(MediaType.APPLICATION_XML)
-				.post(Entity.xml(arretJAXB));
+		System.out.println("*** " + arretJAXB.getGare());
+		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri())
+				.request().put(Entity.xml(arretJAXB));
 	}
 
 	public static void updateIncident(int etatIncident, int idTrain) {
