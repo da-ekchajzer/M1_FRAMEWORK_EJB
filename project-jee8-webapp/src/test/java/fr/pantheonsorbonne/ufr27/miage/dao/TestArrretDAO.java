@@ -10,8 +10,8 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestUtils;
 class TestArrretDAO {
 
 	@BeforeAll
-	public void setup() {
-		TestUtils.startServer();
+	public static void setup() {
+		//TestUtils.startServer();
 	}
 
 	@Test
@@ -20,7 +20,7 @@ class TestArrretDAO {
 	}
 
 	@AfterAll
-	public void end() {
-		TestUtils.stopServer();
+	public static void end() {
+		//TestUtils.stopServer();
 	}
 }
