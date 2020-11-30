@@ -62,8 +62,7 @@ public class Train implements Runnable {
 			break;
 		case 1:
 			updateItineraire(GatewayInfocentre.getItineraire(this.idTrain));
-
-			if (arrets.get(curentIdArret + 1).getheureArrive().isAfter(LocalDateTime.now())) {
+			if (arrets.get(curentIdArret+1).getheureArrive().isAfter(LocalDateTime.now())) {
 				curentIdArret++;
 				GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
 			}
@@ -110,7 +109,7 @@ public class Train implements Runnable {
 
 		for(int i = 0; i < arretsJAXB.size(); i++) {
 			ArretJAXB arreti = arretsJAXB.get(i);
-			this.arrets.add(new ArretTrain(arreti.getGare(), xmlGregorianCalendar2LocalDateTime(arreti.getHeureArrive()), xmlGregorianCalendar2LocalDateTime(arreti.getHeureDepart())));
+			this.arrets.add(new ArretTrain(arreti.getGare(), xmlGregorianCalendar2LocalDateTime(arreti.getHeureArrivee()), xmlGregorianCalendar2LocalDateTime(arreti.getHeureDepart())));
 		}
 		return true;
 	}
@@ -125,10 +124,10 @@ public class Train implements Runnable {
 	public static LocalDateTime xmlGregorianCalendar2LocalDateTime(XMLGregorianCalendar xgc) {
 		if(xgc == null) {
 			return null;
-		}
-		final int offsetSeconds = xgc.toGregorianCalendar().toZonedDateTime().getOffset().getTotalSeconds();
-		final LocalDateTime localDateTime = xgc.toGregorianCalendar().toZonedDateTime().toLocalDateTime();
-		return localDateTime.minusSeconds(offsetSeconds);
+		}	
+		LocalDateTime ldt = LocalDateTime.of(xgc.getYear(), xgc.getMonth(), xgc.getDay(), xgc.getHour(), xgc.getMinute());
+		return ldt;
+		
 	}
 
 }

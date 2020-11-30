@@ -63,13 +63,21 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 			em.persist(t);
 
 		// --------------------------------- Remplissage de la table Arrêt
-
+		
+//		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now());
+//		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plus(2, ChronoUnit.HOURS),
+//				LocalDateTime.now().plus(2, ChronoUnit.HOURS).plus(5, ChronoUnit.MINUTES));
+//		Arret arret3 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plus(3, ChronoUnit.HOURS),
+//				LocalDateTime.now().plus(3, ChronoUnit.HOURS).plus(5, ChronoUnit.MINUTES));
+//		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plus(4, ChronoUnit.HOURS),
+//				null);
+		
 		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now());
-		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plus(2, ChronoUnit.HOURS),
-				LocalDateTime.now().plus(2, ChronoUnit.HOURS).plus(5, ChronoUnit.MINUTES));
-		Arret arret3 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plus(3, ChronoUnit.HOURS),
-				LocalDateTime.now().plus(3, ChronoUnit.HOURS).plus(5, ChronoUnit.MINUTES));
-		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plus(4, ChronoUnit.HOURS),
+		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plus(1, ChronoUnit.MINUTES),
+				LocalDateTime.now().plus(1, ChronoUnit.MINUTES).plus(30, ChronoUnit.SECONDS));
+		Arret arret3 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plus(3, ChronoUnit.MINUTES),
+				LocalDateTime.now().plus(3, ChronoUnit.MINUTES).plus(1, ChronoUnit.MINUTES));
+		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plus(5, ChronoUnit.MINUTES),
 				null);
 
 		Arret arret1_bis = new Arret(gares.get("Perpignan"), null, LocalDateTime.now());
