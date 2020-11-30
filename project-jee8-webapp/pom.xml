@@ -195,13 +195,21 @@
 			<version>2.0.1.Final</version>
 			<scope>test</scope>
 			<exclusions>
-				
+
 			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>
 		<finalName>project-jee8-webapp</finalName>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M5</version>
+
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
