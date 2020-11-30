@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.ManagedBean;
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.jpa.Payment;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
 @ManagedBean
 public class PaymentDAO {
 
+	@RequestScoped
 	@Inject
 	EntityManager manager;
 
