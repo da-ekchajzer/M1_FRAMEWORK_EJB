@@ -16,6 +16,7 @@
 		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Payment</class>
 		<class>fr.pantheonsorbonne.ufr27.miage.jpa.BillingInfo</class>
 		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Card</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare</class>
 
 
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
