@@ -9,10 +9,9 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
@@ -25,7 +24,7 @@ public class TestGareDAO {
 	@Inject
 	static GareDAO gareDAO;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() {
 		TestUtils.startServer();
 		em.getTransaction().begin();
@@ -42,7 +41,7 @@ public class TestGareDAO {
 		}
 		em.getTransaction().commit();
 	}
-	
+
 	@Test
 	public void testGetGaresByNom() {
 		GareDAO gareDAO = new GareDAO();
@@ -50,9 +49,8 @@ public class TestGareDAO {
 		assertEquals(1, gares.size());
 		assertEquals("Avignon-Centre", gares.get(0).getNom());
 	}
-	
-	
-	@AfterClass
+
+	@AfterAll
 	public static void end() {
 		TestUtils.stopServer();
 	}

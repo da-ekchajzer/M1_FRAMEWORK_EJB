@@ -1,26 +1,25 @@
 package fr.pantheonsorbonne.ufr27.miage.dao;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestUtils;
 
-public class TestArrretDAO {
-	@BeforeClass
+class TestArrretDAO {
+
+	@BeforeAll
 	public void setup() {
 		TestUtils.startServer();
 	}
-	
+
 	@Test
 	public void test1() {
 		assertTrue(true);
 	}
-	
-	
-	@AfterClass
+
+	@AfterAll
 	public void end() {
 		TestUtils.stopServer();
 	}
