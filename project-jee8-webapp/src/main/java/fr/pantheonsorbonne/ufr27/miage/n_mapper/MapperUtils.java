@@ -11,9 +11,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 public class MapperUtils {
 	public static LocalDateTime xmlGregorianCalendarToLocalDateTime(XMLGregorianCalendar xgc) {
-		final int offsetSeconds = xgc.toGregorianCalendar().toZonedDateTime().getOffset().getTotalSeconds();
-		final LocalDateTime localDateTime = xgc.toGregorianCalendar().toZonedDateTime().toLocalDateTime();
-		return localDateTime.minusSeconds(offsetSeconds);
+//		LocalDateTime ldt = LocalDateTime.of(xgc.getYear(), xgc.getMonth(), xgc.getDay(), xgc.getHour(), 
+//				xgc.getMinute(), xgc.getSecond(), xgc.getMillisecond());
+		
+		GregorianCalendar gc = xgc.toGregorianCalendar();
+		ZonedDateTime zdt = gc.toZonedDateTime();
+		LocalDateTime ldt = zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+		System.out.println("&&& ldt = " + ldt);
+		return ldt;
 	}
 
 	public static XMLGregorianCalendar localDateTimeToXmlGregorianCalendar(LocalDateTime ldt) {
