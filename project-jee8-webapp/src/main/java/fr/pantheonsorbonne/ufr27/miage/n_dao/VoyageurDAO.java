@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -20,6 +21,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
 
 @ManagedBean
+@RequestScoped
 public class VoyageurDAO {
 
 	@Inject

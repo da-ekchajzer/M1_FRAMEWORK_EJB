@@ -2,11 +2,15 @@ package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 
 import java.time.LocalTime;
 
+import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 
+@ManagedBean
+@RequestScoped
 public class ServiceMajExecuteurImp implements fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur {
 
 	@Inject

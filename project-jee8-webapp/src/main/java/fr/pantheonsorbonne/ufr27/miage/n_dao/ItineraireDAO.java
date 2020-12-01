@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -17,6 +18,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 
 @ManagedBean
+@RequestScoped
 public class ItineraireDAO {
 
 	@Inject
@@ -29,8 +31,6 @@ public class ItineraireDAO {
 
 	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat)
 			throws MulitpleResultsNotExpectedException {
-		
-		System.out.println("== getItineraireByTrainEtEtat ==");
 		
 		List<Itineraire> itineraires = getAllItinerairesByTrainEtEtat(idTrain, etat);
 		if (itineraires.isEmpty()) {

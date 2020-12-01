@@ -1,17 +1,20 @@
 package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 
+import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
-import fr.pantheonsorbonne.ufr27.miage.n_mapper.ArretMapper;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.ItineraireMapper;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceUtilisateur;
 
+@ManagedBean
+@RequestScoped
 public class ServiceItineraireImp implements ServiceItineraire {
 
 	@Inject
@@ -24,7 +27,6 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	public ItineraireJAXB getItineraire(int idTrain) {
 		Itineraire itineraire = itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain);
 		if (itineraire != null) {
-			System.out.println("== itineraire n'est pas nul ==");
 			// Il faut update l'itinéraire de état = 0 à état = 1 !
 			if (itineraire.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
 				itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_COURS);

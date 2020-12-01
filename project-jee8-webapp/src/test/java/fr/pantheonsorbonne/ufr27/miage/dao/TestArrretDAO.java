@@ -5,8 +5,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestUtils;
-
 class TestArrretDAO {
 
 	@BeforeAll

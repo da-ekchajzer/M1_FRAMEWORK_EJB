@@ -4,6 +4,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
@@ -14,6 +16,8 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 
+@ManagedBean
+@RequestScoped
 public class ItineraireRepository {
 
 	@Inject

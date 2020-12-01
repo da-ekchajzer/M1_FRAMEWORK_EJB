@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 
 import org.jvnet.hk2.annotations.Service;
@@ -22,7 +24,8 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.BDDFillerService;
 
-@Service
+@ManagedBean
+@ApplicationScoped
 public class BDDFillerServiceImpl implements BDDFillerService {
 
 	private EntityManager em;

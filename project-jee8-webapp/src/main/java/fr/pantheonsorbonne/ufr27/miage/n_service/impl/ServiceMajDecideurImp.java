@@ -2,6 +2,11 @@ package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 
 import java.time.LocalTime;
 
+import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
+
+@ManagedBean
+@RequestScoped
 public class ServiceMajDecideurImp implements fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur {
 
 	@Override

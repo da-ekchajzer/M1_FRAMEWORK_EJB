@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
@@ -15,6 +17,8 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 
+@ManagedBean
+@RequestScoped
 public class VoyageurRepository {
 
 	@Inject

@@ -36,7 +36,6 @@ public class TestGareDAO {
 
 	@BeforeEach
 	public void setup() {
-		// TestUtils.startServer();
 
 		em.getTransaction().begin();
 
@@ -61,8 +60,4 @@ public class TestGareDAO {
 		assertEquals("Avignon-Centre", gares.get(0).getNom());
 	}
 
-	@AfterAll
-	public static void end() {
-		// TestUtils.stopServer();
-	}
 }

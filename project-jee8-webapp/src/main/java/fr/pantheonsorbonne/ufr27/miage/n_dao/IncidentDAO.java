@@ -3,6 +3,7 @@ package fr.pantheonsorbonne.ufr27.miage.n_dao;
 import java.util.List;
 
 import javax.annotation.ManagedBean;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -11,6 +12,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 
 @ManagedBean
+@RequestScoped
 public class IncidentDAO {
 
 	@Inject
