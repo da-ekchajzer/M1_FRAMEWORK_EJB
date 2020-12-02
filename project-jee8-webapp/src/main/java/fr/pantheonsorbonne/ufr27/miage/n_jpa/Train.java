@@ -15,7 +15,6 @@ import lombok.ToString;
 @ToString
 @NamedQueries({
 	@NamedQuery(name = "Train.getTrainById", query = "SELECT t FROM Train t WHERE t.id = :id")
-
 })
 public abstract class Train {
 
