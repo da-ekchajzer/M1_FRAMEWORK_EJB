@@ -14,8 +14,8 @@ public class ItineraireMapper {
 		ItineraireJAXB itineraireJAXB = factory.createItineraireJAXB();
 		List<ArretJAXB> arretsJAXB = itineraireJAXB.getArrets();
 		
-		for(int i = 0; i < itineraire.getGaresDesservies().size();i++) {
-			arretsJAXB.add(ArretMapper.mapArretToArretJAXB(itineraire.getGaresDesservies().get(i)));
+		for(int i = 0; i < itineraire.getArretsDesservis().size();i++) {
+			arretsJAXB.add(ArretMapper.mapArretToArretJAXB(itineraire.getArretsDesservis().get(i)));
 		}
 		
 		itineraireJAXB.setEtatItineraire(itineraire.getEtat());

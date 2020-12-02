@@ -24,7 +24,8 @@ import lombok.ToString;
 @NamedQueries({
 		@NamedQuery(name = "Itineraire.getItineraireById", query = "SELECT i FROM Itineraire i WHERE i.id = :id"),
 		@NamedQuery(name = "Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :idTrain and i.etat = :etat"),
-		
+		@NamedQuery(name = "Itineraire.getAllItinerairesByEtat", query = "SELECT i FROM Itineraire i WHERE i.etat = :etat"),
+
 })
 public class Itineraire {
 
@@ -33,12 +34,12 @@ public class Itineraire {
 
 	public Itineraire(Train train) {
 		this.train = train;
-		this.garesDesservies = new LinkedList<Arret>();
+		this.arretsDesservis = new LinkedList<Arret>();
 	}
 
-	public Itineraire(Train train, List<Arret> garesDesservies) {
+	public Itineraire(Train train, List<Arret> arretsDesservis) {
 		this.train = train;
-		this.garesDesservies = garesDesservies;
+		this.arretsDesservis = arretsDesservis;
 	}
 
 	@Id
@@ -49,7 +50,7 @@ public class Itineraire {
 	@JoinColumn(name = "TRAIN_ID")
 	Train train;
 	List<Voyageur> voyageurs;
-	List<Arret> garesDesservies;
+	List<Arret> arretsDesservis;
 	int etat;
 
 	Arret arretActuel;
@@ -78,12 +79,12 @@ public class Itineraire {
 		this.voyageurs = voyageurs;
 	}
 
-	public List<Arret> getGaresDesservies() {
-		return garesDesservies;
+	public List<Arret> getArretsDesservis() {
+		return arretsDesservis;
 	}
 
-	public void setGaresDesservies(List<Arret> garesDesservies) {
-		this.garesDesservies = garesDesservies;
+	public void setArretsDesservis(List<Arret> arretsDesservis) {
+		this.arretsDesservis = arretsDesservis;
 	}
 
 	public int getEtat() {
@@ -111,7 +112,7 @@ public class Itineraire {
 	}
 
 	public void addArret(Arret a) {
-		this.garesDesservies.add(a);
+		this.arretsDesservis.add(a);
 	}
 
 	public enum CodeEtatItinieraire {

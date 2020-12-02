@@ -22,6 +22,9 @@ public class ItineraireRepository {
 
 	@Inject
 	ItineraireDAO itineraireDAO;
+	
+	@Inject
+	ArretRepository arretRepository;
 
 	@Inject
 	TrajetRepository trajetRepository;
@@ -52,14 +55,14 @@ public class ItineraireRepository {
 			List<Arret> arrets = new ArrayList<Arret>();
 
 			for (Itineraire i : itineraires) {
-				arrets.add(i.getGaresDesservies().get(0));
+				arrets.add(i.getArretsDesservis().get(0));
 			}
 
 			itineraire = itineraires.get(0);
 
 			for (int n = 0; n < itineraires.size(); n++) {
 				if (arrets.get(n).getHeureDepartDeGare()
-						.isBefore(itineraire.getGaresDesservies().get(0).getHeureDepartDeGare()))
+						.isBefore(itineraire.getArretsDesservis().get(0).getHeureDepartDeGare()))
 					itineraire = itineraires.get(n);
 			}
 		}
@@ -96,9 +99,9 @@ public class ItineraireRepository {
 		// On récupère l'itinéraire associé au train
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
-		int nbArretsAvantSuppression = itineraire.getGaresDesservies().size();
-		itineraireDAO.supprimerArretDansUnItineraire(itineraire, arret);
-		return itineraire.getGaresDesservies().size() == nbArretsAvantSuppression - 1;
+		int nbArretsAvantSuppression = itineraire.getArretsDesservis().size();
+		arretRepository.supprimerArret(itineraire, arret);
+		return itineraire.getArretsDesservis().size() == nbArretsAvantSuppression - 1;
 	}
 
 	/*
@@ -112,11 +115,11 @@ public class ItineraireRepository {
 
 		List<Trajet> trajets = trajetRepository.getTrajetsByItineraire(itineraire);
 
-		int nbArretsAvantAjout = itineraire.getGaresDesservies().size();
+		int nbArretsAvantAjout = itineraire.getArretsDesservis().size();
 
 		itineraireDAO.ajouterUnArretDansUnItineraire(itineraire, arret, gare, trajets);
 
-		return itineraire.getGaresDesservies().size() == nbArretsAvantAjout + 1;
+		return itineraire.getArretsDesservis().size() == nbArretsAvantAjout + 1;
 	}
 
 	public void retarderTrain(int idTrain, LocalTime tempsRetard) {
@@ -126,6 +129,44 @@ public class ItineraireRepository {
 		Arret arretActuel = itineraire.getArretActuel();
 
 		itineraireDAO.retarderTrain(tempsRetard, arretActuel, itineraire);
+	}
+	
+	public Arret getNextArret(int idTrain, Arret arret) {
+		Itineraire itineraire = this.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		for(Arret a : itineraire.getArretsDesservis()) {
+			if(a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+				return a;
+			}
+		}
+		return null;
+	}
+	
+	public List<Arret> getAllNextArrets(Itineraire itineraire, Arret arret) {
+		List<Arret> arretsSuivants = new ArrayList<Arret>();
+		for(Arret a : itineraire.getArretsDesservis()) {
+			if(a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+				arretsSuivants.add(a);
+			}
+		}
+		return arretsSuivants;
+	}
+	
+	public List<Itineraire> getItinerairesEnCoursOuEnIncidentByGare(Gare gare) {
+		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
+
+		List<Itineraire> itinerairesEnCoursOuEnIncident = new ArrayList<Itineraire>();
+		itinerairesEnCoursOuEnIncident.addAll(this.itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
+		itinerairesEnCoursOuEnIncident.addAll(this.itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
+		
+		for(Itineraire i : itinerairesEnCoursOuEnIncident) {
+			for(Arret a : i.getArretsDesservis()) {
+				if(a.getGare().equals(gare)) {
+					itinerairesConcernes.add(i);
+				}
+			}
+		}
+		
+		return itinerairesConcernes;
 	}
 
 }
