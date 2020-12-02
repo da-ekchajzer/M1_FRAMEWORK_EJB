@@ -48,8 +48,11 @@ public class TestTrainDAO {
 		Train train9 = new TrainAvecResa(9, "TGV");
 
 		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
-		for (Train t : trains)
+		
+		for (Train t : trains) {
 			em.persist(t);
+		}
+		
 		em.getTransaction().commit();
 	}
 

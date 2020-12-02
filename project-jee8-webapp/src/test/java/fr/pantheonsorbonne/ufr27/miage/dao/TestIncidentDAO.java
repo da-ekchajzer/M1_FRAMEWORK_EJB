@@ -18,6 +18,8 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeTypeIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
@@ -32,66 +34,65 @@ public class TestIncidentDAO {
 
 	@Inject
 	EntityManager em;
+
 	@Inject
 	IncidentDAO incidentDAO;
 
-	
 	@BeforeAll
 	public void setup() {
 		em.getTransaction().begin();
-		
+
 		Incident incident1 = new Incident();
 		Incident incident2 = new Incident();
-		Incident incident3 = new Incident();
-		
-		Itineraire itineraire1 = new Itineraire();
-		
-		incident1.setTypeIncident(1);
-		incident1.setEtat(1);
+
+		incident1.setTypeIncident(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode());
+		incident1.setEtat(CodeEtatIncident.EN_COURS.getCode());
 
 		em.persist(incident1);
 		em.persist(incident2);
-		em.persist(itineraire1);
-		
+
 		em.getTransaction().commit();
 	}
 
 	@Test
 	void testGetAllIncidents() {
-
 		List<Incident> incidents = incidentDAO.getAllIncidents();
 		assertEquals(2, incidents.size());
 	}
-	
+
 	@Test
 	void testGetNbIncident() {
-		assertEquals(2,incidentDAO.getNbIncidents());
+		assertEquals(2, incidentDAO.getNbIncidents());
 	}
-	
+
 	@Test
 	void testGetIncidentById() {
-		assertEquals(1, incidentDAO.getIncidentById(1).getEtat());	
+		assertEquals(CodeEtatIncident.EN_COURS.getCode(), incidentDAO.getIncidentById(1).getEtat());
 	}
-	
-//	Ne fonctionne pas
-//	@Test
-//	void testAjouterIncidentEnBDD() {
-//		incidentDAO.ajouterIncidentEnBD(incidentDAO.getIncidentById(3));
-//		assertEquals(3,incidentDAO.getNbIncidents());
-//	}
-	
-	
+
+	@Test
+	void testAjouterIncidentEnBDD() {
+		Incident incident3 = new Incident();
+		int nbIncidents = incidentDAO.getNbIncidents();
+		incidentDAO.ajouterIncidentEnBD(incident3);
+		assertEquals(nbIncidents + 1, incidentDAO.getNbIncidents());
+	}
+
 	@Test
 	void testMajEtatIncidentEnBDD() {
 		incidentDAO.majEtatIncidentEnBD(incidentDAO.getIncidentById(1), 0);
-		assertEquals(0,incidentDAO.getIncidentById(1).getEtat());
+		assertEquals(0, incidentDAO.getIncidentById(1).getEtat());
 	}
-	
-// Ne sais pas comment le tester	
-//	@Test
-//	void testAssocierIncidentItineraire() {
-//	}
-	
-	
+
+	@Test
+	void testAssocierIncidentItineraire() {
+		Itineraire itineraire1 = new Itineraire();
+		em.getTransaction().begin();
+		em.persist(itineraire1);
+		em.getTransaction().commit();
+		assertEquals(null, itineraire1.getIncident());
+		incidentDAO.associerIncidentItineraire(itineraire1, incidentDAO.getIncidentById(1));
+		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), itineraire1.getIncident().getTypeIncident());
+	}
 
 }
