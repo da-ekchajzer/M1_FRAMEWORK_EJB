@@ -70,6 +70,7 @@ public class TestItineraireDAO {
 		Train train9 = new TrainAvecResa(9, "TGV");
 
 		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
+		
 		for (Train t : trains)
 			em.persist(t);
 		
@@ -136,6 +137,7 @@ public class TestItineraireDAO {
 		Arret[] arrets = { arret1, arret2, arret3, arret4, arret1_bis, arret2_bis, arret3_bis, arret4_bis, arret5,
 				arret6, arret7, arret5_bis, arret6_bis, arret7_bis, arret8, arret9, arret10, arret11, arret12, arret13,
 				arret14, arret15, arret16, arret17, arret18, arret19, arret18_bis, arret19_bis };
+		
 		for (Arret a : arrets)
 			em.persist(a);
 		
@@ -153,10 +155,10 @@ public class TestItineraireDAO {
 	}
 
 //	Ne fonctionne pas
-//	@Test
-//	void testGetItineraireById() {
-//		assertEquals(1, itineraireDAO.getItineraireById(1).getEtat());
-//	}
+	@Test
+	void testGetItineraireById() {
+		assertEquals(1, itineraireDAO.getItineraireById(1).getEtat());
+	}
 	
 //	@Test
 //	void getItineraireByTrainEtEtat{
