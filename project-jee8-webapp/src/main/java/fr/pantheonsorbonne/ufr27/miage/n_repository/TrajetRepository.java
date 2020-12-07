@@ -10,6 +10,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 
 @ManagedBean
 @RequestScoped

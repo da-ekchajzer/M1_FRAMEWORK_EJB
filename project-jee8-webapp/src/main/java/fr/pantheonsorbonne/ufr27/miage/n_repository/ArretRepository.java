@@ -28,4 +28,11 @@ public class ArretRepository {
 	public void retardHeureDepartDeGare(Arret a, int tempsRetard) {
 		this.arretDAO.retardHeureDepartDeGare(a, tempsRetard);
 	}
+	
+	public Arret getArretParItineraireEtNomGare(Itineraire itineraire, String nomGare) {
+		for(Arret a : itineraire.getArretsDesservis()) {
+			if(a.getGare().getNom().equals(nomGare)) return a;
+		}
+		return null;
+	}
 }
