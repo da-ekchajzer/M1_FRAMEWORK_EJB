@@ -2,7 +2,9 @@ package fr.pantheonsorbonne.ufr27.miage.n_repository;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
@@ -141,6 +143,15 @@ public class ItineraireRepository {
 		return null;
 	}
 	
+	public Arret getNextArretByItineraireEtArretActuel(Itineraire itineraire, Arret arret) {
+		for(Arret a : itineraire.getArretsDesservis()) {
+			if(a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+				return a;
+			}
+		}
+		return null;
+	}
+	
 	public List<Arret> getAllNextArrets(Itineraire itineraire, Arret arret) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
 		for(Arret a : itineraire.getArretsDesservis()) {
@@ -168,5 +179,19 @@ public class ItineraireRepository {
 		
 		return itinerairesConcernes;
 	}
+	
+	public List<Itineraire> getAllItinerairesByGare(Gare g) {
+		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
+		List<Itineraire> allItineraires = this.itineraireDAO.getAllItineraires();
+		for(Itineraire i : allItineraires) {
+			for(Arret a : i.getArretsDesservis()) {
+				if(a.getGare().equals(g)) {
+					itinerairesConcernes.add(i);
+				}
+			}
+		}
+		return itinerairesConcernes;
+	}
+	
 
 }

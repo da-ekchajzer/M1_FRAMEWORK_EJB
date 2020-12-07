@@ -45,6 +45,10 @@ public class ItineraireDAO {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
 				.setParameter("idTrain", idTrain).setParameter("etat", etat.getCode()).getResultList();
 	}
+	
+	public List<Itineraire> getAllItineraires() {
+		return (List<Itineraire>) em.createNamedQuery("Itineraire.getAllItineraires", Itineraire.class).getResultList();
+	}
 
 	public void majEtatItineraire(Itineraire itineraire, CodeEtatItinieraire newEtat) {
 		em.getTransaction().begin();

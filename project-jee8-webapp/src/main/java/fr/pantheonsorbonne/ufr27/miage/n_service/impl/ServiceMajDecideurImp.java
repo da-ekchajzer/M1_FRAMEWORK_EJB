@@ -13,9 +13,13 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
 
 @ManagedBean
@@ -30,6 +34,9 @@ public class ServiceMajDecideurImp implements fr.pantheonsorbonne.ufr27.miage.n_
 
 	@Inject
 	TrainRepository trainRepository;
+	
+	@Inject
+	ArretRepository arretRepository;
 
 	/**
 	 * Un TER n'attend pas un autre TER Un TGV n'attend pas un TER On ne gère pas
@@ -61,82 +68,7 @@ public class ServiceMajDecideurImp implements fr.pantheonsorbonne.ufr27.miage.n_
 				CodeEtatItinieraire.EN_COURS);
 		Arret nextArret = this.itineraireRepository.getNextArret(idTrain, itineraire.getArretActuel());
 
-		// On vérifie que ce soit bien un train AVEC resa
-		if (trainConcerne instanceof TrainAvecResa) {
-			// On récupère les voyageurs présents dans le train
-			List<Voyageur> voyageursDansLeTrain = itineraire.getVoyageurs();
-			// On récupère tous les itinéraires qui passe par le prochain arrêt du train
-			List<Itineraire> itinerairesConcernesParLaGare = this.itineraireRepository
-					.getItinerairesEnCoursOuEnIncidentByGare(nextArret.getGare());
-			
-			int cpt = 0;
-			// Pour chaque itineraire concerne par le retard ...
-			for(Itineraire i : itinerairesConcernesParLaGare) {
-				// On récupère le prochain arrêt du train associée à l'itinéraire i
-				Arret nextArretI = this.itineraireRepository.getNextArret(i.getTrain().getId(), i.getArretActuel());
-				
-				// Si l'arret actuel ou le prochain arret du train associé à i est impacté par le retard du train courant ...
-				if(i.getArretActuel().getHeureDepartDeGare().isBefore(nextArret.getHeureArriveeEnGare()) ||
-						nextArretI.getHeureDepartDeGare().isBefore(nextArret.getHeureArriveeEnGare())) {
-					cpt = 0;
-					// Pour chaque voyageur dans le train associé à i ...
-					for(Voyageur voyageur : voyageursDansLeTrain) {
-						// TODO : MEMO - Penser à vérifier si les voyageurs sont dans la liste de l'itinéraire dès la résa
-						
-						// Si le voyageur du train courant va prendre le train associé à i ...
-						if(i.getVoyageurs().contains(voyageur)) {
-							cpt++;
-						}
-					}
-					// S'il y a plus de 50 voyageurs qui prendront le train associé à i ...
-					if(cpt >= 50) {
-						// i est considéré comme un itinéraire impacté
-						itinerairesImpactes.add(i);
-					}
-				}
-			}
-			
-			// Pour chaque itineraire impacté ...
-			for(Itineraire i : itinerairesImpactes) {
-				// TODO : condition d'arrêt de la récursivité à faire
-				
-				// On refait tous les tests du dessus (récursivité) pour retarder 
-				// les trains associés aux itinéraires impactés
-				//this.decideMajRetardTrainLorsCreationIncident(i.getTrain().getId(), estimationTempsRetard);
-			}
-			
-			
-			
-			// PREMIERE IDEE MATHIEU
-			/*
-			// On récupère le voyage de chaque voyageur
-			for (Voyageur voyageur : voyageursDansLeTrain) {
-				Voyage voyage = voyageur.getVoyage();
-				// On récupère les trajets d'un voyage
-				List<Trajet> trajetsVoyage = voyage.getTrajets();
-				// S'il existe + d'1 trajet dans la liste, le voyageur a une correspondance
-				if (trajetsVoyage.size() > 1) {
-					// Pour chaque trajet du voyage d'un voyageur...
-					for (int i = 0; i < trajetsVoyage.size(); i++) {
-						// On s'assure que le train (l'itineraire) actuel ne soit pas le dernier de son
-						// voyage
-						if (i < trajetsVoyage.size() - 1) {
-							if (trajetsVoyage.get(i).getItineraire().equals(itineraire)) {
-
-							}
-						}
-
-					}
-
-				} else {
-					// Le voyageur n'a pas de correspondance, on ne le garde pas dans les
-					// voyageursConcernes
-				}
-			}
-			 */
-		} else {
-			// On a pas le nb de voyageurs dans un train sans resa
-		}
+		this.deciderRetardRecursif(itineraire, nextArret, estimationTempsRetard);
 
 		/*********
 		 * R2 : Si EstTmpsRetard > 2h on cherche le 1er train qui peut desservir les
@@ -144,9 +76,101 @@ public class ServiceMajDecideurImp implements fr.pantheonsorbonne.ufr27.miage.n_
 		 *******/
 		// TODO !!!
 
-		
 	}
 
+	private void deciderRetardRecursif(Itineraire itineraireCourant, Arret a, LocalTime estimationTempsRetard) {
+		// On vérifie que ce soit bien un train AVEC resa
+		Train trainAssocieItineraireCourant = itineraireCourant.getTrain();
+		if (trainAssocieItineraireCourant instanceof TrainAvecResa) {
+			
+			// Condition d'arret : Si a est le dernier Arret de l'Itineraire
+			Arret nextArret = this.itineraireRepository.getNextArretByItineraireEtArretActuel(itineraireCourant, a);
+			if(nextArret == null) return;
+			
+			// On récupère les itinéraires impactés par le retard d'itineraireCourant
+			List<Itineraire> itinerairesImpactes = this.getItinerairesImpactes(a, itineraireCourant.getVoyageurs(), estimationTempsRetard);
+			if(itinerairesImpactes.size() > 0) {
+				// Pour chaque itinéraire impacté ...
+				for(Itineraire itineraireImpacte : itinerairesImpactes) {
+					// On le retarde
+					this.serviceMajExecuteur.retarderTrain(itineraireImpacte.getTrain().getId(), estimationTempsRetard);
+					// Puis on décide pour les arrêts suivants
+					Arret nextArretItineraireImpacte = this.itineraireRepository.getNextArretByItineraireEtArretActuel(itineraireImpacte, itineraireImpacte.getArretActuel());
+					this.deciderRetardRecursif(itineraireImpacte, nextArretItineraireImpacte, estimationTempsRetard);
+				}
+			}
+			// On continue les décisions pour les prochains arrêts de l'itinéraire courant
+			this.deciderRetardRecursif(itineraireCourant, nextArret, estimationTempsRetard);
+			
+		} else return;
+	}
+	
+	/**
+	 * Retourne les itinéraires qui passent par l'Arret a au même moment que l'itinéraire en cours
+	 * (check sur les horaires + appel d'une méthode qui check le nb de voyageurs en correspondance)
+	 * @param a
+	 * @return
+	 */
+	private List<Itineraire> getItinerairesImpactes(Arret a, List<Voyageur> voyageursDansTrainCourant, LocalTime estimationTempsRetard) {
+		List<Itineraire> itinerairesPossiblementImpactes = new ArrayList<Itineraire>();
+		
+		// On récupère tous les itinéraires qui passent, à un moment ou à un autre, par la Gare a.getGare()
+		List<Itineraire> itinerairesPassantParA = this.itineraireRepository.getAllItinerairesByGare(a.getGare());
+		// Pour chaque itinéraire passant par l'arrêt a ...
+		for(Itineraire i : itinerairesPassantParA) {
+			// On récupère l'Arret de l'itinéraire équivalent de a (même Gare)
+			Arret arretConcerne = this.arretRepository.getArretParItineraireEtNomGare(i, a.getGare().getNom());
+			// (On check les horaires) Si la correspondance n'est plus possible en raison du retard, 
+			// alors l'itinéraire est possiblement impacté
+			if(arretConcerne.getHeureDepartDeGare().isBefore(a.getHeureArriveeEnGare().plusSeconds(estimationTempsRetard.getSecond()))) {
+				// S'il y a plus de 50 personnes dans le train actuel qui prendront le train associé à l'itinéraire i, 
+				// alors i est un itinéraire impacté
+				if(checkNbPersConcerneesParCorrespondance(voyageursDansTrainCourant, i)) {
+					itinerairesPossiblementImpactes.add(i);
+				}
+			}
+		}
+		return itinerairesPossiblementImpactes;
+	}
+	
+	/**
+	 * Retourne vrai si plus de N (50) personnes du train actuel prendront l'itinéraire i comme correspondance
+	 * @param voyageursDansTrainActuel
+	 * @param i
+	 * @return
+	 */
+	private boolean checkNbPersConcerneesParCorrespondance(List<Voyageur> voyageursDansTrainActuel, Itineraire i) {
+		boolean enoughPers = false;
+		// Pour chaque voyageur dans le train actuel ...
+		for(Voyageur voyageur : voyageursDansTrainActuel) {
+			// On récupère leur voyage
+			Voyage voyage = voyageur.getVoyage();
+			// On récupère les trajets du voyageur
+			List<Trajet> trajets = voyage.getTrajets();
+			// On récupère l'itinéraire de correspondance du voyageur
+			// TODO : check si plusieurs itinéraires dans son voyage
+			Itineraire itineraireDeCorrespondance = trajets.get(0).getItineraire();
+			if(this.countNbPersDansItineraireDeCorrespondance(voyageursDansTrainActuel, itineraireDeCorrespondance) > 50) enoughPers = true;
+		}
+		return enoughPers;
+	}
+	
+	/**
+	 * Compte le nb de personnes dans le train actuel qui prendront le train associé à l'itinéraire passé en param
+	 * @param voyageursDansTrainActuel
+	 * @param itineraireDeCorrespondance
+	 * @return
+	 */
+	private int countNbPersDansItineraireDeCorrespondance(List<Voyageur> voyageursDansTrainActuel, Itineraire itineraireDeCorrespondance) {
+		int cpt = 0;
+		for(Voyageur v1 : voyageursDansTrainActuel) {
+			for(Voyageur v2 : itineraireDeCorrespondance.getVoyageurs()) {
+				if(v1.equals(v2)) cpt++;
+			}
+		}
+		return cpt;
+	}
+	
 	@Override
 	public void decideMajTrainEnCours(int idTrain, LocalTime estimationTempsRetardEnCours) {
 		// TODO Auto-generated method stub

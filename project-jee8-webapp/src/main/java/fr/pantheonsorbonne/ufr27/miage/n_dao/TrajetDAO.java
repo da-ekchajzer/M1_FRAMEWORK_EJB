@@ -40,4 +40,6 @@ public class TrajetDAO {
 		em.remove(trajet);
 		em.getTransaction().commit();
 	}
+	
+	
 }
