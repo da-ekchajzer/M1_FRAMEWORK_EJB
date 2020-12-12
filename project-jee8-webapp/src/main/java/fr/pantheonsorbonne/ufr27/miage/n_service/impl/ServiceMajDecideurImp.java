@@ -3,7 +3,6 @@ package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,12 +21,12 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
-import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
 
 @ManagedBean
 @RequestScoped
-public class ServiceMajDecideurImp implements fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur {
+public class ServiceMajDecideurImp implements ServiceMajDecideur {
 
 	@Inject
 	ServiceMajExecuteur serviceMajExecuteur;
@@ -85,7 +84,7 @@ public class ServiceMajDecideurImp implements fr.pantheonsorbonne.ufr27.miage.n_
 	 * 
 	 * @author Abdel Benamara
 	 * 
-	 * TODO : à faire valider par le reste de l'équipe >>>
+	 *         TODO : à faire valider par le reste de l'équipe >>>
 	 */
 	public void decideMajRetardTrainLorsCreationIncident2(int idTrain, LocalTime tempsRetard) {
 		// On teste si l'on se trouve dans un cas R1 ou R2 (cf les règles ci-dessous)

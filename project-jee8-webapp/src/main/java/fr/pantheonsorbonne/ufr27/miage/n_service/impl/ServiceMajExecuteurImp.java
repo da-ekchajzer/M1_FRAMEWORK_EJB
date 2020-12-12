@@ -11,10 +11,11 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
 
 @ManagedBean
 @RequestScoped
-public class ServiceMajExecuteurImp implements fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur {
+public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 	
 	@Inject
 	ItineraireRepository itineraireRepository;

@@ -2,9 +2,7 @@ package fr.pantheonsorbonne.ufr27.miage.n_repository;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
@@ -24,7 +22,7 @@ public class ItineraireRepository {
 
 	@Inject
 	ItineraireDAO itineraireDAO;
-	
+
 	@Inject
 	ArretRepository arretRepository;
 
@@ -132,66 +130,66 @@ public class ItineraireRepository {
 
 		itineraireDAO.retarderTrain(tempsRetard, arretActuel, itineraire);
 	}
-	
+
 	public Arret getNextArret(int idTrain, Arret arret) {
 		Itineraire itineraire = this.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		for(Arret a : itineraire.getArretsDesservis()) {
-			if(a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+		for (Arret a : itineraire.getArretsDesservis()) {
+			if (a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
 				return a;
 			}
 		}
 		return null;
 	}
-	
+
 	public Arret getNextArretByItineraireEtArretActuel(Itineraire itineraire, Arret arret) {
-		for(Arret a : itineraire.getArretsDesservis()) {
-			if(a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+		for (Arret a : itineraire.getArretsDesservis()) {
+			if (a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
 				return a;
 			}
 		}
 		return null;
 	}
-	
+
 	public List<Arret> getAllNextArrets(Itineraire itineraire, Arret arret) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
-		for(Arret a : itineraire.getArretsDesservis()) {
-			if(a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+		for (Arret a : itineraire.getArretsDesservis()) {
+			if (a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
 				arretsSuivants.add(a);
 			}
 		}
 		return arretsSuivants;
 	}
-	
+
 	public List<Itineraire> getItinerairesEnCoursOuEnIncidentByGare(Gare gare) {
 		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
 
 		List<Itineraire> itinerairesEnCoursOuEnIncident = new ArrayList<Itineraire>();
 		itinerairesEnCoursOuEnIncident.addAll(this.itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
-		itinerairesEnCoursOuEnIncident.addAll(this.itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
-		
-		for(Itineraire i : itinerairesEnCoursOuEnIncident) {
-			for(Arret a : i.getArretsDesservis()) {
-				if(a.getGare().equals(gare)) {
+		itinerairesEnCoursOuEnIncident
+				.addAll(this.itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
+
+		for (Itineraire i : itinerairesEnCoursOuEnIncident) {
+			for (Arret a : i.getArretsDesservis()) {
+				if (a.getGare().equals(gare)) {
 					itinerairesConcernes.add(i);
 				}
 			}
 		}
-		
+
 		return itinerairesConcernes;
 	}
-	
+
 	public List<Itineraire> getAllItinerairesByGare(Gare g) {
 		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
 		List<Itineraire> allItineraires = this.itineraireDAO.getAllItineraires();
-		for(Itineraire i : allItineraires) {
-			for(Arret a : i.getArretsDesservis()) {
-				if(a.getGare().equals(g)) {
+		for (Itineraire i : allItineraires) {
+			for (Arret a : i.getArretsDesservis()) {
+				if (a.getGare().equals(g)) {
 					itinerairesConcernes.add(i);
 				}
 			}
 		}
 		return itinerairesConcernes;
 	}
-	
 
 }
