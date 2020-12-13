@@ -10,10 +10,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 public class MapperUtils {
-	public static LocalDateTime xmlGregorianCalendarToLocalDateTime(XMLGregorianCalendar xgc) {
-//		LocalDateTime ldt = LocalDateTime.of(xgc.getYear(), xgc.getMonth(), xgc.getDay(), xgc.getHour(), 
-//				xgc.getMinute(), xgc.getSecond(), xgc.getMillisecond());
-		
+	public static LocalDateTime xmlGregorianCalendarToLocalDateTime(XMLGregorianCalendar xgc) {	
 		GregorianCalendar gc = xgc.toGregorianCalendar();
 		ZonedDateTime zdt = gc.toZonedDateTime();
 		LocalDateTime ldt = zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();

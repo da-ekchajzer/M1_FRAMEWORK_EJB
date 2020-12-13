@@ -68,7 +68,7 @@ public class ItineraireValidationAcknowledgerBean implements MessageListener {
 
 	@Override
 	public void onMessage(Message message) {
-		// TODO
+		// TODO :
 	}
 
 }

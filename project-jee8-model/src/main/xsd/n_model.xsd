@@ -5,6 +5,20 @@
 <xsd:element name="incidentJAXB" type="incidentJAXB"></xsd:element>
 
 
+	<xsd:complexType name="ItineraireInfoGareJAXB">
+		<xsd:sequence>
+			<xsd:element name="heureArrivee" type="xsd:dateTime"></xsd:element>
+			<xsd:element name="heureDepart" type="xsd:dateTime"></xsd:element>
+			<xsd:element name="etat_itineraire" type="xsd:int"></xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="GareConcerneeJAXB">
+		<xsd:sequence>
+			<xsd:element name="gares" type="xsd:string"
+				maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
 	<xsd:complexType name="itineraireJAXB">
 		<xsd:sequence>

@@ -51,13 +51,13 @@ public class JMSProducer {
 	public Queue getInfoItineraireQueue() throws NamingException {
 		return (Queue) JNDI_CONTEXT.lookup("InfoItineraireQueue");
 	}
-	
+
 	@Produces
 	@Named("ItineraireAskQueue")
 	public Queue getItineraireAskQueue() throws NamingException {
 		return (Queue) JNDI_CONTEXT.lookup("ItineraireAskQueue");
 	}
-	
+
 	@Produces
 	public ConnectionFactory getJMSConnectionFactory() throws NamingException {
 		return (ConnectionFactory) JNDI_CONTEXT.lookup("ConnectionFactory");

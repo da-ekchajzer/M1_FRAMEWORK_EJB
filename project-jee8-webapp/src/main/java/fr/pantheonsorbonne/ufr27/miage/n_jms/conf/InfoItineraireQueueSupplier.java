@@ -11,14 +11,14 @@ import javax.naming.NamingException;
 
 import org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory;
 
-public class ItineraireQueueSupplier implements Supplier<Queue>{
+public class InfoItineraireQueueSupplier implements Supplier<Queue>{
 
 	private static final Context JNDI_CONTEXT;
 
 	static {
 		Hashtable<String, String> jndiBindings = new Hashtable<>();
 		jndiBindings.put(Context.INITIAL_CONTEXT_FACTORY, ActiveMQInitialContextFactory.class.getName());
-		jndiBindings.put("queue.ItineraireQueue", "ItineraireQueue");
+		jndiBindings.put("queue.InfoItineraireQueue", "InfoItineraireQueue");
 
 		Context c = null;
 		try {
@@ -36,7 +36,7 @@ public class ItineraireQueueSupplier implements Supplier<Queue>{
 	@Override
 	public Queue get() {
 		try {
-			return (Queue) JNDI_CONTEXT.lookup("ItineraireQueue");
+			return (Queue) JNDI_CONTEXT.lookup("InfoItineraireQueue");
 		} catch (NamingException e) {
 			throw new RuntimeException(e);
 		}
