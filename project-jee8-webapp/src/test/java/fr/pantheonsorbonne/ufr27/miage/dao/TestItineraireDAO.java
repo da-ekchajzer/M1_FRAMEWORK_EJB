@@ -157,6 +157,7 @@ public class TestItineraireDAO {
 		//assertEquals(a2.plus(5, ChronoUnit.SECONDS),arret2.getHeureArriveeEnGare());
 		assertEquals(d2.plus(5, ChronoUnit.SECONDS),arret2.getHeureDepartDeGare());	
 	}
+	
 
 	// La méthode ajouterUnArretDansUnItineraire sera déplacée donc pas testée ici
 
