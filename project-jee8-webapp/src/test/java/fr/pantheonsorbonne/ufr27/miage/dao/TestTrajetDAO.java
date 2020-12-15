@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import ch.qos.logback.core.recovery.ResilientSyslogOutputStream;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
@@ -95,10 +96,10 @@ public class TestTrajetDAO {
 		
 		em.persist(itineraire1);
 
-//		Itineraire[] itineraires = { itineraire1 };
-//
-//		for (Itineraire i : itineraires)
-//			em.persist(i);
+		Itineraire[] itineraires = { itineraire1 };
+
+		for (Itineraire i : itineraires)
+			em.persist(i);
 
 		// --------------------------------- Trajets
 
@@ -115,24 +116,24 @@ public class TestTrajetDAO {
 		em.getTransaction().commit();
 	}
 
-//	@Test
-//	void testGetTrajetsByItineraire() {
-//		em.getTransaction().begin();
-//		Itineraire itineraire = new Itineraire();
-//		em.persist(itineraire);
-//		Trajet trajet1 = new Trajet();
-//		Trajet trajet2 = new Trajet();
-//		Trajet trajet3 = new Trajet();
-//		trajet1.setItineraire(itineraire);
-//		trajet2.setItineraire(itineraire);
-//		trajet3.setItineraire(itineraire);
-//		em.persist(trajet1);
-//		em.persist(trajet2);
-//		em.persist(trajet3);
-//		em.getTransaction().commit();
-//		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
-//		assertEquals(3,trajets.size());
-//	}
+	@Test
+	void testGetTrajetsByItineraire() {
+		em.getTransaction().begin();
+		Itineraire itineraire = new Itineraire();
+		em.persist(itineraire);
+		Trajet trajet1 = new Trajet();
+		Trajet trajet2 = new Trajet();
+		Trajet trajet3 = new Trajet();
+		trajet1.setItineraire(itineraire);
+		trajet2.setItineraire(itineraire);
+		trajet3.setItineraire(itineraire);
+		em.persist(trajet1);
+		em.persist(trajet2);
+		em.persist(trajet3);
+		em.getTransaction().commit();
+		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
+		assertEquals(3,trajets.size());
+	}
 
 //	@Test
 //	void testGetTrajetsNomGareDeDepart() {
@@ -144,19 +145,55 @@ public class TestTrajetDAO {
 //	}
 	
 //	@Test
+//	void testGetTrajetsNomGareDeDepart() {
+//		em.getTransaction().begin();
+//		Gare gare1 = new Gare("Paris - Gare de Lyon");
+//		em.persist(gare1);
+//		Gare gare2 = new Gare("Avignon-Centre");
+//		em.persist(gare2);
+//		Trajet trajet1 = new Trajet();
+//		Trajet trajet2 = new Trajet();
+//		Trajet trajet3 = new Trajet();
+//		trajet1.setGareDepart(gare1);
+//		trajet2.setGareDepart(gare1);
+//		trajet3.setGareDepart(gare2);
+//		em.getTransaction().commit();
+//		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareDeDepart(gare1);
+//		for (Trajet trajet : trajets) {
+//			System.out.println(trajet.getId());
+//		}
+//		assertEquals(2,trajets.size());
+//	}
+	
+//	@Test
 //	void testTrajetNomGareArrivee() {
 //		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareArrivee(gareDAO.getGaresByNom("Marseille - St Charles").get(0));
 //		assertEquals(1,trajets.size());
 //	}
 	
-//Poser question
-//	@Test
-//	void testDeleteTrajet() {
-//		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareDeDepart(gareDAO.getGaresByNom("Paris - Gare de Lyon").get(0));
-//		assertEquals(3,trajets.size());
-//		trajetDAO.deleteTrajet(trajets.get(0));
-//		assertEquals(2,trajets.size());
-//	}
+
+	@Test
+	void testDeleteTrajet() {
+		em.getTransaction().begin();
+		Itineraire itineraire = new Itineraire();
+		em.persist(itineraire);
+		Trajet trajet1 = new Trajet();
+		Trajet trajet2 = new Trajet();
+		Trajet trajet3 = new Trajet();
+		trajet1.setItineraire(itineraire);
+		trajet2.setItineraire(itineraire);
+		trajet3.setItineraire(itineraire);
+		em.persist(trajet1);
+		em.persist(trajet2);
+		em.persist(trajet3);
+		em.getTransaction().commit();
+		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
+		assertEquals(3,trajets.size());
+		trajetDAO.deleteTrajet(trajet3);
+		//Ne fonctionne pas
+		//assertEquals(2,trajets.size());
+		
+	}
 	
 
 

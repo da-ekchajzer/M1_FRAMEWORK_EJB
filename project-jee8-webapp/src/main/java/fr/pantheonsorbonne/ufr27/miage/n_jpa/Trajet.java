@@ -19,7 +19,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NamedQueries({
-		@NamedQuery(name = "Trajet.getTrajetsByItineraire", query = "SELECT t FROM Trajet t, Itineraire i WHERE t.itineraire.id = :idItineraire"),
+		@NamedQuery(name = "Trajet.getTrajetsByItineraire", query = "SELECT t FROM Trajet t WHERE t.itineraire.id = :idItineraire"),
 		@NamedQuery(name = "Trajet.getTrajetsByNomGareDeDepart", query = "SELECT t FROM Trajet t, Gare g WHERE g.nom = :nom"),
 		@NamedQuery(name = "Trajet.getTrajetsByNomGareArrivee", query = "SELECT t FROM Trajet t, Gare g WHERE g.nom = :nom")
 
