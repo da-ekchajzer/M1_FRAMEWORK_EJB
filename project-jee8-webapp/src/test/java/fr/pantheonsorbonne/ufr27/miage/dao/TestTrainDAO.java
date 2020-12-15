@@ -41,13 +41,9 @@ public class TestTrainDAO {
 		Train train2 = new TrainSansResa(2, "TER");
 		Train train3 = new TrainAvecResa(3, "OUIGO");
 		Train train4 = new TrainAvecResa(4, "OUIGO");
-		Train train5 = new TrainSansResa(5, "TER");
-		Train train6 = new TrainAvecResa(6, "TGV");
-		Train train7 = new TrainSansResa(7, "TER");
-		Train train8 = new TrainAvecResa(8, "TGV");
-		Train train9 = new TrainAvecResa(9, "TGV");
 
-		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
+
+		Train[] trains = { train1, train2, train3, train4};
 		
 		for (Train t : trains) {
 			em.persist(t);
