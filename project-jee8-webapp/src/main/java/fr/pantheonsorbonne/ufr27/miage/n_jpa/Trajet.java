@@ -20,8 +20,8 @@ import lombok.ToString;
 @ToString
 @NamedQueries({
 		@NamedQuery(name = "Trajet.getTrajetsByItineraire", query = "SELECT t FROM Trajet t WHERE t.itineraire.id = :idItineraire"),
-		@NamedQuery(name = "Trajet.getTrajetsByNomGareDeDepart", query = "SELECT t FROM Trajet t, Gare g WHERE g.nom = :nom"),
-		@NamedQuery(name = "Trajet.getTrajetsByNomGareArrivee", query = "SELECT t FROM Trajet t, Gare g WHERE g.nom = :nom")
+		@NamedQuery(name = "Trajet.getTrajetsByNomGareDeDepart", query = "SELECT t FROM Trajet t WHERE t.gareDepart.nom = :nom"),
+		@NamedQuery(name = "Trajet.getTrajetsByNomGareArrivee", query = "SELECT t FROM Trajet t WHERE t.gareArrivee.nom = :nom")
 
 })
 public class Trajet implements Comparable<Trajet> {
