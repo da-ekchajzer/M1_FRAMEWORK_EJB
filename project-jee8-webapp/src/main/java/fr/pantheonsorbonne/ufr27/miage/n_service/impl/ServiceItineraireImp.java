@@ -32,7 +32,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 				itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_COURS);
 				
 				//Passer l'arret actuel a la gare de depart de l'itineraire
-				itineraireRepository.majArretActuel(idTrain, itineraire.getGaresDesservies().get(0));
+				itineraireRepository.majArretActuel(idTrain, itineraire.getArretsDesservis().get(0));
 				
 				serviceUtilisateur.initUtilisateursItineraire(idTrain);
 			}
@@ -52,11 +52,11 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		
 		serviceUtilisateur.majUtilisateursTrain(idTrain);
 		return true;
-	}	
+	}
 	
 	private Arret getArretByItineraireAndNomGare(Itineraire itineraire, String nomGare) {
 		Arret arret = null;
-		for(Arret a : itineraire.getGaresDesservies()) {
+		for(Arret a : itineraire.getArretsDesservis()) {
 			if(a.getGare().getNom().equals(nomGare)) {
 				arret = a;
 			}

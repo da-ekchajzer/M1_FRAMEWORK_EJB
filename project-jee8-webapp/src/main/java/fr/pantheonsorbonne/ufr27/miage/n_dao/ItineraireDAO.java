@@ -45,6 +45,10 @@ public class ItineraireDAO {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
 				.setParameter("idTrain", idTrain).setParameter("etat", etat.getCode()).getResultList();
 	}
+	
+	public List<Itineraire> getAllItineraires() {
+		return (List<Itineraire>) em.createNamedQuery("Itineraire.getAllItineraires", Itineraire.class).getResultList();
+	}
 
 	public void majEtatItineraire(Itineraire itineraire, CodeEtatItinieraire newEtat) {
 		em.getTransaction().begin();
@@ -58,13 +62,7 @@ public class ItineraireDAO {
 		em.getTransaction().commit();
 	}
 
-	public void supprimerArretDansUnItineraire(Itineraire itineraire, Arret arret) {
-		// On supprime l'arrêt de l'itinéraire
-		em.getTransaction().begin();
-		itineraire.getGaresDesservies().remove(arret);
-		em.remove(arret);
-		em.getTransaction().commit();
-	}
+	
 
 	public void ajouterUnArretDansUnItineraire(Itineraire itineraire, Arret arret, Gare gare, List<Trajet> trajets) {
 		em.getTransaction().begin();
@@ -77,12 +75,12 @@ public class ItineraireDAO {
 				} else {
 					// arrêt qu'on ajoute en cours d'itinéraire
 					List<Arret> arretsDeTransition = new LinkedList<Arret>();
-					int length = itineraire.getGaresDesservies().size();
+					int length = itineraire.getArretsDesservis().size();
 					for (int j = i + 1; j < length; j++) {
-						arretsDeTransition.add(itineraire.getGaresDesservies().remove(j));
+						arretsDeTransition.add(itineraire.getArretsDesservis().remove(j));
 					}
 					itineraire.addArret(arret);
-					itineraire.getGaresDesservies().addAll(arretsDeTransition);
+					itineraire.getArretsDesservis().addAll(arretsDeTransition);
 				}
 			}
 		}
@@ -116,6 +114,11 @@ public class ItineraireDAO {
 		em.getTransaction().commit();
 	}
 
+	public List<Itineraire> getAllItinerairesByEtat(CodeEtatItinieraire codeEtatItinieraire) {
+		return (List<Itineraire>) em.createNamedQuery("Itineraire.getAllItinerairesByEtat", Itineraire.class)
+				.setParameter("etat", codeEtatItinieraire.getCode()).getResultList();
+	}
+	
 	public class MulitpleResultsNotExpectedException extends Exception {
 
 		/**

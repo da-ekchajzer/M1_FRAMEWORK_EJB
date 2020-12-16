@@ -17,4 +17,5 @@ public class TrainRepository {
 	public Train getTrainById(int idTrain) {
 		return trainDAO.getTrainById(idTrain);
 	}
+	
 }

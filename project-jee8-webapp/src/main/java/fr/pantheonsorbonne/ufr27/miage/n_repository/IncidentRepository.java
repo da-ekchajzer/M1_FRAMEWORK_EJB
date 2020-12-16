@@ -57,20 +57,25 @@ public class IncidentRepository {
 		return true;
 	}
 
-	public void ajouterIncidentItineraire(int idItineraire, int idIncident) {
+	private void ajouterIncidentItineraire(int idItineraire, int idIncident) {
 		Itineraire itineraire = itineraireRepository.getItineraireById(idItineraire);
 		Incident incident = getIncidentById(idIncident);
 		incidentDAO.associerIncidentItineraire(itineraire, incident);
 	}
 
 	public void updateEtatIncident(int idTrain, int etat) {
+		Incident incident = this.getIncidentByIdTrain(idTrain);
+		incidentDAO.majEtatIncidentEnBD(incident, etat);
+	}
+	
+	public Incident getIncidentByIdTrain(int idTrain) {
 		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
 		// Récupération de l'incident associé à l'itinéraire itinéraire
 		Incident incident = getIncidentById(itineraire.getIncident().getId());
-
-		incidentDAO.majEtatIncidentEnBD(incident, etat);
+		
+		return incident;
 	}
 
 }

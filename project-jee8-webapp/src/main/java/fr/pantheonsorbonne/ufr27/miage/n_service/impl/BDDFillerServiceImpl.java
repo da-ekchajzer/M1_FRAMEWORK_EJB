@@ -11,8 +11,6 @@ import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 
-import org.jvnet.hk2.annotations.Service;
-
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
@@ -66,7 +64,7 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 			em.persist(t);
 
 		// --------------------------------- Remplissage de la table Arrêt
-		
+
 //		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now());
 //		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plus(2, ChronoUnit.HOURS),
 //				LocalDateTime.now().plus(2, ChronoUnit.HOURS).plus(5, ChronoUnit.MINUTES));
@@ -74,7 +72,7 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 //				LocalDateTime.now().plus(3, ChronoUnit.HOURS).plus(5, ChronoUnit.MINUTES));
 //		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plus(4, ChronoUnit.HOURS),
 //				null);
-		
+
 		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now());
 		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plus(1, ChronoUnit.MINUTES),
 				LocalDateTime.now().plus(1, ChronoUnit.MINUTES).plus(30, ChronoUnit.SECONDS));
