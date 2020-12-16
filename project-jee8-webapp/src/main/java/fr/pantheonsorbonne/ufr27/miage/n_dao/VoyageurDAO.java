@@ -16,9 +16,6 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
-import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
-import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
-import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
 
 @ManagedBean
 @RequestScoped
@@ -26,15 +23,6 @@ public class VoyageurDAO {
 
 	@Inject
 	EntityManager em;
-
-	@Inject
-	ItineraireRepository itineraireRepository;
-
-	@Inject
-	TrajetRepository trajetRepository;
-
-	@Inject
-	VoyageRepository voyageRepository;
 
 	public List<Voyageur> getVoyageursByVoyage(Voyage v) {
 		return (List<Voyageur>) em.createNamedQuery("Voyageur.getVoyageursByVoyage", Voyageur.class)

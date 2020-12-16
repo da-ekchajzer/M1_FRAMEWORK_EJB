@@ -31,15 +31,6 @@ public class Incident {
 	LocalDateTime heureDebut;
 	int duree;
 	int etat;
-	
-	// TODO
-	public String getStrEtat() {
-		String strEtat = "";
-		if(etat == 0) strEtat = "en cours";
-		else if(etat == 1) strEtat = "terminé";
-		else strEtat = "???";
-		return strEtat;
-	}
 
 	public int getId() {
 		return id;
