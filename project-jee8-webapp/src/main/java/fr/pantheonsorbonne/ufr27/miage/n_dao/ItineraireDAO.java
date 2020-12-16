@@ -31,7 +31,7 @@ public class ItineraireDAO {
 
 	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat)
 			throws MulitpleResultsNotExpectedException {
-		
+
 		List<Itineraire> itineraires = getAllItinerairesByTrainEtEtat(idTrain, etat);
 		if (itineraires.isEmpty()) {
 			return null;
@@ -89,17 +89,27 @@ public class ItineraireDAO {
 		em.getTransaction().commit();
 	}
 
-	public void retarderTrain(LocalTime tempsRetard, Arret arretActuel, Itineraire itineraire) {
+	public void retarderTrain(LocalTime tempsRetard, Arret arretRetarde, Itineraire itineraire) {
 		em.getTransaction().begin();
 
-		if (LocalDateTime.now().isBefore(arretActuel.getHeureDepartDeGare())) {
-			arretActuel.setHeureDepartDeGare(arretActuel.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
+		if (LocalDateTime.now().isBefore(arretRetarde.getHeureArriveeEnGare())) {
+			arretRetarde.setHeureArriveeEnGare(
+					arretRetarde.getHeureArriveeEnGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
+		}
+		
+		if (LocalDateTime.now().isBefore(arretRetarde.getHeureDepartDeGare())) {
+			arretRetarde.setHeureDepartDeGare(
+					arretRetarde.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
 		}
 
 		for (Arret a : itineraire.getGaresDesservies()) {
-			if (a.getHeureArriveeEnGare().isAfter(arretActuel.getHeureArriveeEnGare())) {
-				a.setHeureArriveeEnGare(a.getHeureArriveeEnGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
-				a.setHeureDepartDeGare(a.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
+			if (a.getHeureArriveeEnGare().isAfter(arretRetarde.getHeureArriveeEnGare())) {
+				a.setHeureArriveeEnGare(
+						a.getHeureArriveeEnGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
+				if (a.getHeureDepartDeGare() != null) {
+					a.setHeureDepartDeGare(
+							a.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
+				}
 			}
 		}
 

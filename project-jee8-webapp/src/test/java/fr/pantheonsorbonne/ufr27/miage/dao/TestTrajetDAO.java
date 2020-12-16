@@ -135,14 +135,11 @@ public class TestTrajetDAO {
 		assertEquals(3,trajets.size());
 	}
 
-//	@Test
-//	void testGetTrajetsNomGareDeDepart() {
-//		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareDeDepart(gareDAO.getGaresByNom("Paris - Gare de Lyon").get(0));
-//		System.out.println(trajets.get(0).getId());
-//		System.out.println(trajets.get(1).getId());
-//		System.out.println(trajets.get(2).getId());
-//		assertEquals(1,trajets.size());
-//	}
+	@Test
+	void testGetTrajetsNomGareDeDepart() {
+		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareDeDepart(gareDAO.getGaresByNom("Paris - Gare de Lyon").get(0));
+		assertEquals(1,trajets.size());
+	}
 	
 //	@Test
 //	void testGetTrajetsNomGareDeDepart() {
@@ -165,11 +162,11 @@ public class TestTrajetDAO {
 //		assertEquals(2,trajets.size());
 //	}
 	
-//	@Test
-//	void testTrajetNomGareArrivee() {
-//		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareArrivee(gareDAO.getGaresByNom("Marseille - St Charles").get(0));
-//		assertEquals(1,trajets.size());
-//	}
+	@Test
+	void testTrajetNomGareArrivee() {
+		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareArrivee(gareDAO.getGaresByNom("Marseille - St Charles").get(0));
+		assertEquals(1,trajets.size());
+	}
 	
 
 	@Test
@@ -190,8 +187,8 @@ public class TestTrajetDAO {
 		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
 		assertEquals(3,trajets.size());
 		trajetDAO.deleteTrajet(trajet3);
-		//Ne fonctionne pas
-		//assertEquals(2,trajets.size());
+		trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
+		assertEquals(2,trajets.size());
 		
 	}
 	

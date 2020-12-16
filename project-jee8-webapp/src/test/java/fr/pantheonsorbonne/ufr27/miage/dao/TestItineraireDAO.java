@@ -1,6 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -60,6 +61,15 @@ public class TestItineraireDAO {
 		em.getTransaction().commit();
 		itineraireDAO.getItineraireByTrainEtEtat(train.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertEquals(CodeEtatItinieraire.EN_ATTENTE.getCode(), itineraire.getEtat());
+		
+		Itineraire itineraire2 = new Itineraire(train);
+		em.getTransaction().begin();
+		em.persist(itineraire2);
+		em.getTransaction().commit();
+		Exception exception = assertThrows(MulitpleResultsNotExpectedException.class, () -> {
+			itineraireDAO.getItineraireByTrainEtEtat(train.getId(), CodeEtatItinieraire.EN_ATTENTE);
+		});
+		assertEquals("Expected only one 'Itineraire'", exception.getMessage());
 	}
 
 	@Test
@@ -84,13 +94,7 @@ public class TestItineraireDAO {
 		List<Itineraire> itineraires2 = itineraireDAO.getAllItinerairesByTrainEtEtat(train4.getId(),
 				CodeEtatItinieraire.EN_ATTENTE);
 		assertEquals(0, itineraires2.size());
-
-//		Voir comment on peut traiter l'exception
-//		Exception exception = assertThrows(MulitpleResultsNotExpectedException.class, () -> {
-//			itineraireDAO.getAllItinerairesByTrainEtEtat(train3.getId(), CodeEtatItinieraire.EN_ATTENTE);
-//		});
-//		assertEquals("Expected only one 'Itineraire'", exception.getMessage());
-		
+	
 	}
 
 	@Test
@@ -138,24 +142,26 @@ public class TestItineraireDAO {
 		LocalTime retard = LocalTime.of(0, 0, 5);
 		Arret arret1 = new Arret(null,LocalDateTime.now(),LocalDateTime.now().plus(10, ChronoUnit.SECONDS));
 		Arret arret2 = new Arret(null,LocalDateTime.now().plus(20, ChronoUnit.SECONDS),LocalDateTime.now().plus(30, ChronoUnit.SECONDS));
+		Arret arret3 = new Arret(null,LocalDateTime.now().plus(40, ChronoUnit.SECONDS),null);
 		Itineraire itineraire = new Itineraire();
+		itineraire.addArret(arret1);
+		itineraire.addArret(arret2);
+		itineraire.addArret(arret3);
 		em.getTransaction().begin();
 		em.persist(arret1);
 		em.persist(arret2);
+		em.persist(arret3);
 		em.persist(itineraire);
 		em.getTransaction().commit();
-		//LocalDateTime a1 = arret1.getHeureArriveeEnGare();
 		LocalDateTime d1 = arret1.getHeureDepartDeGare();
-		//LocalDateTime a2 = arret2.getHeureArriveeEnGare();
+		LocalDateTime a2 = arret2.getHeureArriveeEnGare();
 		LocalDateTime d2 = arret2.getHeureDepartDeGare();
-		itineraireDAO.retarderTrain(retard, arret1, itineraire);
+		LocalDateTime a3 = arret3.getHeureArriveeEnGare();
 		itineraireDAO.retarderTrain(retard, arret2, itineraire);
-		//Ne passe pas
-		//assertEquals(a1.plus(5, ChronoUnit.SECONDS),arret1.getHeureArriveeEnGare());
-		assertEquals(d1.plus(5, ChronoUnit.SECONDS),arret1.getHeureDepartDeGare());	
-		//Ne passe pas
-		//assertEquals(a2.plus(5, ChronoUnit.SECONDS),arret2.getHeureArriveeEnGare());
+		assertEquals(d1,arret1.getHeureDepartDeGare());	
+		assertEquals(a2.plus(5, ChronoUnit.SECONDS),arret2.getHeureArriveeEnGare());
 		assertEquals(d2.plus(5, ChronoUnit.SECONDS),arret2.getHeureDepartDeGare());	
+		assertEquals(a3.plus(5, ChronoUnit.SECONDS),arret3.getHeureArriveeEnGare());
 	}
 	
 
