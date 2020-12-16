@@ -52,7 +52,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		
 		serviceUtilisateur.majUtilisateursTrain(idTrain);
 		return true;
-	}	
+	}
 	
 	private Arret getArretByItineraireAndNomGare(Itineraire itineraire, String nomGare) {
 		Arret arret = null;

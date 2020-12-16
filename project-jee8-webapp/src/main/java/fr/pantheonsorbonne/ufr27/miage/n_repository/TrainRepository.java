@@ -12,9 +12,6 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 public class TrainRepository {
 	
 	@Inject
-	ItineraireRepository itineraireRepository;
-	
-	@Inject
 	TrainDAO trainDAO;
 	
 	public Train getTrainById(int idTrain) {

@@ -57,7 +57,7 @@ public class IncidentRepository {
 		return true;
 	}
 
-	public void ajouterIncidentItineraire(int idItineraire, int idIncident) {
+	private void ajouterIncidentItineraire(int idItineraire, int idIncident) {
 		Itineraire itineraire = itineraireRepository.getItineraireById(idItineraire);
 		Incident incident = getIncidentById(idIncident);
 		incidentDAO.associerIncidentItineraire(itineraire, incident);
