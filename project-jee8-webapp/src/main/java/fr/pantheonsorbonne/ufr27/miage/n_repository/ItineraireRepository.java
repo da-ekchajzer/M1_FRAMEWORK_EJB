@@ -127,6 +127,8 @@ public class ItineraireRepository {
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 
 		Arret arretActuel = itineraire.getArretActuel();
+		System.out.println("heureArriveeEnGare arret actuel = " + arretActuel.getHeureArriveeEnGare());
+		System.out.println("heureDepartDeGare arret actuel = " + arretActuel.getHeureDepartDeGare());
 
 		itineraireDAO.retarderTrain(tempsRetard, arretActuel, itineraire);
 	}

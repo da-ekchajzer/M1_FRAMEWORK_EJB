@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -22,10 +23,13 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -123,6 +127,52 @@ public class TestItineraireDAO {
 		assertEquals(itineraire.getArretActuel(), arret);
 	}
 
+	// TODO : deplacer la méthode donc celle de test aussi ?
+	// TODO : On n'ajoute jamais les gares de départ et d'arrivée d'un trajet comme arrets desservis de l'itinéraire associé (TODO : arretDesservis doit donc être un Set ?)
+	/*
+	@Test
+	void testAjouterArretDansUnItineraire() {
+		Gare g1 = new Gare("Gare1");
+		Gare g2 = new Gare("Gare2");
+		Gare g3 = new Gare("Gare3");
+		Gare g4 = new Gare("Gare4");
+		
+		Itineraire i1 = new Itineraire();
+		Trajet trajet1 = new Trajet(g1, g2, i1, 1);
+		Trajet trajet2 = new Trajet(g2, g3, i1, 1);
+		Trajet trajet3 = new Trajet(g3, g4, i1, 1);
+		List<Trajet> trajetsV1 = new ArrayList<Trajet>();
+		trajetsV1.add(trajet1); trajetsV1.add(trajet2); trajetsV1.add(trajet3);
+		
+		Gare g5 = new Gare("Arret1ToAdd");
+		Gare g6 = new Gare("Arret2ToAdd");
+		// A ajouter au milieu de l'itinéraire
+		Arret arret1ToAdd = new Arret(g5, LocalDateTime.now().plusMinutes(3), LocalDateTime.now().plusMinutes(15));
+		// A ajouter comme terminus
+		Arret arret2ToAdd = new Arret(g6, LocalDateTime.now().plusMinutes(100), null);
+
+		em.getTransaction().begin();
+		em.persist(g1);
+		em.persist(g2);
+		em.persist(g3);
+		em.persist(g4);
+		em.persist(g5);
+		em.persist(g6);
+		em.persist(arret1ToAdd);
+		em.persist(arret2ToAdd);
+		em.persist(trajet1);
+		em.persist(trajet2);
+		em.persist(trajet3);
+		em.persist(i1);
+		i1.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
+		em.getTransaction().commit();
+		
+		assertEquals(3,  i1.getArretsDesservis().size());
+		this.itineraireDAO.ajouterUnArretDansUnItineraire(i1, arret1ToAdd, arret1ToAdd.getGare(), trajetsV1);
+		assertEquals(4,  i1.getArretsDesservis().size());
+	}
+	*/
+	
 	/*
 	@Test
 	void testSupprimerArretDansUnItineraire() {
@@ -166,7 +216,5 @@ public class TestItineraireDAO {
 		assertEquals(a3.plus(5, ChronoUnit.SECONDS),arret3.getHeureArriveeEnGare());
 	}
 	
-
-	// La méthode ajouterUnArretDansUnItineraire sera déplacée donc pas testée ici
 
 }
