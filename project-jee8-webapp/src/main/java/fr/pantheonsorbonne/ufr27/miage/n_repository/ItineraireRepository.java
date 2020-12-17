@@ -135,14 +135,19 @@ public class ItineraireRepository {
 
 	public Arret getNextArret(int idTrain, Arret arret) {
 		Itineraire itineraire = this.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		
+		// On est au dernier arrêt, y en a pas après
+		if(arret.getHeureDepartDeGare() == null) return null;
+		
 		for (Arret a : itineraire.getArretsDesservis()) {
-			if (a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+			if(a.getHeureArriveeEnGare() != null && a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
 				return a;
 			}
 		}
 		return null;
 	}
 
+	// TODO : a finir !
 	public Arret getNextArretByItineraireEtArretActuel(Itineraire itineraire, Arret arret) {
 		for (Arret a : itineraire.getArretsDesservis()) {
 			if (a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
@@ -154,9 +159,12 @@ public class ItineraireRepository {
 
 	public List<Arret> getAllNextArrets(Itineraire itineraire, Arret arret) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
-		for (Arret a : itineraire.getArretsDesservis()) {
-			if (a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
-				arretsSuivants.add(a);
+		// Si on est au dernier arrêt, y en a pas après donc on renvoie une liste vide
+		if(arret.getHeureDepartDeGare() != null) {
+			for (Arret a : itineraire.getArretsDesservis()) {
+				if (a.getHeureArriveeEnGare() != null && a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+					arretsSuivants.add(a);
+				}
 			}
 		}
 		return arretsSuivants;
