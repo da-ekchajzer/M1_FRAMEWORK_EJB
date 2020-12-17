@@ -13,8 +13,8 @@ public class ArretRepository {
 	@Inject
 	ArretDAO arretDAO;
 	
-	public void supprimerArret(Itineraire itineraire, Arret arret) {
-		this.arretDAO.supprimerArret(itineraire, arret);
+	public void supprimerArret(Arret arret) {
+		this.arretDAO.supprimerArret(arret);
 	}
 	
 	public void avancerHeureArriveeEnGare(Arret a, int tempsAvance) {

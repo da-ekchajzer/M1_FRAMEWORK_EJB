@@ -17,10 +17,9 @@ public class ArretDAO {
 	@Inject
 	EntityManager em;
 
-	public void supprimerArret(Itineraire itineraire, Arret arret) {
-		// On supprime l'arrêt de l'itinéraire
+	public void supprimerArret(Arret arret) {
+		// On supprime l'arrêt
 		em.getTransaction().begin();
-		itineraire.getArretsDesservis().remove(arret);
 		em.remove(arret);
 		em.getTransaction().commit();
 	}

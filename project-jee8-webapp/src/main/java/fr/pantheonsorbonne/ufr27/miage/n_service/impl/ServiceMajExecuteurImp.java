@@ -60,7 +60,7 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 
 	@Override
 	public void ajouterArret(int idTrain, Arret arret) {
-		itineraireRepository.ajouterUnArretDansUnItineraire(idTrain, arret);
+		itineraireRepository.ajouterUnArretEnCoursItineraire(idTrain, arret);
 	}
 
 }

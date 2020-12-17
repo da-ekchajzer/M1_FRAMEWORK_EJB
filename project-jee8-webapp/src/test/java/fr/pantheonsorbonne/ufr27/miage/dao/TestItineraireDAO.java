@@ -45,7 +45,6 @@ public class TestItineraireDAO {
 	@Inject
 	ItineraireDAO itineraireDAO;
 
-
 	@Test
 	void testGetItineraireById() {
 		Itineraire itineraire = new Itineraire();
@@ -65,7 +64,7 @@ public class TestItineraireDAO {
 		em.getTransaction().commit();
 		itineraireDAO.getItineraireByTrainEtEtat(train.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertEquals(CodeEtatItinieraire.EN_ATTENTE.getCode(), itineraire.getEtat());
-		
+
 		Itineraire itineraire2 = new Itineraire(train);
 		em.getTransaction().begin();
 		em.persist(itineraire2);
@@ -98,7 +97,7 @@ public class TestItineraireDAO {
 		List<Itineraire> itineraires2 = itineraireDAO.getAllItinerairesByTrainEtEtat(train4.getId(),
 				CodeEtatItinieraire.EN_ATTENTE);
 		assertEquals(0, itineraires2.size());
-	
+
 	}
 
 	@Test
@@ -127,74 +126,99 @@ public class TestItineraireDAO {
 		assertEquals(itineraire.getArretActuel(), arret);
 	}
 
-	// TODO : deplacer la méthode donc celle de test aussi ?
-	// TODO : On n'ajoute jamais les gares de départ et d'arrivée d'un trajet comme arrets desservis de l'itinéraire associé (TODO : arretDesservis doit donc être un Set ?)
-	/*
+	// TODO : deplacer la méthode donc celle de test aussi ? 
+	// => Non nous ne pensons pas (signé Mathieu & Abdel)
 	@Test
-	void testAjouterArretDansUnItineraire() {
-		Gare g1 = new Gare("Gare1");
-		Gare g2 = new Gare("Gare2");
-		Gare g3 = new Gare("Gare3");
-		Gare g4 = new Gare("Gare4");
-		
+	void testAjouterArretEnCoursItineraire() {
+		Arret a1 = new Arret(null, null, LocalDateTime.now());
+		Arret a2 = new Arret(null, LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(2));
+		Arret a3 = new Arret(null, LocalDateTime.now().plusMinutes(5), null);
+
 		Itineraire i1 = new Itineraire();
-		Trajet trajet1 = new Trajet(g1, g2, i1, 1);
-		Trajet trajet2 = new Trajet(g2, g3, i1, 1);
-		Trajet trajet3 = new Trajet(g3, g4, i1, 1);
-		List<Trajet> trajetsV1 = new ArrayList<Trajet>();
-		trajetsV1.add(trajet1); trajetsV1.add(trajet2); trajetsV1.add(trajet3);
+		i1.addArret(a1);
+		i1.addArret(a2);
+		i1.addArret(a3);
 		
-		Gare g5 = new Gare("Arret1ToAdd");
-		Gare g6 = new Gare("Arret2ToAdd");
 		// A ajouter au milieu de l'itinéraire
-		Arret arret1ToAdd = new Arret(g5, LocalDateTime.now().plusMinutes(3), LocalDateTime.now().plusMinutes(15));
-		// A ajouter comme terminus
-		Arret arret2ToAdd = new Arret(g6, LocalDateTime.now().plusMinutes(100), null);
+		Arret arret1ToAdd = new Arret(null, LocalDateTime.now().plusMinutes(3), LocalDateTime.now().plusMinutes(4));
+		// A ajouter comme terminus (normalement ne doit pas fonctionner)
+		Arret arret2ToAdd = new Arret(null, LocalDateTime.now().plusMinutes(10), null);
 
 		em.getTransaction().begin();
-		em.persist(g1);
-		em.persist(g2);
-		em.persist(g3);
-		em.persist(g4);
-		em.persist(g5);
-		em.persist(g6);
+		em.persist(a1);
+		em.persist(a2);
+		em.persist(a3);
 		em.persist(arret1ToAdd);
 		em.persist(arret2ToAdd);
-		em.persist(trajet1);
-		em.persist(trajet2);
-		em.persist(trajet3);
 		em.persist(i1);
-		i1.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
 		em.getTransaction().commit();
-		
-		assertEquals(3,  i1.getArretsDesservis().size());
-		this.itineraireDAO.ajouterUnArretDansUnItineraire(i1, arret1ToAdd, arret1ToAdd.getGare(), trajetsV1);
-		assertEquals(4,  i1.getArretsDesservis().size());
+
+		assertEquals(3, i1.getArretsDesservis().size());
+		this.itineraireDAO.ajouterUnArretEnCoursItineraire(i1, arret1ToAdd);
+		assertEquals(4, i1.getArretsDesservis().size());
+		this.itineraireDAO.ajouterUnArretEnCoursItineraire(i1, arret2ToAdd);
+		assertEquals(4, i1.getArretsDesservis().size());
 	}
-	*/
 	
-	/*
+	// TODO : deplacer la méthode donc celle de test aussi ? 
+	// => Non nous ne pensons pas (signé Mathieu & Abdel)
 	@Test
-	void testSupprimerArretDansUnItineraire() {
-		Arret arret = new Arret();
-		Itineraire itineraire = new Itineraire();
+	void testAjouterArretEnBoutItineraire() {
+		Arret a1 = new Arret(null, null, LocalDateTime.now());
+		Arret a2 = new Arret(null, LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(2));
+		Arret a3 = new Arret(null, LocalDateTime.now().plusMinutes(5), null);
+
+		Itineraire i1 = new Itineraire();
+		i1.addArret(a1);
+		i1.addArret(a2);
+		i1.addArret(a3);
+		
+		// A ajouter au milieu de l'itinéraire (normalement ne doit pas fonctionner)
+		Arret arret1ToAdd = new Arret(null, LocalDateTime.now().plusMinutes(3), LocalDateTime.now().plusMinutes(4));
+		// A ajouter comme terminus
+		Arret arret2ToAdd = new Arret(null, LocalDateTime.now().plusMinutes(10), null);
+		// Ajouter comme departus
+		Arret arret3ToAdd = new Arret(null, null, LocalDateTime.now().minusMinutes(1));
+		
 		em.getTransaction().begin();
-		em.persist(arret);
-		em.persist(itineraire);
+		em.persist(a1);
+		em.persist(a2);
+		em.persist(a3);
+		em.persist(arret1ToAdd);
+		em.persist(arret2ToAdd);
+		em.persist(arret3ToAdd);
+		em.persist(i1);
 		em.getTransaction().commit();
-		itineraire.addArret(arret);
-		assertEquals(itineraire.getArretsDesservis().get(0), arret);
-		itineraireDAO.supprimerArretDansUnItineraire(itineraire, arret);
-		assertEquals(itineraire.getArretsDesservis().size(), 0);
+
+		assertEquals(3, i1.getArretsDesservis().size());
+		// Ajouter en tant que terminus (fonctionne pas car arret1ToAdd n'est pas un terminus)
+		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret1ToAdd, arret1ToAdd.getHeureArriveeEnGare().minusSeconds(30));
+		assertEquals(3, i1.getArretsDesservis().size());
+		// Ajouter en tant que terminus
+		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret2ToAdd, arret2ToAdd.getHeureArriveeEnGare().minusSeconds(30));
+		assertEquals(4, i1.getArretsDesservis().size());
+		// Ajouter en tant que départus
+		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret3ToAdd, arret3ToAdd.getHeureDepartDeGare().minusSeconds(30));
+		assertEquals(5, i1.getArretsDesservis().size());
 	}
-	*/
+
+	/*
+	 * @Test void testSupprimerArretDansUnItineraire() { Arret arret = new Arret();
+	 * Itineraire itineraire = new Itineraire(); em.getTransaction().begin();
+	 * em.persist(arret); em.persist(itineraire); em.getTransaction().commit();
+	 * itineraire.addArret(arret);
+	 * assertEquals(itineraire.getArretsDesservis().get(0), arret);
+	 * itineraireDAO.supprimerArretDansUnItineraire(itineraire, arret);
+	 * assertEquals(itineraire.getArretsDesservis().size(), 0); }
+	 */
 
 	@Test
 	void testRetarderTrain() {
 		LocalTime retard = LocalTime.of(0, 0, 5);
-		Arret arret1 = new Arret(null,LocalDateTime.now(),LocalDateTime.now().plus(10, ChronoUnit.SECONDS));
-		Arret arret2 = new Arret(null,LocalDateTime.now().plus(20, ChronoUnit.SECONDS),LocalDateTime.now().plus(30, ChronoUnit.SECONDS));
-		Arret arret3 = new Arret(null,LocalDateTime.now().plus(40, ChronoUnit.SECONDS),null);
+		Arret arret1 = new Arret(null, LocalDateTime.now(), LocalDateTime.now().plus(10, ChronoUnit.SECONDS));
+		Arret arret2 = new Arret(null, LocalDateTime.now().plus(20, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(30, ChronoUnit.SECONDS));
+		Arret arret3 = new Arret(null, LocalDateTime.now().plus(40, ChronoUnit.SECONDS), null);
 		Itineraire itineraire = new Itineraire();
 		itineraire.addArret(arret1);
 		itineraire.addArret(arret2);
@@ -210,11 +234,10 @@ public class TestItineraireDAO {
 		LocalDateTime d2 = arret2.getHeureDepartDeGare();
 		LocalDateTime a3 = arret3.getHeureArriveeEnGare();
 		itineraireDAO.retarderTrain(retard, arret2, itineraire);
-		assertEquals(d1,arret1.getHeureDepartDeGare());	
-		assertEquals(a2.plus(5, ChronoUnit.SECONDS),arret2.getHeureArriveeEnGare());
-		assertEquals(d2.plus(5, ChronoUnit.SECONDS),arret2.getHeureDepartDeGare());	
-		assertEquals(a3.plus(5, ChronoUnit.SECONDS),arret3.getHeureArriveeEnGare());
+		assertEquals(d1, arret1.getHeureDepartDeGare());
+		assertEquals(a2.plus(5, ChronoUnit.SECONDS), arret2.getHeureArriveeEnGare());
+		assertEquals(d2.plus(5, ChronoUnit.SECONDS), arret2.getHeureDepartDeGare());
+		assertEquals(a3.plus(5, ChronoUnit.SECONDS), arret3.getHeureArriveeEnGare());
 	}
-	
 
 }
