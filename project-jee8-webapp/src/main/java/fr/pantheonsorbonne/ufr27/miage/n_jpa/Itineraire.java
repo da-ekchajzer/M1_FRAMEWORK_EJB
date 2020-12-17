@@ -31,7 +31,7 @@ import lombok.ToString;
 public class Itineraire {
 
 	public Itineraire() {
-		this.garesDesservies = new LinkedList<Arret>();
+		this.arretsDesservis = new LinkedList<Arret>();
 	}
 
 	public Itineraire(Train train) {

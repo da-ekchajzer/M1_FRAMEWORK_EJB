@@ -100,7 +100,7 @@ public class ItineraireDAO {
 					arretRetarde.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
 		}
 
-		for (Arret a : itineraire.getGaresDesservies()) {
+		for (Arret a : itineraire.getArretsDesservis()) {
 			if (a.getHeureArriveeEnGare().isAfter(arretRetarde.getHeureArriveeEnGare())) {
 				a.setHeureArriveeEnGare(
 						a.getHeureArriveeEnGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
