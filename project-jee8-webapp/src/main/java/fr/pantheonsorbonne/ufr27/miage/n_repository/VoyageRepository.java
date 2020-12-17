@@ -44,7 +44,7 @@ public class VoyageRepository {
 		for (Trajet t : trajets) {
 			for (Voyage v : allVoyages) {
 				if (v.getTrajets().contains(t)) {
-					resVoyages.add(v);
+					if(!resVoyages.contains(v)) resVoyages.add(v);
 				}
 			}
 		}

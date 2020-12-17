@@ -14,10 +14,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 
 @ManagedBean
 @RequestScoped
@@ -63,29 +61,63 @@ public class ItineraireDAO {
 		itineraire.setArretActuel(arret);
 		em.getTransaction().commit();
 	}
-
 	
-
-	public void ajouterUnArretDansUnItineraire(Itineraire itineraire, Arret arret, Gare gare, List<Trajet> trajets) {
-		em.getTransaction().begin();
-		// On ajoute l'arrêt à l'itinéraire
-		for (int i = 0; i < trajets.size(); i++) {
-			if (gare.equals(trajets.get(i).getGareArrivee())) {
-				if (i == trajets.size() - 1) {
-					// arrêt qu'on ajoute à la fin
-					itineraire.addArret(arret);
+	public void ajouterUnArretEnCoursItineraire(Itineraire itineraire, Arret arret) {
+		List<Arret> arretsDeTransition = new LinkedList<Arret>();
+		
+		// Ajouter l'arrêt à la fin de l'itinéraire
+		if(arret.getHeureDepartDeGare() == null || arret.getHeureArriveeEnGare() == null) {
+			System.err.println("Veuillez utiliser la méthode 'ajouterUnArretEnBoutItineraire()'");
+			return;
+		}
+		// Ajouter l'arrêt en cours d'itinéraire
+		else {
+			// Déterminer la position à laquelle on doit ajouter l'arrêt
+			for (int i = 0 ; i < itineraire.getArretsDesservis().size() ; i++) {
+				if(itineraire.getArretsDesservis().get(i).getHeureDepartDeGare() != null && 
+						itineraire.getArretsDesservis().get(i).getHeureDepartDeGare().isBefore(arret.getHeureDepartDeGare())) {
+					arretsDeTransition.add(itineraire.getArretsDesservis().get(i));
 				} else {
-					// arrêt qu'on ajoute en cours d'itinéraire
-					List<Arret> arretsDeTransition = new LinkedList<Arret>();
-					int length = itineraire.getArretsDesservis().size();
-					for (int j = i + 1; j < length; j++) {
-						arretsDeTransition.add(itineraire.getArretsDesservis().remove(j));
+					arretsDeTransition.add(arret);
+					for(int j = i ; j < itineraire.getArretsDesservis().size() ; j++) {
+						arretsDeTransition.add(itineraire.getArretsDesservis().get(j));
 					}
-					itineraire.addArret(arret);
-					itineraire.getArretsDesservis().addAll(arretsDeTransition);
+					break;
 				}
 			}
 		}
+		
+		em.getTransaction().begin();
+		itineraire.setArretsDesservis(arretsDeTransition);
+		em.getTransaction().commit();
+	}
+	
+	/**
+	 * 
+	 * @param itineraire
+	 * @param arret
+	 * @param heure heureDeDepart de l'ancienne gare d'arrivée ou heureArrivee de l'ancienne gare de départ
+	 */
+	public void ajouterUnArretEnBoutItineraire(Itineraire itineraire, Arret arret, LocalDateTime heure) {
+		List<Arret> arretsDeTransition = new LinkedList<Arret>();
+
+		if(arret.getHeureArriveeEnGare() == null) {
+			Arret ancienDepartus = itineraire.getArretsDesservis().get(0);
+			ancienDepartus.setHeureArriveeEnGare(heure);
+			arretsDeTransition.add(arret);
+			arretsDeTransition.addAll(itineraire.getArretsDesservis());
+		} else if(arret.getHeureDepartDeGare() == null) {
+			Arret ancienTerminus = itineraire.getArretsDesservis().get(itineraire.getArretsDesservis().size()-1);
+			ancienTerminus.setHeureDepartDeGare(heure);
+			arretsDeTransition.addAll(itineraire.getArretsDesservis());
+			arretsDeTransition.add(arret);
+		} else {
+			System.err.println("Veuillez utiliser la méthode 'ajouterUnArretEnCoursItineraire()'");
+			return;
+		}
+		
+		em.getTransaction().begin();
+		itineraire.setArretsDesservis(arretsDeTransition);
 		em.getTransaction().commit();
 	}
 
