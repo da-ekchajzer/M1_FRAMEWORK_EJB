@@ -204,4 +204,9 @@ public class ItineraireRepository {
 		return itinerairesConcernes;
 	}
 
+	public Itineraire getItineraireByBusinessId(String idItineraire) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

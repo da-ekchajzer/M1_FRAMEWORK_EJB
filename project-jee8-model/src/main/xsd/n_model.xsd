@@ -5,7 +5,7 @@
 <xsd:element name="incidentJAXB" type="incidentJAXB"></xsd:element>
 
 
-	<xsd:complexType name="ItineraireInfoGareJAXB">
+	<xsd:complexType name="ItineraireInfoJAXB">
 		<xsd:sequence>
 			<xsd:element name="heureArrivee" type="xsd:dateTime"></xsd:element>
 			<xsd:element name="heureDepart" type="xsd:dateTime"></xsd:element>

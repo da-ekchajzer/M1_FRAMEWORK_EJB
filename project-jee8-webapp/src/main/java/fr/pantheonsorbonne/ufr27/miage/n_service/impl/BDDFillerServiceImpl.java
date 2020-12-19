@@ -9,8 +9,10 @@ import java.util.Map;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import fr.pantheonsorbonne.ufr27.miage.n_jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
@@ -26,6 +28,9 @@ import fr.pantheonsorbonne.ufr27.miage.n_service.BDDFillerService;
 @ApplicationScoped
 public class BDDFillerServiceImpl implements BDDFillerService {
 
+	@Inject
+	MessageGateway messageGateway;
+	
 	private EntityManager em;
 
 	public BDDFillerServiceImpl(EntityManager em) {
@@ -188,8 +193,12 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		Itineraire[] itineraires = { itineraire1, itineraire2, itineraire3, itineraire4, itineraire5, itineraire6,
 				itineraire7, itineraire8, itineraire9 };
 
-		for (Itineraire i : itineraires)
+		for (Itineraire i : itineraires) {
 			em.persist(i);
+			//messageGateway.publishCreation(i);
+		}
+
+			
 
 		// --------------------------------- Remplissage de la table Trajet
 

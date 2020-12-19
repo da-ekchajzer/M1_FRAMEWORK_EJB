@@ -1,12 +1,12 @@
 package fr.pantheonsorbonne.ufr27.miage.main;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.jms.JMSException;
+import javax.jms.Queue;
 import javax.xml.bind.JAXBException;
 
 import fr.pantheonsorbonne.ufr27.miage.POJO.Itineraire;
@@ -18,7 +18,7 @@ public class InfoGare implements Runnable {
 	InfoGareProcessorBean processor;
 	Map<String, Itineraire> itineraires;
 
-	public InfoGare(String gare) {
+	public InfoGare(String gare, Queue queueAck, Queue queueInfoPub) {
 		this.gare = gare;
 		this.itineraires = new HashMap<String, Itineraire>();
 
@@ -27,14 +27,18 @@ public class InfoGare implements Runnable {
 		try (SeContainer container = initializer.disableDiscovery().addPackages(true, InfoGareProcessorBean.class)
 				.initialize()) {
 			processor = container.select(InfoGareProcessorBean.class).get();
+			processor.setAckQueue(queueAck);
+			processor.setInfoPubQueue(queueInfoPub);
+			processor.setInfoGare(this);
 		}
 	}
 
 	@Override
 	public void run() {
+		
 		while (true) {
 			try {
-				processor.consume(this);
+				processor.consume();
 			} catch (JMSException | JAXBException e) {
 				e.printStackTrace();
 			}

@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -21,7 +20,7 @@ import javax.xml.bind.JAXBException;
 import fr.pantheonsorbonne.ufr27.miage.POJO.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.main.InfoGare;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.GareConcerneeJAXB;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoGareJAXB;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.ItineraireMapper;
 
 public class InfoGareProcessorBean {
@@ -29,25 +28,16 @@ public class InfoGareProcessorBean {
 	@Inject
 	private ConnectionFactory connectionFactory;
 
-	@Inject
-	@Named("ItineraireAckQueue")
+	private Queue queueInfoPub;
+
 	private Queue queueAck;
-
-	@Inject
-	@Named("InfoItineraireQueue")
-	private Queue queueInfo;
-
-	@Inject
-	@Named("ItineraireAskQueue")
-	private Queue queueAsk;
 
 	private Connection connection;
 
 	private Session session;
 
-	private MessageConsumer consumerAck;
-	private MessageConsumer consumerInfo;
-	private MessageProducer producerAsk;
+	private MessageProducer producerAck;
+	private MessageConsumer consumerInfoPub;
 
 	private InfoGare infoGare;
 
@@ -56,12 +46,11 @@ public class InfoGareProcessorBean {
 
 		try {
 
-			connection = connectionFactory.createConnection("nicolas", "nicolas");
+			connection = connectionFactory.createConnection("projet", "inf2");
 			connection.start();
 			session = connection.createSession();
-			consumerInfo = session.createConsumer(queueInfo);
-			consumerAck = session.createConsumer(queueAck);
-			producerAsk = session.createProducer(queueAsk);
+			consumerInfoPub = session.createConsumer(queueInfoPub);
+			producerAck = session.createProducer(queueAck);
 
 		} catch (JMSException e) {
 			throw new RuntimeException("failed to create JMS Session", e);
@@ -69,7 +58,7 @@ public class InfoGareProcessorBean {
 
 	}
 
-	public void onAckMessage(TextMessage message) throws JAXBException, JMSException {
+	public void onInfoPubMessage(TextMessage message) throws JAXBException, JMSException {
 		JAXBContext context = JAXBContext.newInstance(GareConcerneeJAXB.class);
 		StringReader reader = new StringReader(message.getText());
 
@@ -87,20 +76,60 @@ public class InfoGareProcessorBean {
 			switch (callout) {
 			case "majItineraire":
 
-				outgoingMessage.setStringProperty("callout", "getInfoMajItineraire");
+				outgoingMessage.setStringProperty("callout", "majItineraire");
 
 				break;
 
-			case "CreateItineraire":
+			case "createItineraire":
 
-				outgoingMessage.setStringProperty("callout", "getInfoCreationItineraire");
+				outgoingMessage.setStringProperty("callout", "createItineraire");
 
 				break;
 
 			default:
 				break;
 			}
-			producerAsk.send(outgoingMessage);
+
+			Queue tmpQueue = session.createTemporaryQueue();
+			outgoingMessage.setJMSReplyTo(tmpQueue);
+
+			producerAck.send(outgoingMessage);
+
+			ReceiveInfoItineraire(tmpQueue);
+
+		}
+
+	}
+
+	private void ReceiveInfoItineraire(Queue tmpQueue) throws JMSException, JAXBException {
+		MessageConsumer consumer = session.createConsumer(tmpQueue);
+		Message reply = consumer.receive();
+
+		TextMessage message = (TextMessage) reply;
+		
+		//Traitement de la reponse
+		JAXBContext context = JAXBContext.newInstance(ItineraireInfoJAXB.class);
+		StringReader reader = new StringReader(message.getText());
+
+		String callout = message.getStringProperty("callout");
+		String idItineraire = message.getStringProperty("idItineraire");
+
+		ItineraireInfoJAXB itineraireInfoJAXB = (ItineraireInfoJAXB) context.createUnmarshaller().unmarshal(reader);
+		Itineraire itineraireInfoGare = ItineraireMapper.mapItineraireJAXBToItineraire(itineraireInfoJAXB,
+				idItineraire);
+		
+		switch (callout) {
+		
+		case "majItineraire":
+			infoGare.updateStop(itineraireInfoGare);
+			break;
+
+		case "createItineraire":
+			infoGare.addStop(itineraireInfoGare);
+			break;
+
+		default:
+			break;
 		}
 
 	}
@@ -115,34 +144,20 @@ public class InfoGareProcessorBean {
 		return false;
 	}
 
-	private void onInfoMessage(TextMessage message) throws JAXBException, JMSException {
-		JAXBContext context = JAXBContext.newInstance(ItineraireInfoGareJAXB.class);
-		StringReader reader = new StringReader(message.getText());
-
-		String callout = message.getStringProperty("callout");
-		String idItineraire = message.getStringProperty("idItineraire");
-
-		ItineraireInfoGareJAXB itineraireInfoGareJAXB = (ItineraireInfoGareJAXB) context.createUnmarshaller().unmarshal(reader);
-		Itineraire itineraireInfoGare = ItineraireMapper.mapItineraireJAXBToItineraire(itineraireInfoGareJAXB, idItineraire);
-		switch (callout) {
-			case "majItineraire":
-				infoGare.updateStop(itineraireInfoGare);
-				break;
-	
-			case "CreateItineraire":
-				infoGare.addStop(itineraireInfoGare);
-				break;
-	
-			default:
-				break;
-			}
+	public void consume() throws JMSException, JAXBException {
+		onInfoPubMessage((TextMessage) consumerInfoPub.receive());
 	}
 
+	public void setAckQueue(Queue queueAck) {
+		this.queueAck = queueAck;
+	}
 
-	public void consume(InfoGare g) throws JMSException, JAXBException {
+	public void setInfoPubQueue(Queue queueInfoPub) {
+		this.queueInfoPub = queueInfoPub;
+	}
+
+	public void setInfoGare(InfoGare g) {
 		this.infoGare = g;
-		onAckMessage((TextMessage) consumerAck.receive());
-		onInfoMessage((TextMessage) consumerInfo.receive());
 	}
 
 }
