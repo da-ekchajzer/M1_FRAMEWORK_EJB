@@ -37,6 +37,8 @@ public class VoyageurDAO {
 		em.getTransaction().begin();
 		// TODO : est-ce que les voyageurs dans ajoutés dans la liste de l'itinéraire au
 		// moment de leur réservation ?
+		
+		// TODO : faire une méthode majVoyageurDansItineraire dans la classe ItineraireDAO/ItineraireRepository
 
 		for (Trajet trajet : trajetsItineraire) {
 			if (itineraire.getArretActuel().getGare().equals(trajet.getGareDepart())) {
@@ -52,6 +54,7 @@ public class VoyageurDAO {
 
 			while (it.hasNext()) {
 				t = it.next();
+				//Voyageurs qui ont une correspondance
 				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && !t.equals(nextTrajet)) {
 					train.getVoyageurs().remove(voyageur);
 					itineraire.getVoyageurs().remove(voyageur);

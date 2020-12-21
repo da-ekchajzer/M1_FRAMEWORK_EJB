@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.dao;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import fr.pantheonsorbonne.ufr27.miage.n_dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
@@ -37,6 +40,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainSansResa;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
@@ -47,15 +51,21 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestVoyageurDAO {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator
-			.from(VoyageurDAO.class, ItineraireRepository.class, TrajetRepository.class, ItineraireDAO.class,
-					VoyageRepository.class, TrajetDAO.class, VoyageDAO.class, TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator.from(VoyageurDAO.class, ItineraireRepository.class,
+			TrajetRepository.class, ItineraireDAO.class, VoyageRepository.class, TrajetDAO.class, TrainDAO.class,
+			VoyageDAO.class, ArretRepository.class, ArretDAO.class, TrajetDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
 	@Inject
 	VoyageurDAO voyageurDAO;
+	@Inject
+	TrainDAO trainDAO;
+	@Inject
+	TrajetDAO trajetDAO;
+	@Inject
+	ItineraireDAO itineraireDAO;
 
 	@BeforeAll
 	public void setup() {
@@ -107,6 +117,7 @@ public class TestVoyageurDAO {
 
 		Itineraire itineraire1 = new Itineraire(train1);
 		itineraire1.addArret(arret1);
+		itineraire1.setArretActuel(arret1);
 		itineraire1.addArret(arret2);
 		itineraire1.addArret(arret3);
 		itineraire1.addArret(arret4);
@@ -128,10 +139,15 @@ public class TestVoyageurDAO {
 		List<Trajet> voyageTrajet1 = new LinkedList<Trajet>();
 		voyageTrajet1.add(trajet1);
 		voyageTrajet1.add(trajet2);
-		voyageTrajet1.add(trajet3);
 		Voyage voyage1 = new Voyage(voyageTrajet1);
 
+		List<Trajet> voyageTrajet2 = new LinkedList<Trajet>();
+		voyageTrajet2.add(trajet2);
+		voyageTrajet2.add(trajet3);
+		Voyage voyage2 = new Voyage(voyageTrajet2);
+
 		em.persist(voyage1);
+		em.persist(voyage2);
 
 		// --------------------------------- Remplissage de la table Voyageur
 
@@ -149,11 +165,11 @@ public class TestVoyageurDAO {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
 			if (i < 5)
 				voyage1.addVoyageur(v);
+			if (i >= 5 && i < 8)
+				voyage2.addVoyageur(v);
 			em.persist(v);
 		}
 
-		
-		
 		em.getTransaction().commit();
 	}
 
@@ -191,59 +207,28 @@ public class TestVoyageurDAO {
 		assertEquals(2, itineraire1.getVoyageurs().size());
 	}
 
-//A finir
+// TODO : Faire MajVoyageurDansItineraire avant de tester celle ci
 //	@Test
 //	void testMajVoyageursDansTrainAvecResa() {
-//		TrainAvecResa train1 = new TrainAvecResa();
-//		Itineraire itineraire1 = new Itineraire(train1);
-//		Gare g1 = new Gare("Gare1");
-//		Gare g2 = new Gare("Gare2");
-//		Gare g3 = new Gare("Gare3");
-//		Trajet trajet1 = new Trajet(g1, g2, itineraire1, 1);
-//		Trajet trajet2 = new Trajet(g2, g3, itineraire1, 2);
-//		trajet1.setItineraire(itineraire1);
-//		trajet2.setItineraire(itineraire1);
-//		Voyageur voyageur1 = new Voyageur();
-//		Voyageur voyageur2 = new Voyageur();
-//		Voyageur voyageur3 = new Voyageur();
-//		Voyage voyage1 = new Voyage();
-//		Voyage voyage2 = new Voyage();
-//		List<Voyageur> voyageurs1 = new ArrayList<Voyageur>();
-//		voyageurs1.add(voyageur1);
-//		voyageurs1.add(voyageur2);
-//		List<Voyageur> voyageurs2 = new ArrayList<Voyageur>();
-//		voyageurs1.add(voyageur3);
-//		voyage1.setVoyageurs(voyageurs1);
-//		voyage2.setVoyageurs(voyageurs2);
-//		List<Trajet> trajetList1 = new ArrayList<Trajet>();
-//		trajetList1.add(trajet1);
-//		voyage1.setTrajets(trajetList1);
-//		List<Trajet> trajetList2 = new ArrayList<Trajet>();
-//		trajetList1.add(trajet2);
-//		voyage2.setTrajets(trajetList2);
-//		train1.setVoyageurs(voyageurs1);
-//		
-//		Set<Trajet> trajetsItineraire = new TreeSet<Trajet>();
-//		trajetsItineraire.add(trajet1);
-//		trajetsItineraire.add(trajet2);
-//		
-//		em.getTransaction().begin();
-//		em.persist(train1);
-//		em.persist(itineraire1);
-//		em.persist(g1);
-//		em.persist(g2);
-//		em.persist(g3);
-//		em.persist(trajet1);
-//		em.persist(trajet2);
-//		em.persist(voyageur1);
-//		em.persist(voyageur2);
-//		em.persist(voyageur3);
-//		em.persist(voyage1);
-//		em.persist(voyage2);
-//		em.getTransaction().commit();
-//		
-//		voyageurDAO.majVoyageursDansTrainAvecResa(train1, itineraire1, trajetsItineraire);
-//	
+//		List<Itineraire> listItineraire = itineraireDAO.getAllItineraires();
+//		System.out.println(listItineraire.get(0).getId()); //--> id itineraire = 20
+//		Itineraire itineraire = listItineraire.get(0);
+//		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(listItineraire.get(0).getId()));
+//		System.out.println(trajets.size());
+//		Set<Trajet> trajetsItineraire = new TreeSet<>(trajets);
+//		Train train = trainDAO.getTrainById(1);
+//		TrainAvecResa trainAvecResa = null;
+//		List<Voyageur> list = new ArrayList<Voyageur>();
+//		if(train instanceof TrainAvecResa) {
+//			trainAvecResa = (TrainAvecResa) train;
+//			list = trainAvecResa.getVoyageurs();
+//			for (Voyageur v : list) {
+//				System.out.println(v.getPrenom());
+//			}
+//			System.out.println(list.size());
+//		}
+//		voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire, trajetsItineraire);
+//		System.out.println(trainAvecResa.getVoyageurs().size());
 //	}
 
 }

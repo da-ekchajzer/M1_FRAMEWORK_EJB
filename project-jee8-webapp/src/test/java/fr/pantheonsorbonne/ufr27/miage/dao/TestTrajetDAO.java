@@ -141,26 +141,6 @@ public class TestTrajetDAO {
 		assertEquals(1,trajets.size());
 	}
 	
-//	@Test
-//	void testGetTrajetsNomGareDeDepart() {
-//		em.getTransaction().begin();
-//		Gare gare1 = new Gare("Paris - Gare de Lyon");
-//		em.persist(gare1);
-//		Gare gare2 = new Gare("Avignon-Centre");
-//		em.persist(gare2);
-//		Trajet trajet1 = new Trajet();
-//		Trajet trajet2 = new Trajet();
-//		Trajet trajet3 = new Trajet();
-//		trajet1.setGareDepart(gare1);
-//		trajet2.setGareDepart(gare1);
-//		trajet3.setGareDepart(gare2);
-//		em.getTransaction().commit();
-//		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareDeDepart(gare1);
-//		for (Trajet trajet : trajets) {
-//			System.out.println(trajet.getId());
-//		}
-//		assertEquals(2,trajets.size());
-//	}
 	
 	@Test
 	void testTrajetNomGareArrivee() {
