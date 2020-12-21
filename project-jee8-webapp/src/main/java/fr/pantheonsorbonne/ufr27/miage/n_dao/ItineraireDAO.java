@@ -28,6 +28,11 @@ public class ItineraireDAO {
 		return em.createNamedQuery("Itineraire.getItineraireById", Itineraire.class).setParameter("id", idItineraire)
 				.getSingleResult();
 	}
+	
+	public Itineraire getItineraireByBusinessId(String businessIdItineraire) {
+		return em.createNamedQuery("Itineraire.getItineraireByBusinessId", Itineraire.class).setParameter("id", businessIdItineraire)
+				.getSingleResult();
+	}
 
 	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat)
 			throws MulitpleResultsNotExpectedException {
