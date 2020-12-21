@@ -240,4 +240,23 @@ public class TestItineraireDAO {
 		assertEquals(a3.plus(5, ChronoUnit.SECONDS), arret3.getHeureArriveeEnGare());
 	}
 
+	@Test
+	void testGetAllItinerairesByEtat() {
+		Itineraire itineraire1 = new Itineraire();
+		Itineraire itineraire2 = new Itineraire();
+		Itineraire itineraire3 = new Itineraire();
+		itineraire1.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
+		itineraire2.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
+		itineraire3.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
+		em.getTransaction().begin();
+		em.persist(itineraire1);
+		em.persist(itineraire2);
+		em.persist(itineraire3);
+		em.getTransaction().commit();
+		List<Itineraire> listItinerairesAttente = itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE);
+		assertEquals(2,listItinerairesAttente.size());
+		List<Itineraire> listItinerairesEnCours = itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS);
+		assertEquals(1,listItinerairesEnCours.size());
+	}
+
 }
