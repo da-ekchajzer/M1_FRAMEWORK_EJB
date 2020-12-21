@@ -23,6 +23,9 @@ import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ArretDAO;
@@ -48,18 +51,22 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @EnableWeld
+@TestMethodOrder(OrderAnnotation.class)
 public class TestVoyageurDAO {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(VoyageurDAO.class, ItineraireRepository.class,
-			TrajetRepository.class, ItineraireDAO.class, VoyageRepository.class, TrajetDAO.class, TrainDAO.class,
-			VoyageDAO.class, ArretRepository.class, ArretDAO.class, TrajetDAO.class, TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator
+			.from(VoyageurDAO.class, ItineraireRepository.class, TrajetRepository.class, ItineraireDAO.class,
+					VoyageRepository.class, TrajetDAO.class, TrainDAO.class, VoyageDAO.class, ArretRepository.class,
+					ArretDAO.class, TrajetDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
 	@Inject
 	VoyageurDAO voyageurDAO;
+	@Inject
+	VoyageDAO voyageDAO;
 	@Inject
 	TrainDAO trainDAO;
 	@Inject
@@ -174,6 +181,7 @@ public class TestVoyageurDAO {
 	}
 
 	@Test
+	@Order(1)
 	void testGetVoyageursByVoyage() {
 		Voyageur voyageur1 = new Voyageur();
 		Voyageur voyageur2 = new Voyageur();
@@ -191,44 +199,37 @@ public class TestVoyageurDAO {
 	}
 
 	@Test
+	@Order(2)
 	void testMettreVoyageursDansItineraire() {
-		Itineraire itineraire1 = new Itineraire();
-		Voyageur voyageur1 = new Voyageur();
-		Voyageur voyageur2 = new Voyageur();
-		em.getTransaction().begin();
-		em.persist(voyageur1);
-		em.persist(voyageur2);
-		em.persist(itineraire1);
-		List<Voyageur> voyageurs = new ArrayList<Voyageur>();
-		voyageurs.add(voyageur1);
-		voyageurs.add(voyageur2);
-		em.getTransaction().commit();
-		voyageurDAO.mettreVoyageursDansItineraire(itineraire1, voyageurs);
-		assertEquals(2, itineraire1.getVoyageurs().size());
+		Itineraire itineraire1 = itineraireDAO.getItineraireByBusinessId("IT1");
+		Voyage voyage1 = voyageDAO.getAllVoyages().get(0);
+		voyageurDAO.mettreVoyageursDansItineraire(itineraire1, voyage1.getVoyageurs());
+		assertEquals(voyage1.getVoyageurs().size(), itineraire1.getVoyageurs().size());
 	}
 
-// TODO : Faire MajVoyageurDansItineraire avant de tester celle ci
-//	@Test
-//	void testMajVoyageursDansTrainAvecResa() {
-//		List<Itineraire> listItineraire = itineraireDAO.getAllItineraires();
-//		System.out.println(listItineraire.get(0).getId()); //--> id itineraire = 20
-//		Itineraire itineraire = listItineraire.get(0);
-//		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(listItineraire.get(0).getId()));
-//		System.out.println(trajets.size());
-//		Set<Trajet> trajetsItineraire = new TreeSet<>(trajets);
-//		Train train = trainDAO.getTrainById(1);
-//		TrainAvecResa trainAvecResa = null;
-//		List<Voyageur> list = new ArrayList<Voyageur>();
-//		if(train instanceof TrainAvecResa) {
-//			trainAvecResa = (TrainAvecResa) train;
-//			list = trainAvecResa.getVoyageurs();
-//			for (Voyageur v : list) {
-//				System.out.println(v.getPrenom());
-//			}
-//			System.out.println(list.size());
-//		}
-//		voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire, trajetsItineraire);
-//		System.out.println(trainAvecResa.getVoyageurs().size());
-//	}
+	@Test
+	@Order(3)
+	void testMajVoyageursDansTrainAvecResa() {
+		Itineraire itineraire1 = itineraireDAO.getItineraireByBusinessId("IT1");
+		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraire1);
+		System.out.println(trajets.size());
+		Set<Trajet> trajetsItineraire = new TreeSet<>(trajets);
+		Train train = trainDAO.getTrainById(1);
+		TrainAvecResa trainAvecResa = null;
+		List<Voyageur> list = new ArrayList<Voyageur>();
+		if (train instanceof TrainAvecResa) {
+			trainAvecResa = (TrainAvecResa) train;
+			list = trainAvecResa.getVoyageurs();
+			for (Voyageur v : list) {
+				System.out.println(v.getPrenom());
+			}
+			System.out.println(list.size());
+		}
+		// Ici y'a un null pointer exception qui est trigger dans la méthode
+		// majVoyageursDansTrainAvecResa, faut debug pour voir d'où ça vient prcq tout
+		// est bien setup en BDD comme il faut donc c'est chelou
+//		voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire1, trajetsItineraire);
+//		assertTrue(trainAvecResa.getVoyageurs().size() > 0);
+	}
 
 }

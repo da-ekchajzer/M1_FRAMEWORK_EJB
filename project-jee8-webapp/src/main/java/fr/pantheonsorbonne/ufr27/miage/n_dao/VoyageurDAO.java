@@ -29,16 +29,18 @@ public class VoyageurDAO {
 				.setParameter("id", v.getId()).getResultList();
 	}
 
-	public void majVoyageursDansTrainAvecResa(TrainAvecResa train, Itineraire itineraire, Set<Trajet> trajetsItineraire) {
+	public void majVoyageursDansTrainAvecResa(TrainAvecResa train, Itineraire itineraire,
+			Set<Trajet> trajetsItineraire) {
 		Set<Trajet> trajetsVoyageur;
 		Iterator<Trajet> it;
 		Trajet t, nextTrajet = null;
-		
-		em.getTransaction().begin();
-		// TODO : est-ce que les voyageurs dans ajoutés dans la liste de l'itinéraire au
+
+		// TODO : est-ce que les voyageurs sont ajoutés dans la liste de l'itinéraire au
 		// moment de leur réservation ?
-		
-		// TODO : faire une méthode majVoyageurDansItineraire dans la classe ItineraireDAO/ItineraireRepository
+		// => Non il faut appeler au bons endroits dans les services la méthode
+		// mettreVoyageursDansItineraire (elle est plus bas) 
+
+		em.getTransaction().begin();
 
 		for (Trajet trajet : trajetsItineraire) {
 			if (itineraire.getArretActuel().getGare().equals(trajet.getGareDepart())) {
@@ -54,7 +56,7 @@ public class VoyageurDAO {
 
 			while (it.hasNext()) {
 				t = it.next();
-				//Voyageurs qui ont une correspondance
+				// Voyageurs qui ont une correspondance
 				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && !t.equals(nextTrajet)) {
 					train.getVoyageurs().remove(voyageur);
 					itineraire.getVoyageurs().remove(voyageur);
@@ -74,8 +76,6 @@ public class VoyageurDAO {
 		em.getTransaction().commit();
 	}
 
-	
-	
 	public void mettreVoyageursDansItineraire(Itineraire itineraire, List<Voyageur> voyageursToAdd) {
 		em.getTransaction().begin();
 		// On ajoute les voyageurs dans l'itinéraire
