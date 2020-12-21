@@ -72,6 +72,10 @@ public class ItineraireRepository {
 	public Itineraire getItineraireById(int idItineraire) {
 		return itineraireDAO.getItineraireById(idItineraire);
 	}
+	
+	public Itineraire getItineraireByBusinessId(String businessIdItineraire) {
+		return itineraireDAO.getItineraireByBusinessId(businessIdItineraire);
+	}
 
 	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
 		try {
@@ -202,11 +206,6 @@ public class ItineraireRepository {
 			}
 		}
 		return itinerairesConcernes;
-	}
-
-	public Itineraire getItineraireByBusinessId(String idItineraire) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
