@@ -38,8 +38,8 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 		Arret nextArret = this.itineraireRepository.getNextArret(idTrain, arret);
 		// Si l'arrêt supprimé n'est pas le dernier arrêt de l'itinéraire...
 		if(nextArret != null) {
-			int nbSecondesAvance = 300;
-			// On avance l'heure d'arrivée à la prochaine gare d'arrêt de nbMinutesAvance
+			int nbSecondesAvance = 60;
+			// On avance l'heure d'arrivée à la prochaine gare d'arrêt de nbSecondesAvance
 			this.arretRepository.avancerHeureArriveeEnGare(nextArret, nbSecondesAvance);
 		}
 	}

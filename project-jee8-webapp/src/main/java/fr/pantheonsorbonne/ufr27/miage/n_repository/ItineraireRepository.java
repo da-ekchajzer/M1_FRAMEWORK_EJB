@@ -143,7 +143,7 @@ public class ItineraireRepository {
 		Itineraire itineraire = this.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 		
 		// On est au dernier arrêt, y en a pas après
-		if(arret.getHeureDepartDeGare() == null) return null;
+		if(arret == null || arret.getHeureDepartDeGare() == null) return null;
 		
 		for (Arret a : itineraire.getArretsDesservis()) {
 			if(a.getHeureArriveeEnGare() != null && a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
@@ -166,7 +166,7 @@ public class ItineraireRepository {
 	public List<Arret> getAllNextArrets(Itineraire itineraire, Arret arret) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
 		// Si on est au dernier arrêt, y en a pas après donc on renvoie une liste vide
-		if(arret.getHeureDepartDeGare() != null) {
+		if(arret != null && arret.getHeureDepartDeGare() != null) {
 			for (Arret a : itineraire.getArretsDesservis()) {
 				if (a.getHeureArriveeEnGare() != null && a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
 					arretsSuivants.add(a);

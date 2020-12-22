@@ -22,11 +22,11 @@ public class ArretRepository {
 	}
 	
 	public void retarderHeureArriveeEnGare(Arret a, int tempsRetard) {
-		this.arretDAO.retarderHeureArriveeEnGare(a, tempsRetard);
+		if(a.getHeureArriveeEnGare() != null) this.arretDAO.retarderHeureArriveeEnGare(a, tempsRetard);
 	}
 	
 	public void retardHeureDepartDeGare(Arret a, int tempsRetard) {
-		this.arretDAO.retardHeureDepartDeGare(a, tempsRetard);
+		if(a.getHeureDepartDeGare() != null) this.arretDAO.retardHeureDepartDeGare(a, tempsRetard);
 	}
 	
 	public Arret getArretParItineraireEtNomGare(Itineraire itineraire, String nomGare) {
