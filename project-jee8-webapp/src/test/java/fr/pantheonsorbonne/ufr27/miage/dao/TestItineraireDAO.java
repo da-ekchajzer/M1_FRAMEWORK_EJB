@@ -2,11 +2,11 @@ package fr.pantheonsorbonne.ufr27.miage.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -23,13 +23,10 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -52,6 +49,15 @@ public class TestItineraireDAO {
 		em.persist(itineraire);
 		em.getTransaction().commit();
 		assertEquals(itineraire, itineraireDAO.getItineraireById(itineraire.getId()));
+	}
+
+	@Test
+	void testGetItineraireByBusinessId() {
+		Itineraire itineraire = new Itineraire();
+		em.getTransaction().begin();
+		em.persist(itineraire);
+		em.getTransaction().commit();
+		assertTrue(itineraireDAO.getItineraireByBusinessId("IT1") != null);
 	}
 
 	@Test
@@ -126,8 +132,6 @@ public class TestItineraireDAO {
 		assertEquals(itineraire.getArretActuel(), arret);
 	}
 
-	// TODO : deplacer la méthode donc celle de test aussi ? 
-	// => Non nous ne pensons pas (signé Mathieu & Abdel)
 	@Test
 	void testAjouterArretEnCoursItineraire() {
 		Arret a1 = new Arret(null, null, LocalDateTime.now());
@@ -138,7 +142,7 @@ public class TestItineraireDAO {
 		i1.addArret(a1);
 		i1.addArret(a2);
 		i1.addArret(a3);
-		
+
 		// A ajouter au milieu de l'itinéraire
 		Arret arret1ToAdd = new Arret(null, LocalDateTime.now().plusMinutes(3), LocalDateTime.now().plusMinutes(4));
 		// A ajouter comme terminus (normalement ne doit pas fonctionner)
@@ -159,9 +163,7 @@ public class TestItineraireDAO {
 		this.itineraireDAO.ajouterUnArretEnCoursItineraire(i1, arret2ToAdd);
 		assertEquals(4, i1.getArretsDesservis().size());
 	}
-	
-	// TODO : deplacer la méthode donc celle de test aussi ? 
-	// => Non nous ne pensons pas (signé Mathieu & Abdel)
+
 	@Test
 	void testAjouterArretEnBoutItineraire() {
 		Arret a1 = new Arret(null, null, LocalDateTime.now());
@@ -172,14 +174,14 @@ public class TestItineraireDAO {
 		i1.addArret(a1);
 		i1.addArret(a2);
 		i1.addArret(a3);
-		
+
 		// A ajouter au milieu de l'itinéraire (normalement ne doit pas fonctionner)
 		Arret arret1ToAdd = new Arret(null, LocalDateTime.now().plusMinutes(3), LocalDateTime.now().plusMinutes(4));
 		// A ajouter comme terminus
 		Arret arret2ToAdd = new Arret(null, LocalDateTime.now().plusMinutes(10), null);
 		// Ajouter comme departus
 		Arret arret3ToAdd = new Arret(null, null, LocalDateTime.now().minusMinutes(1));
-		
+
 		em.getTransaction().begin();
 		em.persist(a1);
 		em.persist(a2);
@@ -191,14 +193,18 @@ public class TestItineraireDAO {
 		em.getTransaction().commit();
 
 		assertEquals(3, i1.getArretsDesservis().size());
-		// Ajouter en tant que terminus (fonctionne pas car arret1ToAdd n'est pas un terminus)
-		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret1ToAdd, arret1ToAdd.getHeureArriveeEnGare().minusSeconds(30));
+		// Ajouter en tant que terminus (fonctionne pas car arret1ToAdd n'est pas un
+		// terminus)
+		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret1ToAdd,
+				arret1ToAdd.getHeureArriveeEnGare().minusSeconds(30));
 		assertEquals(3, i1.getArretsDesservis().size());
 		// Ajouter en tant que terminus
-		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret2ToAdd, arret2ToAdd.getHeureArriveeEnGare().minusSeconds(30));
+		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret2ToAdd,
+				arret2ToAdd.getHeureArriveeEnGare().minusSeconds(30));
 		assertEquals(4, i1.getArretsDesservis().size());
 		// Ajouter en tant que départus
-		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret3ToAdd, arret3ToAdd.getHeureDepartDeGare().minusSeconds(30));
+		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret3ToAdd,
+				arret3ToAdd.getHeureDepartDeGare().minusSeconds(30));
 		assertEquals(5, i1.getArretsDesservis().size());
 	}
 
@@ -254,9 +260,9 @@ public class TestItineraireDAO {
 		em.persist(itineraire3);
 		em.getTransaction().commit();
 		List<Itineraire> listItinerairesAttente = itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE);
-		assertEquals(2,listItinerairesAttente.size());
+		assertEquals(2, listItinerairesAttente.size());
 		List<Itineraire> listItinerairesEnCours = itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS);
-		assertEquals(1,listItinerairesEnCours.size());
+		assertEquals(1, listItinerairesEnCours.size());
 	}
 
 }

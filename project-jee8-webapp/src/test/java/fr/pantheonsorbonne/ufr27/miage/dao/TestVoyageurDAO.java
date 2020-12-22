@@ -170,10 +170,14 @@ public class TestVoyageurDAO {
 
 		for (int i = 0; i < prenomsVoyageurs.length; i++) {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
-			if (i < 5)
+			if (i < 5) {
 				voyage1.addVoyageur(v);
-			if (i >= 5 && i < 8)
+				v.setVoyageActuel(voyage1);
+			}
+			if (i >= 5 && i < 8) {
 				voyage2.addVoyageur(v);
+				v.setVoyageActuel(voyage2);
+			}
 			em.persist(v);
 		}
 
@@ -182,7 +186,7 @@ public class TestVoyageurDAO {
 
 	@Test
 	@Order(1)
-	void testGetVoyageursByVoyage() {
+	void testGetVoyageursByVoyageActuel() {
 		Voyageur voyageur1 = new Voyageur();
 		Voyageur voyageur2 = new Voyageur();
 		Voyage voyage1 = new Voyage();
@@ -190,10 +194,10 @@ public class TestVoyageurDAO {
 		em.persist(voyageur1);
 		em.persist(voyageur2);
 		em.persist(voyage1);
-		voyageur1.setVoyage(voyage1);
-		voyageur2.setVoyage(voyage1);
+		voyageur1.setVoyageActuel(voyage1);
+		voyageur2.setVoyageActuel(voyage1);
 		em.getTransaction().commit();
-		List<Voyageur> voyageurs = voyageurDAO.getVoyageursByVoyage(voyage1);
+		List<Voyageur> voyageurs = voyageurDAO.getVoyageursByVoyageActuel(voyage1);
 		assertEquals(2, voyageurs.size());
 
 	}
@@ -225,11 +229,8 @@ public class TestVoyageurDAO {
 			}
 			System.out.println(list.size());
 		}
-		// Ici y'a un null pointer exception qui est trigger dans la méthode
-		// majVoyageursDansTrainAvecResa, faut debug pour voir d'où ça vient prcq tout
-		// est bien setup en BDD comme il faut donc c'est chelou
-//		voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire1, trajetsItineraire);
-//		assertTrue(trainAvecResa.getVoyageurs().size() > 0);
+		voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire1, trajetsItineraire);
+		assertTrue(trainAvecResa.getVoyageurs().size() > 0);
 	}
 
 }
