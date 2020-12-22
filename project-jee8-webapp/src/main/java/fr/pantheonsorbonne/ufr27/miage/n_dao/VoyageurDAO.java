@@ -24,8 +24,8 @@ public class VoyageurDAO {
 	@Inject
 	EntityManager em;
 
-	public List<Voyageur> getVoyageursByVoyage(Voyage v) {
-		return (List<Voyageur>) em.createNamedQuery("Voyageur.getVoyageursByVoyage", Voyageur.class)
+	public List<Voyageur> getVoyageursByVoyageActuel(Voyage v) {
+		return (List<Voyageur>) em.createNamedQuery("Voyageur.getVoyageursByVoyageActuel", Voyageur.class)
 				.setParameter("id", v.getId()).getResultList();
 	}
 
@@ -38,7 +38,7 @@ public class VoyageurDAO {
 		// TODO : est-ce que les voyageurs sont ajoutés dans la liste de l'itinéraire au
 		// moment de leur réservation ?
 		// => Non il faut appeler au bons endroits dans les services la méthode
-		// mettreVoyageursDansItineraire (elle est plus bas) 
+		// mettreVoyageursDansItineraire (elle est plus bas)
 
 		em.getTransaction().begin();
 
@@ -51,7 +51,7 @@ public class VoyageurDAO {
 
 		for (Voyageur voyageur : itineraire.getVoyageurs()) {
 			// Les voyageurs qui doivent descendre
-			trajetsVoyageur = new TreeSet<Trajet>(voyageur.getVoyage().getTrajets());
+			trajetsVoyageur = new TreeSet<Trajet>(voyageur.getVoyageActuel().getTrajets());
 			it = trajetsVoyageur.iterator();
 
 			while (it.hasNext()) {
@@ -68,7 +68,7 @@ public class VoyageurDAO {
 				}
 			}
 			// Les voyageurs qui doivent descendre
-			if (voyageur.getVoyage().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
+			if (voyageur.getVoyageActuel().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
 				train.getVoyageurs().remove(voyageur);
 				itineraire.getVoyageurs().remove(voyageur);
 			}
@@ -80,6 +80,15 @@ public class VoyageurDAO {
 		em.getTransaction().begin();
 		// On ajoute les voyageurs dans l'itinéraire
 		itineraire.setVoyageurs(voyageursToAdd);
+		em.getTransaction().commit();
+	}
+
+	public void majVoyageActuelDesVoyageurs(Voyage newVoyageActuel, List<Voyageur> voyageursToUpdate) {
+		em.getTransaction().begin();
+		// On met à jour le voyage actuel des voyageurs
+		for (Voyageur v : voyageursToUpdate) {
+			v.setVoyageActuel(newVoyageActuel);
+		}
 		em.getTransaction().commit();
 	}
 

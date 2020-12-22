@@ -1,12 +1,15 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
@@ -19,7 +22,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NamedQueries({
-		@NamedQuery(name = "Voyageur.getVoyageursByVoyage", query = "SELECT v FROM Voyageur v WHERE v.voyage.id = :id"),
+		@NamedQuery(name = "Voyageur.getVoyageursByVoyageActuel", query = "SELECT v FROM Voyageur v WHERE v.voyageActuel.id = :id"),
 
 })
 public class Voyageur {
@@ -39,9 +42,11 @@ public class Voyageur {
 		this.nom = nom;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "VOYAGE_ID")
-	Voyage voyage;
+	List<Voyage> voyages;
+	
+	Voyage voyageActuel;
 
 	public int getId() {
 		return id;
@@ -63,12 +68,24 @@ public class Voyageur {
 		this.prenom = prenom;
 	}
 
-	public Voyage getVoyage() {
-		return voyage;
+	public List<Voyage> getVoyages() {
+		return voyages;
 	}
 
-	public void setVoyage(Voyage voyage) {
-		this.voyage = voyage;
+	public void setVoyages(List<Voyage> voyages) {
+		this.voyages = voyages;
+	}
+	
+	public void addVoyage(Voyage voyage) {
+		this.voyages.add(voyage);
+	}
+
+	public Voyage getVoyageActuel() {
+		return voyageActuel;
+	}
+
+	public void setVoyageActuel(Voyage voyageActuel) {
+		this.voyageActuel = voyageActuel;
 	}
 
 }

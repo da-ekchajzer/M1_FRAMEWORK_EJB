@@ -111,7 +111,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 			// Pour chaque voyageur du train qui a subi l'incident...
 			for (Voyageur voyageur : itineraire.getVoyageurs()) {
 				// Pour chaque trajet du voyage du voyageur sélectionné...
-				for (Trajet t : voyageur.getVoyage().getTrajets()) {
+				for (Trajet t : voyageur.getVoyageActuel().getTrajets()) {
 					// On note i l'itinéraire du trajet t
 					Itineraire i = t.getItineraire();
 					// Si l'itinéraire est différent de l'itinéraire initiale
@@ -230,7 +230,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		// Pour chaque voyageur dans le train actuel ...
 		for (Voyageur voyageur : voyageursDansTrainActuel) {
 			// On récupère leur voyage
-			Voyage voyage = voyageur.getVoyage();
+			Voyage voyage = voyageur.getVoyageActuel();
 			// On récupère les trajets du voyageur
 			List<Trajet> trajets = voyage.getTrajets();
 			// On récupère l'itinéraire de correspondance du voyageur

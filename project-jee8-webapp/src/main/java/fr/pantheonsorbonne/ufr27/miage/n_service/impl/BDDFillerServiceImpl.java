@@ -30,7 +30,7 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 
 	@Inject
 	MessageGateway messageGateway;
-	
+
 	private EntityManager em;
 
 	public BDDFillerServiceImpl(EntityManager em) {
@@ -195,10 +195,8 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 
 		for (Itineraire i : itineraires) {
 			em.persist(i);
-			//messageGateway.publishCreation(i);
+			// messageGateway.publishCreation(i);
 		}
-
-			
 
 		// --------------------------------- Remplissage de la table Trajet
 
@@ -306,20 +304,28 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 
 		for (int i = 0; i < prenomsVoyageurs.length; i++) {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
-			if (i < 5)
+			if (i < 5) {
 				voyage1.addVoyageur(v);
-			else if (i >= 5 && i < 10)
+				v.setVoyageActuel(voyage1);
+			} else if (i >= 5 && i < 10) {
 				voyage2.addVoyageur(v);
-			else if (i >= 10 && i < 15)
+				v.setVoyageActuel(voyage2);
+			} else if (i >= 10 && i < 15) {
 				voyage3.addVoyageur(v);
-			else if (i >= 15 && i < 20)
+				v.setVoyageActuel(voyage3);
+			} else if (i >= 15 && i < 20) {
 				voyage4.addVoyageur(v);
-			else if (i >= 20 && i < 25)
+				v.setVoyageActuel(voyage4);
+			} else if (i >= 20 && i < 25) {
 				voyage5.addVoyageur(v);
-			else if (i >= 25 && i < 30)
+				v.setVoyageActuel(voyage5);
+			} else if (i >= 25 && i < 30) {
 				voyage6.addVoyageur(v);
-			else
+				v.setVoyageActuel(voyage6);
+			} else {
 				voyage7.addVoyageur(v);
+				v.setVoyageActuel(voyage7);
+			}
 			em.persist(v);
 		}
 		em.getTransaction().commit();

@@ -36,8 +36,8 @@ public class VoyageurRepository {
 	@Inject
 	TrainRepository trainRepository;
 
-	public List<Voyageur> getVoyageursByVoyage(Voyage v) {
-		return voyageurDAO.getVoyageursByVoyage(v);
+	public List<Voyageur> getVoyageursByVoyageActuel(Voyage v) {
+		return voyageurDAO.getVoyageursByVoyageActuel(v);
 	}
 
 	public void majVoyageursDansTrainAvecResa(int idTrain) {

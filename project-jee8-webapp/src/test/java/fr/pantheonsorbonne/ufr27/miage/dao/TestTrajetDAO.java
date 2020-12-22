@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
-import ch.qos.logback.core.recovery.ResilientSyslogOutputStream;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
@@ -37,7 +36,8 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestTrajetDAO {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(TrajetDAO.class, GareDAO.class,ItineraireDAO.class,TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator
+			.from(TrajetDAO.class, GareDAO.class, ItineraireDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
@@ -66,11 +66,11 @@ public class TestTrajetDAO {
 			em.persist(g);
 		}
 
-		// ---------------------------------Train
+		// --------------------------------- Train
 		Train train1 = new TrainAvecResa(1, "TGV");
 		em.persist(train1);
 
-// ---------------------------------Arrêts
+		// --------------------------------- Arrêts
 
 		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now());
 		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plus(1, ChronoUnit.MINUTES),
@@ -80,8 +80,7 @@ public class TestTrajetDAO {
 		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plus(5, ChronoUnit.MINUTES),
 				null);
 
-
-		Arret[] arrets = { arret1, arret2, arret3, arret4};
+		Arret[] arrets = { arret1, arret2, arret3, arret4 };
 
 		for (Arret a : arrets)
 			em.persist(a);
@@ -93,7 +92,7 @@ public class TestTrajetDAO {
 		itineraire1.addArret(arret2);
 		itineraire1.addArret(arret3);
 		itineraire1.addArret(arret4);
-		
+
 		em.persist(itineraire1);
 
 		Itineraire[] itineraires = { itineraire1 };
@@ -106,7 +105,6 @@ public class TestTrajetDAO {
 		Trajet trajet1 = new Trajet(gares.get("Paris - Gare de Lyon"), gares.get("Avignon-Centre"), itineraire1, 0);
 		Trajet trajet2 = new Trajet(gares.get("Avignon-Centre"), gares.get("Aix en Provence"), itineraire1, 1);
 		Trajet trajet3 = new Trajet(gares.get("Aix en Provence"), gares.get("Marseille - St Charles"), itineraire1, 2);
-
 
 		Trajet[] trajets = { trajet1, trajet2, trajet3 };
 
@@ -132,22 +130,22 @@ public class TestTrajetDAO {
 		em.persist(trajet3);
 		em.getTransaction().commit();
 		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
-		assertEquals(3,trajets.size());
+		assertEquals(3, trajets.size());
 	}
 
 	@Test
 	void testGetTrajetsNomGareDeDepart() {
-		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareDeDepart(gareDAO.getGaresByNom("Paris - Gare de Lyon").get(0));
-		assertEquals(1,trajets.size());
+		List<Trajet> trajets = trajetDAO
+				.getTrajetsByNomGareDeDepart(gareDAO.getGaresByNom("Paris - Gare de Lyon").get(0));
+		assertEquals(1, trajets.size());
 	}
-	
-	
+
 	@Test
 	void testTrajetNomGareArrivee() {
-		List<Trajet> trajets = trajetDAO.getTrajetsByNomGareArrivee(gareDAO.getGaresByNom("Marseille - St Charles").get(0));
-		assertEquals(1,trajets.size());
+		List<Trajet> trajets = trajetDAO
+				.getTrajetsByNomGareArrivee(gareDAO.getGaresByNom("Marseille - St Charles").get(0));
+		assertEquals(1, trajets.size());
 	}
-	
 
 	@Test
 	void testDeleteTrajet() {
@@ -165,13 +163,11 @@ public class TestTrajetDAO {
 		em.persist(trajet3);
 		em.getTransaction().commit();
 		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
-		assertEquals(3,trajets.size());
+		assertEquals(3, trajets.size());
 		trajetDAO.deleteTrajet(trajet3);
 		trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
-		assertEquals(2,trajets.size());
-		
-	}
-	
+		assertEquals(2, trajets.size());
 
+	}
 
 }
