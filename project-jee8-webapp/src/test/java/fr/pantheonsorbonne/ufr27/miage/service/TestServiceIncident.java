@@ -2,46 +2,33 @@ package fr.pantheonsorbonne.ufr27.miage.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
 
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
@@ -53,7 +40,6 @@ import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
-import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceIncidentImp;
@@ -63,6 +49,7 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @EnableWeld
+@TestMethodOrder(OrderAnnotation.class)
 public class TestServiceIncident {
 
 	@WeldSetup
@@ -77,7 +64,6 @@ public class TestServiceIncident {
 	EntityManager em;
 	@Inject
 	ServiceIncident serviceIncident;
-	
 	@Inject
 	TrainRepository trainRepository;
 	@Inject
@@ -95,8 +81,8 @@ public class TestServiceIncident {
 		em.getTransaction().commit();
 	}
 	
-	// TODO : cf pb retour dans la méthode implémentée
 	@Test
+	@Order(1)
 	void testCreerIncident() throws DatatypeConfigurationException {
 		Train t = this.trainRepository.getTrainById(1);
 		IncidentJAXB incidentJAXB = new IncidentJAXB();
@@ -109,16 +95,20 @@ public class TestServiceIncident {
 		
 		assertEquals(0, this.incidentRepository.getNbIncidents());
 		this.serviceIncident.creerIncident(t.getId(), incidentJAXB);
-		assertEquals(1, this.incidentRepository.getNbIncidents());
+		assertEquals(1, this.incidentRepository.getNbIncidents());		
 		
-		// TODO : tester les répercussions du nouvel incident sur d'autres trains
+		// TODO : tester méthode ServiceMajDecideur.decideMajRetardTrainLorsCreationIncident
 	}
 	
 	@Test
+	@Order(2)
 	void testMajEtatIncident() {
 		Train t = this.trainRepository.getTrainById(1);
-		Incident i = this.incidentRepository.getIncidentByIdTrain(t.getId());
-		assertEquals(true,  this.serviceIncident.majEtatIncident(i.getId(),  CodeEtatIncident.RESOLU.getCode()));
+		assertEquals(true,  this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode()));
+		
+		// TODO : tester méthode ServiceMajDecideur.decideMajTrainEnCours
+		// TODO : tester méthode ServiceMajDecideur.decideMajTrainFin
+		
 	}
 
 }
