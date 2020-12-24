@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.service;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
@@ -114,11 +115,14 @@ public class TestServiceItineraire {
 	void testMajItineraire() {
 		Train t = this.trainRepository.getTrainById(1);
 		ArretJAXB arretJAXB = new ArretJAXB();
-		arretJAXB.setGare("Gare2");
-		assertEquals(true,  this.serviceItineraire.majItineraire(t.getId(),  arretJAXB));
+		arretJAXB.setGare("Gare3");
+		this.serviceItineraire.majItineraire(t.getId(),  arretJAXB);
 		Itineraire it = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		assertEquals("Gare3", it.getArretActuel().getGare().getNom());
-		// TODO : tester la partie sur les montées/descentes de voyageurs ?
+		assertNotEquals("Gare3", it.getArretActuel().getGare().getNom());
+		assertEquals("Gare1", it.getArretActuel().getGare().getNom());
+		arretJAXB.setGare("Gare2");
+		this.serviceItineraire.majItineraire(t.getId(),  arretJAXB);
+		assertEquals("Gare2", it.getArretActuel().getGare().getNom());
 	}
 
 }

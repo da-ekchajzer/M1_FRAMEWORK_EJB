@@ -94,9 +94,8 @@ public class ItineraireRepository {
 		itineraireDAO.majEtatItineraire(itineraire, newEtat);
 	}
 
-	public void majArretActuel(int idTrain, Arret arret) {
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		itineraireDAO.majArretActuel(itineraire, arret);
+	public void majArretActuel(Itineraire itineraire, Arret arret) {
+		if(itineraire.getNextArret().getGare().equals(arret.getGare())) itineraireDAO.majArretActuel(itineraire, arret);
 	}
 
 	public Itineraire supprimerArretDansUnItineraire(int idTrain, Arret arret) {

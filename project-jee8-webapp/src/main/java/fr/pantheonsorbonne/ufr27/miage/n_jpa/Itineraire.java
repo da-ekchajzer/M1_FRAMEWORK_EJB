@@ -128,6 +128,12 @@ public class Itineraire {
 		return businessId;
 	}
 
+	public Arret getNextArret() {
+		for (Arret arret : this.arretsDesservis) {
+			if(arret.isAfter(this.arretActuel)) return arret;
+		}
+		return null;
+	}
 
 
 	public enum CodeEtatItinieraire {
