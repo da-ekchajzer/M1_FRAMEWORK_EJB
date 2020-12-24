@@ -32,19 +32,17 @@ public class ServiceIncidentImp implements ServiceIncident {
 	}
 
 	@Override
-	public boolean majEtatIncident(int idTrain, int etatIncident) {
-		incidentRepository.updateEtatIncident(idTrain, etatIncident);
-		Incident i = incidentRepository.getIncidentByIdTrain(idTrain);
-		
-		if(etatIncident == CodeEtatIncident.EN_COURS.getCode()) {
+	public boolean majEtatIncident(int idTrain, int newEtatIncident) {
+		boolean res = false;
+		Incident i = incidentRepository.updateEtatIncident(idTrain, newEtatIncident);		
+		if(newEtatIncident == CodeEtatIncident.EN_COURS.getCode()) {
 			serviceMajDecideur.decideMajTrainEnCours(idTrain, estimationTempsRetard(i.getTypeIncident()));
-			return true;
-		}else if(etatIncident == CodeEtatIncident.RESOLU.getCode()){
+			res = true;
+		} else if(newEtatIncident == CodeEtatIncident.RESOLU.getCode()){
 			serviceMajDecideur.decideMajTrainFin(idTrain);
-			return true;
+			res = true;
 		}
-
-		return false;
+		return res;
 	}
 
 

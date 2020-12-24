@@ -34,38 +34,33 @@ public class IncidentRepository {
 	}
 
 	public boolean creerIncident(int idTrain, Incident incident) {
+		boolean res = true;
 		// On récupère le nb d'Incidents en BD avant l'insertion
 		int nbIncidentsAvantAjout = this.getNbIncidents();
-
 		incidentDAO.ajouterIncidentEnBD(incident);
-
 		// On récupère le nb d'Incidents en BD après l'insertion
 		int nbIncidentsApresAjout = this.getNbIncidents();
 
 		// On vérifie que l'insertion a été effectuée
 		if (nbIncidentsApresAjout != nbIncidentsAvantAjout + 1) {
 			// LOG.error
-			return false;
+			res = false;
 		}
 
-		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
-		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-
 		// Ajout de l'INCIDENT_ID dans l'itinéraire associé au train
-		ajouterIncidentItineraire(itineraire.getId(), incident.getId());
-
-		return true;
+		ajouterIncidentItineraire(idTrain, incident);
+		return res;
 	}
 
-	private void ajouterIncidentItineraire(int idItineraire, int idIncident) {
-		Itineraire itineraire = itineraireRepository.getItineraireById(idItineraire);
-		Incident incident = getIncidentById(idIncident);
-		incidentDAO.associerIncidentItineraire(itineraire, incident);
+	private void ajouterIncidentItineraire(int idTrain, Incident inc) {
+		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		incidentDAO.associerIncidentItineraire(it, inc);
 	}
 
-	public void updateEtatIncident(int idTrain, int etat) {
+	public Incident updateEtatIncident(int idTrain, int etat) {
 		Incident incident = this.getIncidentByIdTrain(idTrain);
 		incidentDAO.majEtatIncidentEnBD(incident, etat);
+		return incident;
 	}
 	
 	public Incident getIncidentByIdTrain(int idTrain) {
