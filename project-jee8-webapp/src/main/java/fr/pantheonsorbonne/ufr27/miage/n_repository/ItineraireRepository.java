@@ -15,6 +15,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
+import fr.pantheonsorbonne.ufr27.miage.n_service.utils.Retard;
 
 @ManagedBean
 @RequestScoped
@@ -126,17 +127,6 @@ public class ItineraireRepository {
 		return itineraire;
 	}
 	
-	public void retarderItineraireEnCoursOuEnIncident(Itineraire i, LocalTime tempsRetard) {
-		Arret arretActuel = i.getArretActuel();
-		itineraireDAO.retarderTrain(tempsRetard, arretActuel, i);
-	}
-	
-	public void retarderItinerairesEnAttente(List<Itineraire> itineraires, LocalTime tempsRetard) {
-		for (Itineraire i : itineraires) {
-			Arret arretActuel = i.getArretActuel();
-			itineraireDAO.retarderTrain(tempsRetard, arretActuel, i);
-		}
-	}
 
 	public Arret getNextArret(int idTrain, Arret arret) {
 		Itineraire itineraire = this.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
@@ -205,6 +195,10 @@ public class ItineraireRepository {
 			}
 		}
 		return itinerairesConcernes;
+	}
+
+	public void retarderItineraire(Retard retard) {
+		//TODO : retarder itineraire avec retard
 	}
 
 }
