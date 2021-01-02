@@ -73,7 +73,7 @@ public class ItineraireRepository {
 	public Itineraire getItineraireById(int idItineraire) {
 		return itineraireDAO.getItineraireById(idItineraire);
 	}
-	
+
 	public Itineraire getItineraireByBusinessId(String businessIdItineraire) {
 		return itineraireDAO.getItineraireByBusinessId(businessIdItineraire);
 	}
@@ -96,7 +96,8 @@ public class ItineraireRepository {
 	}
 
 	public void majArretActuel(Itineraire itineraire, Arret arret) {
-		if(itineraire.getNextArret().getGare().equals(arret.getGare())) itineraireDAO.majArretActuel(itineraire, arret);
+		if (itineraire.getNextArret().getGare().equals(arret.getGare()))
+			itineraireDAO.majArretActuel(itineraire, arret);
 	}
 
 	public Itineraire supprimerArretDansUnItineraire(int idTrain, Arret arret) {
@@ -114,28 +115,29 @@ public class ItineraireRepository {
 		itineraireDAO.ajouterUnArretEnCoursItineraire(itineraire, arret);
 		return itineraire;
 	}
-	
+
 	/**
 	 * 
 	 * @param idTrain
 	 * @param arret
-	 * @param heure heureDeDepart de l'ancienne gare d'arrivée ou heureArrivee de l'ancienne gare de départ
+	 * @param heure   heureDeDepart de l'ancienne gare d'arrivée ou heureArrivee de
+	 *                l'ancienne gare de départ
 	 */
 	public Itineraire ajouterUnArretEnBoutItineraire(int idTrain, Arret arret, LocalDateTime heure) {
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 		itineraireDAO.ajouterUnArretEnBoutItineraire(itineraire, arret, heure);
 		return itineraire;
 	}
-	
 
 	public Arret getNextArret(int idTrain, Arret arret) {
 		Itineraire itineraire = this.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		
+
 		// On est au dernier arrêt, y en a pas après
-		if(arret == null || arret.getHeureDepartDeGare() == null) return null;
-		
+		if (arret == null || arret.getHeureDepartDeGare() == null)
+			return null;
+
 		for (Arret a : itineraire.getArretsDesservis()) {
-			if(a.getHeureArriveeEnGare() != null && a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+			if (a.getHeureArriveeEnGare() != null && a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
 				return a;
 			}
 		}
@@ -155,9 +157,10 @@ public class ItineraireRepository {
 	public List<Arret> getAllNextArrets(Itineraire itineraire, Arret arret) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
 		// Si on est au dernier arrêt, y en a pas après donc on renvoie une liste vide
-		if(arret != null && arret.getHeureDepartDeGare() != null) {
+		if (arret != null && arret.getHeureDepartDeGare() != null) {
 			for (Arret a : itineraire.getArretsDesservis()) {
-				if (a.getHeureArriveeEnGare() != null && a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+				if (a.getHeureArriveeEnGare() != null
+						&& a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
 					arretsSuivants.add(a);
 				}
 			}
@@ -184,6 +187,23 @@ public class ItineraireRepository {
 		return itinerairesConcernes;
 	}
 
+	public List<Itineraire> getAllItineraires() {
+		return itineraireDAO.getAllItineraires();
+	}
+
+	public List<Itineraire> getAllItinerairesAtLeastIn(LocalTime duration) {
+		List<Itineraire> itineraires = new ArrayList<Itineraire>();
+		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
+		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
+		for (Itineraire i : itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE)) {
+			if (i.getArretActuel().getHeureDepartDeGare().isBefore(LocalDateTime.now().plusHours(duration.getHour())
+					.plusMinutes(duration.getMinute()).plusSeconds(duration.getSecond()))) {
+				itineraires.add(i);
+			}
+		}
+		return itineraires;
+	}
+
 	public List<Itineraire> getAllItinerairesByGare(Gare g) {
 		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
 		List<Itineraire> allItineraires = this.itineraireDAO.getAllItineraires();
@@ -198,7 +218,7 @@ public class ItineraireRepository {
 	}
 
 	public void retarderItineraire(Retard retard) {
-		//TODO : retarder itineraire avec retard
+		// TODO : retarder itineraire avec retard
 	}
 
 }
