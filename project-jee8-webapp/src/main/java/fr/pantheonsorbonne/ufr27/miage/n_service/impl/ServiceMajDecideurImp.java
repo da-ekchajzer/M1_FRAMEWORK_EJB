@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +50,8 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		Queue<Retard> retards = new LinkedList<Retard>();
 		retards.add(retard);
 		Retard retardEnTraitement;
-		
-		while(!retards.isEmpty()) {
+
+		while (!retards.isEmpty()) {
 			retardEnTraitement = retards.poll();
 			itineraireRepository.retarderItineraire(retardEnTraitement);
 			retards.addAll(getRetardsItineraireEnCorespondance(retardEnTraitement.getItineraire()));
@@ -59,8 +60,14 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 	}
 
 	private Collection<Retard> getRetardsItineraireEnCorespondance(Itineraire itineraire) {
-		//TODO
+		// TODO
+		Collection<Retard> retards = new HashSet<Retard>();
 		// Iterer sur tous les itinéraires
+		// conditionRetard = 2 heures pour retarder un train (règle métier)
+		LocalTime conditionRetard = LocalTime.of(2, 0, 0);
+		for (Itineraire i : itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard)) {
+			// TODO
+		}
 		// Si le train a un arret en commun
 		// On regarde la règles de temps exemple : - de 10h avant correspondance
 		// On regarde la règles de passager + 50
@@ -69,27 +76,26 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 
 	private void factoriseRetard(Queue<Retard> retards) {
 		Map<Itineraire, Retard> mapRetards = new HashMap<Itineraire, Retard>();
-		
-		for(Retard r : retards) {
-			if(mapRetards.containsKey(r.getItineraire())) {
-				if(mapRetards.get(r.getItineraire()).getTempsDeRetard().toSecondOfDay() < r.getTempsDeRetard().toSecondOfDay()){
+
+		for (Retard r : retards) {
+			if (mapRetards.containsKey(r.getItineraire())) {
+				if (mapRetards.get(r.getItineraire()).getTempsDeRetard().toSecondOfDay() < r.getTempsDeRetard()
+						.toSecondOfDay()) {
 					mapRetards.put(r.getItineraire(), r);
 				}
-			}else {
+			} else {
 				mapRetards.put(r.getItineraire(), r);
 			}
 		}
-		
+
 		retards.clear();
 		retards.addAll(mapRetards.values());
 	}
 
-
 	@Override
 	public void decideMajTrainFin(int idTrain) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
 }
