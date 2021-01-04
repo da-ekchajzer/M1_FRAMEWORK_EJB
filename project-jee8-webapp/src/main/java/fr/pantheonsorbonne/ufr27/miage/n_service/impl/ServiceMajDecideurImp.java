@@ -25,6 +25,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageurRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.utils.Retard;
@@ -45,6 +46,9 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 	@Inject
 	ArretRepository arretRepository;
 
+	@Inject
+	VoyageurRepository voyageurRepository;
+
 	@Override
 	public void decideRetard(Retard retard) {
 		Queue<Retard> retards = new LinkedList<Retard>();
@@ -54,24 +58,42 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		while (!retards.isEmpty()) {
 			retardEnTraitement = retards.poll();
 			itineraireRepository.retarderItineraire(retardEnTraitement);
-			retards.addAll(getRetardsItineraireEnCorespondance(retardEnTraitement.getItineraire()));
+			retards.addAll(getRetardsItineraireEnCorespondance(retardEnTraitement));
 			factoriseRetard(retards);
 		}
 	}
 
-	private Collection<Retard> getRetardsItineraireEnCorespondance(Itineraire itineraire) {
-		// TODO
+	private Collection<Retard> getRetardsItineraireEnCorespondance(Retard retard) {
+		Itineraire itineraire = retard.getItineraire();
+		LocalTime tempsRetard = retard.getTempsDeRetard();
+		int count;
 		Collection<Retard> retards = new HashSet<Retard>();
-		// Iterer sur tous les itinéraires
-		// conditionRetard = 2 heures pour retarder un train (règle métier)
+
 		LocalTime conditionRetard = LocalTime.of(2, 0, 0);
+
+		Collection<Arret> arretRestants = itineraireRepository.getAllNextArrets(itineraire,
+				itineraire.getArretActuel());
+
 		for (Itineraire i : itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard)) {
-			// TODO
+			Arret1Loop: for (Arret a1 : itineraireRepository.getAllNextArrets(i, i.getArretActuel())) {
+				for (Arret a2 : arretRestants) {
+					if (a1.getGare().equals(a2.getGare())) {
+						count = 0;
+						for (Voyageur v : itineraire.getVoyageurs()) {
+							if (voyageurRepository.voyageurHaveItineraire(v, i)) {
+								count++;
+							}
+						}
+						if (count > 50) {
+							retards.add(new Retard(i, tempsRetard));
+							break Arret1Loop;
+						}
+					}
+				}
+
+			}
 		}
-		// Si le train a un arret en commun
-		// On regarde la règles de temps exemple : - de 10h avant correspondance
-		// On regarde la règles de passager + 50
-		return null;
+		return retards;
 	}
 
 	private void factoriseRetard(Queue<Retard> retards) {
@@ -95,7 +117,6 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 	@Override
 	public void decideMajTrainFin(int idTrain) {
 		// TODO Auto-generated method stub
-
 	}
 
 }

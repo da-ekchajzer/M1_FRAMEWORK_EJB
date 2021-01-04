@@ -70,4 +70,13 @@ public class VoyageurRepository {
 		voyageurDAO.mettreVoyageursDansItineraire(itineraire, voyageursToAdd);
 	}
 
+	public boolean voyageurHaveItineraire(Voyageur v, Itineraire i) {
+		for(Trajet t : v.getVoyageActuel().getTrajets()) {
+			if(t.getItineraire().equals(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
