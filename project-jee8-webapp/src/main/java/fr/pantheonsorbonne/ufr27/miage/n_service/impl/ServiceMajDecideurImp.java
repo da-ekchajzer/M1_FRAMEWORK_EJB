@@ -1,12 +1,10 @@
 package fr.pantheonsorbonne.ufr27.miage.n_service.impl;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -16,11 +14,6 @@ import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
@@ -63,7 +56,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		}
 	}
 
-	private Collection<Retard> getRetardsItineraireEnCorespondance(Retard retard) {
+	public Collection<Retard> getRetardsItineraireEnCorespondance(Retard retard) {
 		Itineraire itineraire = retard.getItineraire();
 		LocalTime tempsRetard = retard.getTempsDeRetard();
 		int count;
@@ -71,11 +64,10 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 
 		LocalTime conditionRetard = LocalTime.of(2, 0, 0);
 
-		Collection<Arret> arretRestants = itineraireRepository.getAllNextArrets(itineraire,
-				itineraire.getArretActuel());
+		Collection<Arret> arretRestants = itineraireRepository.getAllNextArrets(itineraire);
 
 		for (Itineraire i : itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard)) {
-			Arret1Loop: for (Arret a1 : itineraireRepository.getAllNextArrets(i, i.getArretActuel())) {
+			Arret1Loop: for (Arret a1 : itineraireRepository.getAllNextArrets(i)) {
 				for (Arret a2 : arretRestants) {
 					if (a1.getGare().equals(a2.getGare())) {
 						count = 0;
@@ -84,7 +76,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 								count++;
 							}
 						}
-						if (count > 50) {
+						if (count > 5) {
 							retards.add(new Retard(i, tempsRetard));
 							break Arret1Loop;
 						}
@@ -96,13 +88,14 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		return retards;
 	}
 
-	private void factoriseRetard(Queue<Retard> retards) {
+	public void factoriseRetard(Queue<Retard> retards) {
 		Map<Itineraire, Retard> mapRetards = new HashMap<Itineraire, Retard>();
 
 		for (Retard r : retards) {
 			if (mapRetards.containsKey(r.getItineraire())) {
 				if (mapRetards.get(r.getItineraire()).getTempsDeRetard().toSecondOfDay() < r.getTempsDeRetard()
 						.toSecondOfDay()) {
+					mapRetards.remove(r.getItineraire());
 					mapRetards.put(r.getItineraire(), r);
 				}
 			} else {

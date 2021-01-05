@@ -154,14 +154,21 @@ public class ItineraireRepository {
 		return null;
 	}
 
-	public List<Arret> getAllNextArrets(Itineraire itineraire, Arret arret) {
+	public List<Arret> getAllNextArrets(Itineraire itineraire) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
-		// Si on est au dernier arrêt, y en a pas après donc on renvoie une liste vide
-		if (arret != null && arret.getHeureDepartDeGare() != null) {
-			for (Arret a : itineraire.getArretsDesservis()) {
-				if (a.getHeureArriveeEnGare() != null
-						&& a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
-					arretsSuivants.add(a);
+		Arret arretActuel = itineraire.getArretActuel();
+		
+		if(itineraire.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
+			arretsSuivants.addAll(itineraire.getArretsDesservis());
+		} else if(itineraire.getEtat() == CodeEtatItinieraire.EN_COURS.getCode() ||
+				itineraire.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
+			// Si on est au dernier arrêt, y en a pas après donc on renvoie une liste vide
+			if (arretActuel != null && arretActuel.getHeureDepartDeGare() != null) {
+				for (Arret a : itineraire.getArretsDesservis()) {
+					if (a.getHeureArriveeEnGare() != null
+							&& a.getHeureArriveeEnGare().isAfter(arretActuel.getHeureDepartDeGare())) {
+						arretsSuivants.add(a);
+					}
 				}
 			}
 		}
@@ -196,7 +203,7 @@ public class ItineraireRepository {
 		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
 		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
 		for (Itineraire i : itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE)) {
-			if (i.getArretActuel().getHeureDepartDeGare().isBefore(LocalDateTime.now().plusHours(duration.getHour())
+			if (i.getArretsDesservis().get(0).getHeureDepartDeGare().isBefore(LocalDateTime.now().plusHours(duration.getHour())
 					.plusMinutes(duration.getMinute()).plusSeconds(duration.getSecond()))) {
 				itineraires.add(i);
 			}

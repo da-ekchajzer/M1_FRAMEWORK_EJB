@@ -49,7 +49,7 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 		Itineraire itineraire = this.itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain);
 		
 		// Retarde le train en param
-		List<Arret> arretsSuivants = this.itineraireRepository.getAllNextArrets(itineraire, itineraire.getArretActuel());
+		List<Arret> arretsSuivants = this.itineraireRepository.getAllNextArrets(itineraire);
 		for(Arret a : arretsSuivants) {
 			this.arretRepository.retarderHeureArriveeEnGare(a, tempsRetard.toSecondOfDay());
 			this.arretRepository.retardHeureDepartDeGare(a, tempsRetard.toSecondOfDay());
