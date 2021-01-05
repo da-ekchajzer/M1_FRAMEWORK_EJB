@@ -9,18 +9,17 @@ import javax.jms.MessageListener;
 import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBException;
 
-public class ItineraireResponderBean implements MessageListener {
+@ApplicationScoped
+public class ItineraireResponderBean implements MessageListener{
 
-	@ApplicationScoped
 	@Inject
 	EntityManager em;
 
-	@Inject
 	MessageGateway messageGateway;
 
 	@PostConstruct
 	private void init() {
-
+		messageGateway = new MessageGateway();
 		new Thread(new Runnable() {
 
 			@Override

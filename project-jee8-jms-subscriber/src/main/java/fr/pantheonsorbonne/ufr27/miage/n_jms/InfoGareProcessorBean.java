@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -28,10 +29,13 @@ public class InfoGareProcessorBean {
 	@Inject
 	private ConnectionFactory connectionFactory;
 
-	private Queue queueInfoPub;
-
+	@Inject
+	@Named("ItineraireAckQueue")
 	private Queue queueAck;
 
+	@Inject
+	@Named("ItinerairePubQueue")
+	private Queue queueInfoPub;
 	private Connection connection;
 
 	private Session session;
@@ -59,6 +63,7 @@ public class InfoGareProcessorBean {
 	}
 
 	public void onInfoPubMessage(TextMessage message) throws JAXBException, JMSException {
+		System.out.println(infoGare.getGare()+ " - " + " ReceivingInfoPub");
 		JAXBContext context = JAXBContext.newInstance(GareConcerneeJAXB.class);
 		StringReader reader = new StringReader(message.getText());
 
@@ -102,6 +107,7 @@ public class InfoGareProcessorBean {
 	}
 
 	private void ReceiveInfoItineraire(Queue tmpQueue) throws JMSException, JAXBException {
+		System.out.println(infoGare.getGare()+ " - " + " ReceiveInfoItineraire");
 		MessageConsumer consumer = session.createConsumer(tmpQueue);
 		Message reply = consumer.receive();
 
@@ -145,15 +151,8 @@ public class InfoGareProcessorBean {
 	}
 
 	public void consume() throws JMSException, JAXBException {
+		System.out.println("testé");
 		onInfoPubMessage((TextMessage) consumerInfoPub.receive());
-	}
-
-	public void setAckQueue(Queue queueAck) {
-		this.queueAck = queueAck;
-	}
-
-	public void setInfoPubQueue(Queue queueInfoPub) {
-		this.queueInfoPub = queueInfoPub;
 	}
 
 	public void setInfoGare(InfoGare g) {

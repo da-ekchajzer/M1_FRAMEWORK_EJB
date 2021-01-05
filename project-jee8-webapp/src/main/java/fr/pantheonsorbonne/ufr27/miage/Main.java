@@ -26,7 +26,7 @@ import fr.pantheonsorbonne.ufr27.miage.dao.PaymentDAO;
 import fr.pantheonsorbonne.ufr27.miage.exception.ExceptionMapper;
 import fr.pantheonsorbonne.ufr27.miage.jms.PaymentValidationAckownledgerBean;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.ConnectionFactorySupplier;
-import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
+import fr.pantheonsorbonne.ufr27.miage.n_jms.conf.JMSProducer;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentAckQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.PaymentQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
@@ -38,6 +38,10 @@ import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_jms.ItineraireResponderBean;
+import fr.pantheonsorbonne.ufr27.miage.n_jms.MessageGateway;
+import fr.pantheonsorbonne.ufr27.miage.n_jms.conf.ItineraireAckQueueSupplier;
+import fr.pantheonsorbonne.ufr27.miage.n_jms.conf.ItinerairePubQueueSupplier;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.GareRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
@@ -101,7 +105,6 @@ public class Main {
 								.in(Singleton.class);
 						bindFactory(PaymentQueueSupplier.class).to(Queue.class).named("PaymentQueue")
 								.in(Singleton.class);
-
 						bind(PaymentValidationAckownledgerBean.class).to(PaymentValidationAckownledgerBean.class)
 								.in(Singleton.class);
 
@@ -135,10 +138,20 @@ public class Main {
 						bind(TrajetRepository.class).to(TrajetRepository.class);
 						bind(VoyageRepository.class).to(VoyageRepository.class);
 						bind(VoyageurRepository.class).to(VoyageurRepository.class);
+						
+						bindFactory(ItineraireAckQueueSupplier.class).to(Queue.class).named("ItineraireAckQueue")
+						.in(Singleton.class);
+						bindFactory(ItinerairePubQueueSupplier.class).to(Queue.class).named("ItinerairePubQueue")
+						.in(Singleton.class);
+						
+						bind(ItineraireResponderBean.class).to(ItineraireResponderBean.class)
+						.in(Singleton.class);
+						bind(MessageGateway.class).to(MessageGateway.class)
+						.in(Singleton.class);
+						
 					}
 
 				});
-
 		return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
 	}
 
@@ -148,7 +161,6 @@ public class Main {
 	 * @param args
 	 * @throws IOException
 	 */
-	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws IOException {
 
 		Locale.setDefault(Locale.ENGLISH);
@@ -161,10 +173,13 @@ public class Main {
 		PersistenceConf pc = new PersistenceConf();
 		pc.getEM();
 		pc.launchH2WS();
-
+		
 		BDDFillerServiceImpl filler = new BDDFillerServiceImpl(pc.getEM());
 		filler.fill();
-		
+
+		//TODO : ASK Herbaut
+		//ItineraireResponderBean responder = new ItineraireResponderBean();
+			
 		System.out.println(String.format(
 				"Jersey app started with WADL available at " + "%sapplication.wadl\nHit enter to stop it...",
 				BASE_URI));

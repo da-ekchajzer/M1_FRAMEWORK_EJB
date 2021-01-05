@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.xml.bind.JAXBException;
@@ -13,12 +15,12 @@ import fr.pantheonsorbonne.ufr27.miage.POJO.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jms.InfoGareProcessorBean;
 
 public class InfoGare implements Runnable {
-
+	
 	String gare;
 	InfoGareProcessorBean processor;
 	Map<String, Itineraire> itineraires;
 
-	public InfoGare(String gare, Queue queueAck, Queue queueInfoPub) {
+	public InfoGare(String gare) {
 		this.gare = gare;
 		this.itineraires = new HashMap<String, Itineraire>();
 
@@ -27,8 +29,6 @@ public class InfoGare implements Runnable {
 		try (SeContainer container = initializer.disableDiscovery().addPackages(true, InfoGareProcessorBean.class)
 				.initialize()) {
 			processor = container.select(InfoGareProcessorBean.class).get();
-			processor.setAckQueue(queueAck);
-			processor.setInfoPubQueue(queueInfoPub);
 			processor.setInfoGare(this);
 		}
 	}
