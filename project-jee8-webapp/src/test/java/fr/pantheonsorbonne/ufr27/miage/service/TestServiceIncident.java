@@ -29,6 +29,8 @@ import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
@@ -39,6 +41,8 @@ import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageurRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
@@ -57,7 +61,8 @@ public class TestServiceIncident {
 			TrainRepository.class, TrainDAO.class, IncidentRepository.class, IncidentDAO.class, 
 			ItineraireRepository.class, ItineraireDAO.class, TrajetRepository.class, TrajetDAO.class, 
 			ArretRepository.class, ArretDAO.class, ServiceMajDecideur.class, ServiceMajDecideurImp.class, 
-			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, TestPersistenceProducer.class)
+			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, VoyageurRepository.class, 
+			VoyageurDAO.class, VoyageRepository.class, VoyageDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
