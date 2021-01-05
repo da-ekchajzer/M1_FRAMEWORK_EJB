@@ -1,0 +1,126 @@
+package fr.pantheonsorbonne.ufr27.miage.service;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+
+import org.jboss.weld.junit5.EnableWeld;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+
+import fr.pantheonsorbonne.ufr27.miage.n_dao.ArretDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageurRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_service.BDDFillerService;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.BDDFillerServiceImpl;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceIncidentImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajDecideurImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajExecuteurImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.utils.Retard;
+import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
+
+@TestInstance(Lifecycle.PER_CLASS)
+@EnableWeld
+public class TestServiceMajDecideur {
+
+	private final static LocalDateTime HEURE_ACTUELLE = LocalDateTime.now();
+
+	@WeldSetup
+	private WeldInitiator weld = WeldInitiator.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class, 
+			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, TrainRepository.class, TrainDAO.class, 
+			ItineraireRepository.class, ItineraireDAO.class, TrajetRepository.class, TrajetDAO.class, 
+			ArretRepository.class, ArretDAO.class, VoyageurRepository.class, VoyageurDAO.class, 
+			VoyageRepository.class, VoyageDAO.class, TestPersistenceProducer.class)
+			.activate(RequestScoped.class).build();
+
+	@Inject
+	EntityManager em;
+	@Inject
+	ServiceMajExecuteur serviceMajExecuteur;
+	@Inject
+	ServiceMajDecideur serviceMajDecideur;
+	@Inject
+	TrainRepository trainRepository;
+	@Inject
+	ArretRepository arretRepository;
+	@Inject
+	ItineraireRepository itineraireRepository;
+
+
+	@BeforeAll
+	void initVarInDB() {
+		new BDDFillerServiceImpl(em).fill();
+	}
+	
+	@Test
+	void testDecideRetard() {
+		
+		
+	}
+	
+	// TODO
+	@Test
+	void testGetRetardsItineraireEnCorespondance() {
+		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(6).getId(), CodeEtatItinieraire.EN_ATTENTE);
+		Retard r1 = new Retard(it6, LocalTime.of(0,  30));
+		assertEquals(1, this.serviceMajDecideur.getRetardsItineraireEnCorespondance(r1));
+		
+	}
+	
+	@Test
+	void testFactoriseRetard() {
+		Itineraire it1 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(1).getId(), CodeEtatItinieraire.EN_ATTENTE);
+		Itineraire it2 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(2).getId(), CodeEtatItinieraire.EN_ATTENTE);
+
+		Retard r1 = new Retard(it1, LocalTime.of(0,  10));
+		Retard r2 = new Retard(it1, LocalTime.of(0,  20));
+		Retard r3 = new Retard(it2, LocalTime.of(0,  15));
+
+		Queue<Retard> retards = new LinkedList<Retard>();
+		retards.add(r1);
+		retards.add(r2);
+		retards.add(r3);
+		int nbRetards = 3;
+		this.serviceMajDecideur.factoriseRetard(retards);
+		assertEquals(--nbRetards, retards.size());
+		assertFalse(retards.contains(r1));
+		assertTrue(retards.contains(r2));
+		assertTrue(retards.contains(r3));
+	}
+}

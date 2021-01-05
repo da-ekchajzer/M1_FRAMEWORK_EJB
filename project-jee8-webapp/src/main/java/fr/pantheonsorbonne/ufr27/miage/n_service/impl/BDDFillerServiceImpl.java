@@ -107,24 +107,24 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 				null);
 
 		Arret arret8 = new Arret(gares.get("Marseille - St Charles"), null,
-				LocalDateTime.now().plus(3, ChronoUnit.HOURS));
-		Arret arret9 = new Arret(gares.get("Narbonne"), LocalDateTime.now().plus(4, ChronoUnit.HOURS),
-				LocalDateTime.now().plus(4, ChronoUnit.HOURS).plus(10, ChronoUnit.MINUTES));
-		Arret arret10 = new Arret(gares.get("Sete"), LocalDateTime.now().plus(5, ChronoUnit.HOURS),
-				LocalDateTime.now().plus(5, ChronoUnit.HOURS).plus(10, ChronoUnit.MINUTES));
-		Arret arret11 = new Arret(gares.get("Perpignan"), LocalDateTime.now().plus(6, ChronoUnit.HOURS), null);
+				LocalDateTime.now().plus(10, ChronoUnit.SECONDS));
+		Arret arret9 = new Arret(gares.get("Narbonne"), LocalDateTime.now().plus(20, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(30, ChronoUnit.SECONDS));
+		Arret arret10 = new Arret(gares.get("Sete"), LocalDateTime.now().plus(40, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(50, ChronoUnit.SECONDS));
+		Arret arret11 = new Arret(gares.get("Perpignan"), LocalDateTime.now().plus(55, ChronoUnit.SECONDS), null);
 
 		Arret arret12 = new Arret(gares.get("Paris - Montparnasse"), null, LocalDateTime.now());
-		Arret arret13 = new Arret(gares.get("Tours"), LocalDateTime.now().plus(1, ChronoUnit.HOURS),
-				LocalDateTime.now().plus(1, ChronoUnit.HOURS).plus(5, ChronoUnit.MINUTES));
-		Arret arret14 = new Arret(gares.get("Bordeaux - Saint-Jean"), LocalDateTime.now().plus(2, ChronoUnit.HOURS),
+		Arret arret13 = new Arret(gares.get("Tours"), LocalDateTime.now().plus(5, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(8, ChronoUnit.SECONDS));
+		Arret arret14 = new Arret(gares.get("Bordeaux - Saint-Jean"), LocalDateTime.now().plus(15, ChronoUnit.SECONDS),
 				null);
 
 		Arret arret15 = new Arret(gares.get("Bordeaux - Saint-Jean"), null,
-				LocalDateTime.now().plus(3, ChronoUnit.HOURS));
-		Arret arret16 = new Arret(gares.get("Pessac"), LocalDateTime.now().plus(4, ChronoUnit.HOURS),
-				LocalDateTime.now().plus(4, ChronoUnit.HOURS).plus(10, ChronoUnit.MINUTES));
-		Arret arret17 = new Arret(gares.get("Arcachon-Centre"), LocalDateTime.now().plus(5, ChronoUnit.HOURS), null);
+				LocalDateTime.now().plus(30, ChronoUnit.SECONDS));
+		Arret arret16 = new Arret(gares.get("Pessac"), LocalDateTime.now().plus(36, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(41, ChronoUnit.SECONDS));
+		Arret arret17 = new Arret(gares.get("Arcachon-Centre"), LocalDateTime.now().plus(55, ChronoUnit.SECONDS), null);
 
 		Arret arret18 = new Arret(gares.get("Nantes"), null, LocalDateTime.now());
 		Arret arret19 = new Arret(gares.get("Paris - Montparnasse"), LocalDateTime.now().plus(1, ChronoUnit.HOURS),

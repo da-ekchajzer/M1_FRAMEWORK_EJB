@@ -143,7 +143,6 @@ public class TestItineraireRepository {
 		this.itineraireRepository.majEtatItineraire(i1, CodeEtatItinieraire.FIN);
 	}	
 	
-	// TODO : faire une méthode getNextArret() dans Itineraire directement ??
 	@Test
 	@Order(3)
 	void testGetNextArretByIdTrainEtArret() {
@@ -159,25 +158,13 @@ public class TestItineraireRepository {
 		assertEquals(null, this.itineraireRepository.getNextArret(t.getId(), i2.getArretActuel()));
 	}
 	
-	// TODO ?
-	/*
-	@Test
-	@Order(?)
-	void testGetNextArretByItineraireEtArretActuel() {
-		
-	}
-	*/
-	
 	@Test
 	@Order(4)
 	void testGetAllNextArrets() {
 		Train t = this.trainRepository.getTrainById(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		List<Arret> allNextArrets = this.itineraireRepository.getAllNextArrets(i2, i2.getArretsDesservis().get(0));
-		assertEquals(2, allNextArrets.size());
-		assertEquals("Gare2", allNextArrets.get(0).getGare().getNom());
 		// Si on est au dernier arrêt, il n'y en a plus après
-		assertEquals(0, this.itineraireRepository.getAllNextArrets(i2, i2.getArretActuel()).size());
+		assertEquals(0, this.itineraireRepository.getAllNextArrets(i2).size());
 	}
 	
 	@Test
@@ -196,6 +183,12 @@ public class TestItineraireRepository {
 
 	@Test
 	@Order(7)
+	void testGetAllItinerairesAtLeastIn() {
+		// TODO
+	}
+	
+	@Test
+	@Order(8)
 	void testSupprimerArretDansUnItineraire() {
 		Train t = this.trainRepository.getTrainById(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
