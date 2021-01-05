@@ -151,7 +151,6 @@ public class InfoGareProcessorBean {
 	}
 
 	public void consume() throws JMSException, JAXBException {
-		System.out.println("testé");
 		onInfoPubMessage((TextMessage) consumerInfoPub.receive());
 	}
 
