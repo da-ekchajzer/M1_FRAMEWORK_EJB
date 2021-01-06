@@ -5,16 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
 import javax.persistence.EntityManager;
 
 import org.jboss.weld.junit5.EnableWeld;
@@ -26,32 +23,25 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ArretDAO;
-import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
+import fr.pantheonsorbonne.ufr27.miage.n_jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
-import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.TrajetRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.VoyageurRepository;
-import fr.pantheonsorbonne.ufr27.miage.n_service.BDDFillerService;
-import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceUtilisateur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.BDDFillerServiceImpl;
-import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceIncidentImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajDecideurImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajExecuteurImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceUtilisateurImp;
@@ -62,14 +52,14 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 @EnableWeld
 public class TestServiceMajDecideur {
 
-	private final static LocalDateTime HEURE_ACTUELLE = LocalDateTime.now();
 
 	@WeldSetup
 	private WeldInitiator weld = WeldInitiator.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class, 
 			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, ServiceUtilisateur.class, ServiceUtilisateurImp.class, 
 			TrainRepository.class, TrainDAO.class, ItineraireRepository.class, ItineraireDAO.class, TrajetRepository.class, 
 			TrajetDAO.class, ArretRepository.class, ArretDAO.class, VoyageurRepository.class, VoyageurDAO.class, 
-			VoyageRepository.class, VoyageDAO.class, TestPersistenceProducer.class)
+			VoyageRepository.class, VoyageDAO.class, MessageGateway.class, ConnectionFactory.class, 
+			TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
