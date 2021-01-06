@@ -60,11 +60,13 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 			this.arretRepository.retardHeureDepartDeGare(a, tempsRetard.toSecondOfDay());
 		}
 		
+		/*
 		try {
 			messageGateway.publishItineraire(itineraire, "majItineraire");
 		} catch (JAXBException | JMSException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 
 	@Override
