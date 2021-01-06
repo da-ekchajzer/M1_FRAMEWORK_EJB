@@ -2,8 +2,10 @@ package fr.pantheonsorbonne.ufr27.miage.repository;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +103,15 @@ public class TestItineraireRepository {
 		Itineraire i4 = new Itineraire(t);
 		i4.setEtat(CodeEtatItinieraire.FIN.getCode());
 		
+		Itineraire i5 = new Itineraire(t);
+		i5.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
+		Arret arret7 = new Arret(g1, null, HEURE_ACTUELLE.plus(3,  ChronoUnit.HOURS));
+		Arret arret8 = new Arret(g2, HEURE_ACTUELLE.plus(3,  ChronoUnit.HOURS).plus(20, ChronoUnit.MINUTES), 
+				HEURE_ACTUELLE.plus(4,  ChronoUnit.HOURS));
+		List<Arret> arretsI5 = new ArrayList<Arret>();
+		arretsI5.add(arret7); arretsI5.add(arret8);
+		i5.setArretsDesservis(arretsI5);
+		
 		em.getTransaction().begin();
 		em.persist(t);
 		em.persist(g1);
@@ -118,10 +129,13 @@ public class TestItineraireRepository {
 		em.persist(arret4);
 		em.persist(arret5);
 		em.persist(arret6);
+		em.persist(arret7);
+		em.persist(arret8);
 		em.persist(i1);
 		em.persist(i2);
 		em.persist(i3);
 		em.persist(i4);
+		em.persist(i5);
 		em.getTransaction().commit();
 	}
 	
@@ -129,12 +143,34 @@ public class TestItineraireRepository {
 	@Order(1)
 	void testRecupItineraireEnCoursOuLeProchain() {
 		Train t = this.trainRepository.getTrainById(1);
-		Itineraire i1 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		assertEquals(i1,  this.itineraireRepository.recupItineraireEnCoursOuLeProchain(t.getId()));
+		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
+		assertEquals(i2,  this.itineraireRepository.recupItineraireEnCoursOuLeProchain(t.getId()));
 	}
 	
 	@Test
 	@Order(2)
+	void testGetAllItinerairesAtLeastIn() {
+		LocalTime conditionRetard = LocalTime.of(2, 0, 0);
+		// i1, i2 & i3 sont les itinéraires pris en compte ici car en cours, en incident ou dans moins de 2h
+		List<Itineraire> itinerairesDansLes2H = itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard);
+		assertEquals(3, itinerairesDansLes2H.size());
+		// On vérifie qu'il y ait bien 2 itinéraires en attente pour le train t
+		Train t = this.trainRepository.getTrainById(1);
+		List<Itineraire> its = this.itineraireRepository.getAllItinerairesByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_ATTENTE);
+		assertEquals(2, its.size());
+		Itineraire i5 = its.get(1);
+		// i5 n'est pas pris en compte car il part dans 3h > 2h
+		for(Itineraire i : itinerairesDansLes2H) {
+			assertNotEquals(i5,  i);
+		}
+		// On le supprime pour ne pas impacter les tests suivants
+		em.getTransaction().begin();
+		em.remove(i5);
+		em.getTransaction().commit();
+	}
+	
+	@Test
+	@Order(3)
 	void testGetItineraireByTrainEtEtatNullSiPlusieursResultats() {
 		Train t = this.trainRepository.getTrainById(1);
 		Itineraire i1 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_ATTENTE);
@@ -144,7 +180,7 @@ public class TestItineraireRepository {
 	}	
 	
 	@Test
-	@Order(3)
+	@Order(4)
 	void testGetNextArretByIdTrainEtArret() {
 		Train t = this.trainRepository.getTrainById(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
@@ -159,7 +195,7 @@ public class TestItineraireRepository {
 	}
 	
 	@Test
-	@Order(4)
+	@Order(5)
 	void testGetAllNextArrets() {
 		Train t = this.trainRepository.getTrainById(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
@@ -168,23 +204,17 @@ public class TestItineraireRepository {
 	}
 	
 	@Test
-	@Order(5)
+	@Order(6)
 	void testGetItinerairesEnCoursOuEnIncidentByGare() {
 		Gare g = this.gareRepository.getGaresByNom("Gare2").get(0);
 		assertEquals(2, this.itineraireRepository.getItinerairesEnCoursOuEnIncidentByGare(g).size());
 	}
 	
 	@Test
-	@Order(6)
+	@Order(7)
 	void testGetAllItinerairesByGare() {
 		Gare g = this.gareRepository.getGaresByNom("Gare2").get(0);
 		assertEquals(3, this.itineraireRepository.getAllItinerairesByGare(g).size());
-	}
-
-	@Test
-	@Order(7)
-	void testGetAllItinerairesAtLeastIn() {
-		// TODO
 	}
 	
 	@Test

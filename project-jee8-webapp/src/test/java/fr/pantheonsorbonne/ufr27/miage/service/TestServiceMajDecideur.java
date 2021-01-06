@@ -1,6 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.service;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -94,10 +95,18 @@ public class TestServiceMajDecideur {
 		
 	}
 	
-	// TODO
+	// TODO : suppr la méthode getItineraireByTrainEtEtat et n'utiliser que getAllItinerairesByTrainEtEtat (renvoyer une liste à chaque fois)
+	// TODO : s'assurer qu'on ne peut pas avoir, pour le mm train, un itinéraire en cours et un en incident
 	@Test
 	void testGetRetardsItineraireEnCorespondance() {
 		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(6).getId(), CodeEtatItinieraire.EN_ATTENTE);
+		assertNotNull(it6);
+		it6.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
+		it6.setArretActuel(it6.getArretsDesservis().get(0));
+		// A quelle moment on met des voyageurs dans un itinéraire ? Dans BBDFiller on attribue 6 voyageurs au voyage 4
+		// (itinéraire 6 fait partie du voyage 4) mais ces 6 voyageurs ne sont pas dans les voyageurs de it6
+		// TODO : ajouter les voyageurs d'un voyage aux itinéraires qui constituent ce voyage
+		assertEquals(6, it6.getVoyageurs().size());
 		Retard r1 = new Retard(it6, LocalTime.of(0,  30));
 		assertEquals(1, this.serviceMajDecideur.getRetardsItineraireEnCorespondance(r1));
 		

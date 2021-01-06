@@ -202,7 +202,9 @@ public class ItineraireRepository {
 		List<Itineraire> itineraires = new ArrayList<Itineraire>();
 		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
 		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
+		System.out.println("****** " + itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE).size());
 		for (Itineraire i : itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE)) {
+			
 			if (i.getArretsDesservis().get(0).getHeureDepartDeGare().isBefore(LocalDateTime.now().plusHours(duration.getHour())
 					.plusMinutes(duration.getMinute()).plusSeconds(duration.getSecond()))) {
 				itineraires.add(i);
