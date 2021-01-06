@@ -15,7 +15,6 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
-import fr.pantheonsorbonne.ufr27.miage.n_service.utils.Retard;
 
 @ManagedBean
 @RequestScoped
@@ -96,8 +95,9 @@ public class ItineraireRepository {
 	}
 
 	public void majArretActuel(Itineraire itineraire, Arret arret) {
-		if (itineraire.getNextArret().getGare().equals(arret.getGare()))
+		if (itineraire.getNextArret().getGare().equals(arret.getGare())) {
 			itineraireDAO.majArretActuel(itineraire, arret);
+		}
 	}
 
 	public Itineraire supprimerArretDansUnItineraire(int idTrain, Arret arret) {
@@ -144,10 +144,9 @@ public class ItineraireRepository {
 		return null;
 	}
 
-	// TODO : a finir !
 	public Arret getNextArretByItineraireEtArretActuel(Itineraire itineraire, Arret arret) {
 		for (Arret a : itineraire.getArretsDesservis()) {
-			if (a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
+			if (a.isAfter(arret)) {
 				return a;
 			}
 		}

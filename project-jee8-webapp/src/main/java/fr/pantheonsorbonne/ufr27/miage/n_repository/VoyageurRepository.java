@@ -71,8 +71,8 @@ public class VoyageurRepository {
 	}
 
 	public boolean voyageurHaveItineraire(Voyageur v, Itineraire i) {
-		for(Trajet t : v.getVoyageActuel().getTrajets()) {
-			if(t.getItineraire().equals(i)) {
+		for (Trajet t : v.getVoyageActuel().getTrajets()) {
+			if (t.getItineraire().equals(i)) {
 				return true;
 			}
 		}

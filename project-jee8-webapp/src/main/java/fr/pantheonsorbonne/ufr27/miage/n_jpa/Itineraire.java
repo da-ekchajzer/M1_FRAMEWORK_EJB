@@ -30,15 +30,15 @@ import lombok.ToString;
 
 })
 public class Itineraire {
-	
+
 	public static int businessIdNumber;
-	
+
 	public Itineraire() {
 		this.businessId = "IT" + businessIdNumber;
 		businessIdNumber++;
 		this.arretsDesservis = new LinkedList<Arret>();
 	}
-		
+
 	public Itineraire(Train train) {
 		this();
 		this.train = train;
@@ -54,7 +54,7 @@ public class Itineraire {
 	int id;
 
 	String businessId;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TRAIN_ID")
 	Train train;
@@ -130,11 +130,12 @@ public class Itineraire {
 
 	public Arret getNextArret() {
 		for (Arret arret : this.arretsDesservis) {
-			if(arret.isAfter(this.arretActuel)) return arret;
+			if (arret.isAfter(this.arretActuel)) {
+				return arret;
+			}
 		}
 		return null;
 	}
-
 
 	public enum CodeEtatItinieraire {
 

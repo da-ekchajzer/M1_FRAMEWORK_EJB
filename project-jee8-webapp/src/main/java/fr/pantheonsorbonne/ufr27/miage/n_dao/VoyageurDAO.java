@@ -48,8 +48,9 @@ public class VoyageurDAO {
 				break;
 			}
 		}
-
-		for (Voyageur voyageur : itineraire.getVoyageurs()) {
+		
+		List<Voyageur> v = itineraire.getVoyageurs();
+		for (Voyageur voyageur : v) {
 			// Les voyageurs qui doivent descendre
 			trajetsVoyageur = new TreeSet<Trajet>(voyageur.getVoyageActuel().getTrajets());
 			it = trajetsVoyageur.iterator();
