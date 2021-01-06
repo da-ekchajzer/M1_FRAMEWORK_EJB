@@ -65,11 +65,14 @@ public class Arret implements Comparable<Arret> {
 	@Override
 	public int compareTo(Arret arret2) {
 		int res = 0;
-		// Si this.heureDepartDeGare est null, arret2.heureDepartDeGare est forcément != null (et vice versa)
-		if(this.heureDepartDeGare == null) {
-			res = -1;
-		} else if(arret2.getHeureDepartDeGare() == null) {
+		// Si this.heureDepartDeGare est null, arret2.heureDepartDeGare est forcément !=
+		// null (et vice versa)
+		if (this.heureDepartDeGare == arret2.getHeureDepartDeGare()) {
+			res = 0;
+		} else if (this.heureDepartDeGare == null) {
 			res = 1;
+		} else if (arret2.getHeureDepartDeGare() == null) {
+			res = -1;
 		} else {
 			if (this.heureDepartDeGare.isAfter(arret2.getHeureDepartDeGare())) {
 				res = 1;
@@ -79,19 +82,19 @@ public class Arret implements Comparable<Arret> {
 		}
 		return res;
 	}
-	
+
 	public boolean isBefore(Arret arret2) {
 		if (this.compareTo(arret2) >= 0) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	public boolean isAfter(Arret arret2) {
 		if (this.compareTo(arret2) <= 0) {
 			return false;
 		}
 		return true;
 	}
-	
+
 }

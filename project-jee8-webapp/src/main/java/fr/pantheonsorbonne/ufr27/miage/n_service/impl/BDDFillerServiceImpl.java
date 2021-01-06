@@ -149,46 +149,55 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		itineraire1.addArret(arret2);
 		itineraire1.addArret(arret3);
 		itineraire1.addArret(arret4);
+		itineraire1.setArretActuel(itineraire1.getArretsDesservis().get(0));
 
 		Itineraire itineraire2 = new Itineraire(train2);
 		itineraire2.addArret(arret1_bis);
 		itineraire2.addArret(arret2_bis);
 		itineraire2.addArret(arret3_bis);
 		itineraire2.addArret(arret4_bis);
+		itineraire2.setArretActuel(itineraire2.getArretsDesservis().get(0));
 
 		Itineraire itineraire3 = new Itineraire(train3);
 		itineraire3.addArret(arret5);
 		itineraire3.addArret(arret6);
 		itineraire3.addArret(arret7);
+		itineraire3.setArretActuel(itineraire3.getArretsDesservis().get(0));
 
 		Itineraire itineraire4 = new Itineraire(train4);
 		itineraire4.addArret(arret5_bis);
 		itineraire4.addArret(arret6_bis);
 		itineraire4.addArret(arret7_bis);
+		itineraire4.setArretActuel(itineraire4.getArretsDesservis().get(0));
 
 		Itineraire itineraire5 = new Itineraire(train5);
 		itineraire5.addArret(arret8);
 		itineraire5.addArret(arret9);
 		itineraire5.addArret(arret10);
 		itineraire5.addArret(arret11);
+		itineraire5.setArretActuel(itineraire5.getArretsDesservis().get(0));
 
 		Itineraire itineraire6 = new Itineraire(train6);
 		itineraire6.addArret(arret12);
-		itineraire6.addArret(arret13);
+		// itineraire6.addArret(arret13);
 		itineraire6.addArret(arret14);
+		itineraire6.setArretActuel(itineraire6.getArretsDesservis().get(0));
 
 		Itineraire itineraire7 = new Itineraire(train7);
 		itineraire7.addArret(arret15);
 		itineraire7.addArret(arret16);
 		itineraire7.addArret(arret17);
+		itineraire7.setArretActuel(itineraire7.getArretsDesservis().get(0));
 
 		Itineraire itineraire8 = new Itineraire(train8);
 		itineraire8.addArret(arret18);
 		itineraire8.addArret(arret19);
+		itineraire8.setArretActuel(itineraire8.getArretsDesservis().get(0));
 
 		Itineraire itineraire9 = new Itineraire(train9);
 		itineraire9.addArret(arret18_bis);
 		itineraire9.addArret(arret19_bis);
+		itineraire9.setArretActuel(itineraire9.getArretsDesservis().get(0));
 
 		Itineraire[] itineraires = { itineraire1, itineraire2, itineraire3, itineraire4, itineraire5, itineraire6,
 				itineraire7, itineraire8, itineraire9 };
