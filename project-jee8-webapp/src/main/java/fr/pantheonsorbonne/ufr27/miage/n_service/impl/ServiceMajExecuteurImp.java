@@ -6,7 +6,10 @@ import java.util.List;
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.jms.JMSException;
+import javax.xml.bind.JAXBException;
 
+import fr.pantheonsorbonne.ufr27.miage.n_jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
@@ -16,6 +19,9 @@ import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
 @ManagedBean
 @RequestScoped
 public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
+	
+	@Inject
+	MessageGateway messageGateway;
 	
 	@Inject
 	ItineraireRepository itineraireRepository;
@@ -45,16 +51,19 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 	}
 	
 	@Override
-	public void retarderTrain(int idTrain, LocalTime tempsRetard) {
-		Itineraire itineraire = this.itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain);
+	public void retarderItineraire(Itineraire itineraire, LocalTime tempsRetard) {
 		
 		// Retarde le train en param
 		List<Arret> arretsSuivants = this.itineraireRepository.getAllNextArrets(itineraire);
 		for(Arret a : arretsSuivants) {
 			this.arretRepository.retarderHeureArriveeEnGare(a, tempsRetard.toSecondOfDay());
 			this.arretRepository.retardHeureDepartDeGare(a, tempsRetard.toSecondOfDay());
-			
-			// TODO : Appeler JMS MajHeureArriveeTrain INFOGARE
+		}
+		
+		try {
+			messageGateway.publishItineraire(itineraire, "majItineraire");
+		} catch (JAXBException | JMSException e) {
+			e.printStackTrace();
 		}
 	}
 

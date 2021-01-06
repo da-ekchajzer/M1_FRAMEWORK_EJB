@@ -4,8 +4,6 @@ import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.jgroups.protocols.RACKSPACE_PING;
-
 import java.time.LocalTime;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
@@ -43,9 +41,9 @@ public class ServiceIncidentImp implements ServiceIncident {
 	@Override
 	public boolean majEtatIncident(int idTrain, int newEtatIncident) {
 		boolean res = false;
-		Incident i = incidentRepository.updateEtatIncident(idTrain, newEtatIncident);		
+		// Incident i = incidentRepository.updateEtatIncident(idTrain, newEtatIncident);		
 		if(newEtatIncident == CodeEtatIncident.EN_COURS.getCode()) {
-			//serviceMajDecideur.decideMajTrainEnCours(idTrain, estimationTempsRetard(i.getTypeIncident()));
+			// serviceMajDecideur.decideMajTrainEnCours(idTrain, estimationTempsRetard(i.getTypeIncident()));
 			res = true;
 		} else if(newEtatIncident == CodeEtatIncident.RESOLU.getCode()){
 			serviceMajDecideur.decideMajTrainFin(idTrain);

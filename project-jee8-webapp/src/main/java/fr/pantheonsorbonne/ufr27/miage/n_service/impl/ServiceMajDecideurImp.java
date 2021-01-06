@@ -50,7 +50,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 
 		while (!retards.isEmpty()) {
 			retardEnTraitement = retards.poll();
-			itineraireRepository.retarderItineraire(retardEnTraitement);
+			serviceMajExecuteur.retarderItineraire(retard.getItineraire(), retardEnTraitement.getTempsDeRetard());
 			retards.addAll(getRetardsItineraireEnCorespondance(retardEnTraitement));
 			factoriseRetard(retards);
 		}

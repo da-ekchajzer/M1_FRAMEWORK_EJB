@@ -45,6 +45,11 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		// Récupérer l'arrêt de l'itinéraire qui a pour nom a.getGare().getNom()
 		Arret arret = this.getArretByItineraireAndNomGare(itineraire, a.getGare());
 		itineraireRepository.majArretActuel(itineraire, arret);
+		System.out.println("Wesh ça passe ici");
+		if (itineraireRepository.getNextArretByItineraireEtArretActuel(itineraire, arret) == null) {
+			System.out.println("Wesh ça passe là");
+			itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.FIN);
+		}
 		serviceUtilisateur.majUtilisateursTrain(idTrain);
 		return true;
 	}
