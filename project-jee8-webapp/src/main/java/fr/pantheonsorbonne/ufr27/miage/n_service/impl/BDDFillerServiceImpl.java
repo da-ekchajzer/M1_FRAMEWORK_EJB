@@ -179,7 +179,7 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 
 		Itineraire itineraire6 = new Itineraire(train6);
 		itineraire6.addArret(arret12);
-		// itineraire6.addArret(arret13);
+		itineraire6.addArret(arret13);
 		itineraire6.addArret(arret14);
 		itineraire6.setArretActuel(itineraire6.getArretsDesservis().get(0));
 

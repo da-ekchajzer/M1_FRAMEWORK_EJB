@@ -25,13 +25,11 @@ public class ItineraireEndpoint {
 	@GET
 	public Response getItineraire(@PathParam("trainId") int trainId) {
 		System.out.println("== Infocentre - getItineraire ==\nidTrain : " + trainId);
-
 		ItineraireJAXB itineraireJAXB = service.getItineraire(trainId);
-
 		if (itineraireJAXB != null) {
 			return Response.ok(itineraireJAXB).build();
 		}
-		return Response.ok(null).build(); // En attendant de renvoyer NO CONTENT
+		return Response.noContent().build();
 	}
 
 	@Consumes(value = { MediaType.APPLICATION_XML })
@@ -40,7 +38,7 @@ public class ItineraireEndpoint {
 	public Response majArret(@PathParam("trainId") int trainId, ArretJAXB arretActuel) {
 		System.out.println("== Infocentre - majArret ==\nidTrain : " + trainId);
 		if (service.majItineraire(trainId, arretActuel)) {
-			return Response.noContent().build();
+			return Response.ok().build();
 		}
 		return Response.serverError().build();
 	}

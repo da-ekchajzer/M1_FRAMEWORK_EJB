@@ -16,36 +16,43 @@ public class GatewayInfocentre {
 	public static Client client = ClientBuilder.newClient();
 
 	public static ItineraireJAXB getItineraire(int idTrain) {
+
 		WebTarget webTarget = client.target("http://localhost:8080");
 		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri()).request()
 				.get(Response.class);
-		ItineraireJAXB itineraireJAXB = null;
-		System.out.println(resp.getStatusInfo().getFamily().toString());
+
 		if (resp.getStatusInfo().getFamily().equals(Family.SUCCESSFUL)) {
 			if (resp.hasEntity()) {
-				itineraireJAXB = resp.readEntity(ItineraireJAXB.class);
+				ItineraireJAXB itineraireJAXB = resp.readEntity(ItineraireJAXB.class);
+				if (itineraireJAXB.getEtatItineraire() != 0) {
+					return itineraireJAXB;
+				}
 			}
 		}
-		return itineraireJAXB;
+
+		return null;
 	}
 
 	public static void sendCurrenArret(ArretJAXB arretJAXB, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
-		System.out.println("*** " + arretJAXB.getGare());
 		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri()).request()
 				.put(Entity.xml(arretJAXB));
 	}
 
+	//TODO : Entity must be not null
 	public static void updateIncident(int etatIncident, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
 		Response resp = webTarget.path("incident").path("" + idTrain).path("" + etatIncident).request()
 				.put(Entity.xml(null));
 	}
 
+	//TODO : notfound 404
 	public static void sendIncident(IncidentJAXB incidentJAXB, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
+//		Response resp = client.target(webTarget.path("incident").path("" + idTrain).getUri()).request()
+//				.accept(MediaType.APPLICATION_XML).post(Entity.xml(incidentJAXB));
 		Response resp = client.target(webTarget.path("incident").path("" + idTrain).getUri()).request()
-				.accept(MediaType.APPLICATION_XML).post(Entity.xml(incidentJAXB));
+				.put(Entity.xml(incidentJAXB));
 	}
 
 }

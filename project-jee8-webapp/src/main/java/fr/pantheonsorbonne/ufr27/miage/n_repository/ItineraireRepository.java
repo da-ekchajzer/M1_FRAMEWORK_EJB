@@ -51,7 +51,9 @@ public class ItineraireRepository {
 		if (itineraire == null) {
 			List<Itineraire> itineraires = itineraireDAO.getAllItinerairesByTrainEtEtat(idTrain,
 					CodeEtatItinieraire.EN_ATTENTE);
-
+			if (itineraires.isEmpty()) {
+				return null;
+			}
 			List<Arret> arrets = new ArrayList<Arret>();
 
 			for (Itineraire i : itineraires) {
@@ -156,11 +158,11 @@ public class ItineraireRepository {
 	public List<Arret> getAllNextArrets(Itineraire itineraire) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
 		Arret arretActuel = itineraire.getArretActuel();
-		
-		if(itineraire.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
+
+		if (itineraire.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
 			arretsSuivants.addAll(itineraire.getArretsDesservis());
-		} else if(itineraire.getEtat() == CodeEtatItinieraire.EN_COURS.getCode() ||
-				itineraire.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
+		} else if (itineraire.getEtat() == CodeEtatItinieraire.EN_COURS.getCode()
+				|| itineraire.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
 			// Si on est au dernier arrêt, y en a pas après donc on renvoie une liste vide
 			if (arretActuel != null && arretActuel.getHeureDepartDeGare() != null) {
 				for (Arret a : itineraire.getArretsDesservis()) {
@@ -203,9 +205,10 @@ public class ItineraireRepository {
 		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
 		System.out.println("****** " + itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE).size());
 		for (Itineraire i : itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE)) {
-			
-			if (i.getArretsDesservis().get(0).getHeureDepartDeGare().isBefore(LocalDateTime.now().plusHours(duration.getHour())
-					.plusMinutes(duration.getMinute()).plusSeconds(duration.getSecond()))) {
+
+			if (i.getArretsDesservis().get(0).getHeureDepartDeGare()
+					.isBefore(LocalDateTime.now().plusHours(duration.getHour()).plusMinutes(duration.getMinute())
+							.plusSeconds(duration.getSecond()))) {
 				itineraires.add(i);
 			}
 		}

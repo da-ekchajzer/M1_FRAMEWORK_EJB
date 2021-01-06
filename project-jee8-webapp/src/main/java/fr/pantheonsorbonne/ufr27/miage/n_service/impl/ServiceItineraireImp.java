@@ -27,15 +27,14 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	public ItineraireJAXB getItineraire(int idTrain) {
 		Itineraire itineraire = itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain);
 		if (itineraire != null) {
-			// Il faut update l'itinéraire de état = 0 à état = 1 !
 			if (itineraire.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
 				itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_COURS);
-				//Passer l'arret actuel a la gare de depart de l'itineraire
 				itineraireRepository.majArretActuel(itineraire, itineraire.getArretsDesservis().get(0));
 				serviceUtilisateur.initUtilisateursItineraire(idTrain);
 			}
+			return ItineraireMapper.mapItineraireToItineraireJAXB(itineraire);
 		}
-		return ItineraireMapper.mapItineraireToItineraireJAXB(itineraire);
+		return null;
 	}
 
 	@Override
@@ -45,17 +44,17 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		// Récupérer l'arrêt de l'itinéraire qui a pour nom a.getGare().getNom()
 		Arret arret = this.getArretByItineraireAndNomGare(itineraire, a.getGare());
 		itineraireRepository.majArretActuel(itineraire, arret);
-		serviceUtilisateur.majUtilisateursTrain(idTrain);
+		// serviceUtilisateur.majUtilisateursTrain(idTrain);
 		if (itineraireRepository.getNextArretByItineraireEtArretActuel(itineraire, arret) == null) {
 			itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.FIN);
 		}
 		return true;
 	}
-	
+
 	private Arret getArretByItineraireAndNomGare(Itineraire itineraire, String nomGare) {
 		Arret arret = null;
-		for(Arret a : itineraire.getArretsDesservis()) {
-			if(a.getGare().getNom().equals(nomGare)) {
+		for (Arret a : itineraire.getArretsDesservis()) {
+			if (a.getGare().getNom().equals(nomGare)) {
 				arret = a;
 			}
 		}

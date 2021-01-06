@@ -23,7 +23,7 @@ public class Train implements Runnable {
 	 */
 	private int etatTrain;
 
-	//Itineraire
+	// Itineraire
 	List<ArretTrain> arrets;
 	int curentIdArret;
 
@@ -38,27 +38,24 @@ public class Train implements Runnable {
 
 	@Override
 	public void run() {
-		while (etatTrain != -1) {
-			System.out.println("[" + idTrain + "] - EtatTrain : " + etatTrain);
-			actionTrain();
-			
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-
-//		actionTrain();
-//		
-//		try {
-//			Thread.sleep(10000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
+//		while (etatTrain != -1) {
+//			actionTrain();
+//			
+//			try {
+//				Thread.sleep(10000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 //		}
-//		
-//		incident = new IncidentTrain(1);
-//		GatewayInfocentre.sendIncident(incident.getXMLIncident(), this.idTrain);
+
+		actionTrain();
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		incident = new IncidentTrain(4);
+		GatewayInfocentre.updateIncident(1, idTrain);
 	}
 
 	private void actionTrain() {
@@ -71,16 +68,17 @@ public class Train implements Runnable {
 			}
 			break;
 		case 1:
-			if (arrets.get(curentIdArret+1).getheureArrive().isBefore(LocalDateTime.now())) {
+			if (arrets.get(curentIdArret + 1).getheureArrive().isBefore(LocalDateTime.now())) {
 				curentIdArret++;
 				GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
+				System.out.println("[" + idTrain + "] - : " + this.arrets.get(curentIdArret).getNomGare());
 			}
 			if (arrets.get(curentIdArret).getHeureDepart() == null) {
 				etatTrain = 0;
 			}
 			updateItineraire(GatewayInfocentre.getItineraire(this.idTrain));
-			
-			//genererRandomIncident();
+
+			// genererRandomIncident();
 			break;
 
 		case 2:
@@ -111,15 +109,17 @@ public class Train implements Runnable {
 	}
 
 	private boolean updateItineraire(ItineraireJAXB itineraireJAXB) {
-		if(itineraireJAXB == null) {
-			return false;			
+		if (itineraireJAXB == null) {
+			return false;
 		}
 		this.arrets = new LinkedList<ArretTrain>();
 		List<ArretJAXB> arretsJAXB = itineraireJAXB.getArrets();
 
-		for(int i = 0; i < arretsJAXB.size(); i++) {
+		for (int i = 0; i < arretsJAXB.size(); i++) {
 			ArretJAXB arreti = arretsJAXB.get(i);
-			this.arrets.add(new ArretTrain(arreti.getGare(), xmlGregorianCalendar2LocalDateTime(arreti.getHeureArrivee()), xmlGregorianCalendar2LocalDateTime(arreti.getHeureDepart())));
+			this.arrets
+					.add(new ArretTrain(arreti.getGare(), xmlGregorianCalendar2LocalDateTime(arreti.getHeureArrivee()),
+							xmlGregorianCalendar2LocalDateTime(arreti.getHeureDepart())));
 		}
 		return true;
 	}
@@ -132,12 +132,13 @@ public class Train implements Runnable {
 	}
 
 	public static LocalDateTime xmlGregorianCalendar2LocalDateTime(XMLGregorianCalendar xgc) {
-		if(xgc == null) {
+		if (xgc == null) {
 			return null;
-		}	
-		LocalDateTime ldt = LocalDateTime.of(xgc.getYear(), xgc.getMonth(), xgc.getDay(), xgc.getHour(), xgc.getMinute());
+		}
+		LocalDateTime ldt = LocalDateTime.of(xgc.getYear(), xgc.getMonth(), xgc.getDay(), xgc.getHour(),
+				xgc.getMinute());
 		return ldt;
-		
+
 	}
 
 }
