@@ -49,6 +49,16 @@ public class Train implements Runnable {
 			}
 		}
 
+//		actionTrain();
+//		
+//		try {
+//			Thread.sleep(10000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		incident = new IncidentTrain(1);
+//		GatewayInfocentre.sendIncident(incident.getXMLIncident(), this.idTrain);
 	}
 
 	private void actionTrain() {
@@ -61,7 +71,7 @@ public class Train implements Runnable {
 			}
 			break;
 		case 1:
-			if (arrets.get(curentIdArret+1).getheureArrive().isAfter(LocalDateTime.now())) {
+			if (arrets.get(curentIdArret+1).getheureArrive().isBefore(LocalDateTime.now())) {
 				curentIdArret++;
 				GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
 			}
@@ -69,7 +79,7 @@ public class Train implements Runnable {
 				etatTrain = 0;
 			}
 			updateItineraire(GatewayInfocentre.getItineraire(this.idTrain));
-
+			
 			//genererRandomIncident();
 			break;
 

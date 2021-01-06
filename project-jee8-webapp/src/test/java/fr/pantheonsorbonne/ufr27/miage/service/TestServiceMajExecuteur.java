@@ -104,12 +104,12 @@ public class TestServiceMajExecuteur {
 	}
 	
 	@Test
-	void testRetarderTrain() {
+	void testRetarderItineraire() {
 		Train t = this.trainRepository.getTrainById(1);
 		Itineraire it = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		LocalDateTime heureArriveeDernierArret = it.getArretsDesservis().get(it.getArretsDesservis().size()-1).getHeureArriveeEnGare();
 		LocalTime tmpsRetard = LocalTime.of(0, 0, 45);
-		this.serviceMajExecuteur.retarderTrain(t.getId(), tmpsRetard);
+		this.serviceMajExecuteur.retarderItineraire(it, tmpsRetard);
 		assertEquals(heureArriveeDernierArret.plusSeconds(45), it.getArretsDesservis().get(it.getArretsDesservis().size()-1).getHeureArriveeEnGare());
 	}
 

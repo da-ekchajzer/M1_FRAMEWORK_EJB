@@ -29,11 +29,11 @@ public class GatewayInfocentre {
 		return itineraireJAXB;
 	}
 
-	public static void sendCurrenArret(ArretJAXB arretJAXB, int idTrain) {	
+	public static void sendCurrenArret(ArretJAXB arretJAXB, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
 		System.out.println("*** " + arretJAXB.getGare());
-		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri())
-				.request().put(Entity.xml(arretJAXB));
+		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri()).request()
+				.put(Entity.xml(arretJAXB));
 	}
 
 	public static void updateIncident(int etatIncident, int idTrain) {
@@ -44,8 +44,8 @@ public class GatewayInfocentre {
 
 	public static void sendIncident(IncidentJAXB incidentJAXB, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
-		Response resp = webTarget.path("incident").path("" + idTrain).request().accept(MediaType.APPLICATION_XML)
-				.post(Entity.xml(incidentJAXB));
+		Response resp = client.target(webTarget.path("incident").path("" + idTrain).getUri()).request()
+				.accept(MediaType.APPLICATION_XML).post(Entity.xml(incidentJAXB));
 	}
 
 }
