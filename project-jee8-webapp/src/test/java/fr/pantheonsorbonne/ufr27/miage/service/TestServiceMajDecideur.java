@@ -49,10 +49,12 @@ import fr.pantheonsorbonne.ufr27.miage.n_service.BDDFillerService;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajExecuteur;
+import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceUtilisateur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.BDDFillerServiceImpl;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceIncidentImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajDecideurImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajExecuteurImp;
+import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceUtilisateurImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.utils.Retard;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
@@ -64,9 +66,9 @@ public class TestServiceMajDecideur {
 
 	@WeldSetup
 	private WeldInitiator weld = WeldInitiator.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class, 
-			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, TrainRepository.class, TrainDAO.class, 
-			ItineraireRepository.class, ItineraireDAO.class, TrajetRepository.class, TrajetDAO.class, 
-			ArretRepository.class, ArretDAO.class, VoyageurRepository.class, VoyageurDAO.class, 
+			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, ServiceUtilisateur.class, ServiceUtilisateurImp.class, 
+			TrainRepository.class, TrainDAO.class, ItineraireRepository.class, ItineraireDAO.class, TrajetRepository.class, 
+			TrajetDAO.class, ArretRepository.class, ArretDAO.class, VoyageurRepository.class, VoyageurDAO.class, 
 			VoyageRepository.class, VoyageDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
@@ -76,6 +78,8 @@ public class TestServiceMajDecideur {
 	ServiceMajExecuteur serviceMajExecuteur;
 	@Inject
 	ServiceMajDecideur serviceMajDecideur;
+	@Inject
+	ServiceUtilisateur serviceUtilisateur;
 	@Inject
 	TrainRepository trainRepository;
 	@Inject
@@ -99,17 +103,15 @@ public class TestServiceMajDecideur {
 	// TODO : s'assurer qu'on ne peut pas avoir, pour le mm train, un itinéraire en cours et un en incident
 	@Test
 	void testGetRetardsItineraireEnCorespondance() {
-		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(6).getId(), CodeEtatItinieraire.EN_ATTENTE);
+		Train t = this.trainRepository.getTrainById(6);
+		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertNotNull(it6);
-		it6.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
+		itineraireRepository.majEtatItineraire(it6, CodeEtatItinieraire.EN_COURS);
 		it6.setArretActuel(it6.getArretsDesservis().get(0));
-		// A quelle moment on met des voyageurs dans un itinéraire ? Dans BBDFiller on attribue 6 voyageurs au voyage 4
-		// (itinéraire 6 fait partie du voyage 4) mais ces 6 voyageurs ne sont pas dans les voyageurs de it6
-		// TODO : ajouter les voyageurs d'un voyage aux itinéraires qui constituent ce voyage
+		this.serviceUtilisateur.initUtilisateursItineraire(t.getId());
 		assertEquals(6, it6.getVoyageurs().size());
 		Retard r1 = new Retard(it6, LocalTime.of(0,  30));
-		assertEquals(1, this.serviceMajDecideur.getRetardsItineraireEnCorespondance(r1));
-		
+		assertEquals(1, this.serviceMajDecideur.getRetardsItineraireEnCorespondance(r1).size());
 	}
 	
 	@Test

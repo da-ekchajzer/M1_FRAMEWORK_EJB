@@ -51,7 +51,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		while (!retards.isEmpty()) {
 			retardEnTraitement = retards.poll();
 			itineraireRepository.retarderItineraire(retardEnTraitement);
-			retards.addAll(getRetardsItineraireEnCorespondance(retardEnTraitement));
+			retards.addAll(this.getRetardsItineraireEnCorespondance(retardEnTraitement));
 			factoriseRetard(retards);
 		}
 	}
@@ -67,22 +67,25 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		Collection<Arret> arretRestants = itineraireRepository.getAllNextArrets(itineraire);
 
 		for (Itineraire i : itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard)) {
-			Arret1Loop: for (Arret a1 : itineraireRepository.getAllNextArrets(i)) {
-				for (Arret a2 : arretRestants) {
-					if (a1.getGare().equals(a2.getGare())) {
-						count = 0;
-						for (Voyageur v : itineraire.getVoyageurs()) {
-							if (voyageurRepository.voyageurHaveItineraire(v, i)) {
-								count++;
+			// L'itinéraire lié au retard sera contenu dans la liste des itinéraires partant dans - de 2h
+			if(!i.equals(itineraire)) {
+				Arret1Loop: for (Arret a1 : itineraireRepository.getAllNextArrets(i)) {
+					for (Arret a2 : arretRestants) {
+						if (a1.getGare().equals(a2.getGare())) {
+							count = 0;
+							for (Voyageur v : itineraire.getVoyageurs()) {
+								if (voyageurRepository.voyageurHaveItineraire(v, i)) {
+									count++;
+								}
+							}
+							if (count > 5) {
+								retards.add(new Retard(i, tempsRetard));
+								break Arret1Loop;
 							}
 						}
-						if (count > 5) {
-							retards.add(new Retard(i, tempsRetard));
-							break Arret1Loop;
-						}
 					}
-				}
 
+				}
 			}
 		}
 		return retards;

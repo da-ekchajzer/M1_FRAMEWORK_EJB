@@ -226,8 +226,4 @@ public class ItineraireRepository {
 		return itinerairesConcernes;
 	}
 
-	public void retarderItineraire(Retard retard) {
-		// TODO : retarder itineraire avec retard
-	}
-
 }
