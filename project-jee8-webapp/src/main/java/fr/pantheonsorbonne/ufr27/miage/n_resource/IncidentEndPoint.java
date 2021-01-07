@@ -35,7 +35,7 @@ public class IncidentEndPoint {
 	@PUT
 	public Response majIncident(@PathParam("trainId") int trainId, @PathParam("etatIncident") int etatIncident) {
 		System.out.println("== Infocentre - majIncident ==\nidTrain : "+ trainId);
-		if(service.majEtatIncident(trainId, etatIncident)) {
+		if(service.majEtatIncident(trainId, etatIncident, 5)) {
 			return Response.noContent().build();
 		}
 		return Response.serverError().build();

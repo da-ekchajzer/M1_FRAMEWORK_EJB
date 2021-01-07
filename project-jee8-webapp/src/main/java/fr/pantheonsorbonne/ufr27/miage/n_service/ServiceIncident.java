@@ -4,5 +4,5 @@ import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
 
 public interface ServiceIncident {
 	public boolean creerIncident(int idTrain, IncidentJAXB inc);
-	public boolean majEtatIncident(int idTrain, int etatIncident);
+	public boolean majEtatIncident(int idTrain, int etatIncident, int ajoutDuree);
 }
