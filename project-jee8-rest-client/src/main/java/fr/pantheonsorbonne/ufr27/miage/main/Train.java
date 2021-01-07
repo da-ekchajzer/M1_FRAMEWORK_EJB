@@ -40,9 +40,9 @@ public class Train implements Runnable {
 	public void run() {
 		while (etatTrain != -1) {
 			actionTrain();
-			
+      
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -50,7 +50,7 @@ public class Train implements Runnable {
 
 //		actionTrain();
 //		try {
-//			Thread.sleep(5000);
+//			Thread.sleep(10000);
 //		} catch (InterruptedException e) {
 //			e.printStackTrace();
 //		}
@@ -59,20 +59,23 @@ public class Train implements Runnable {
 	}
 
 	private void actionTrain() {
+		System.out.println("[" + idTrain + "] - etat train : " + etatTrain);
 		switch (etatTrain) {
 
 		case 0:
 			if (updateItineraire(GatewayInfocentre.getItineraire(this.idTrain))) {
 				curentIdArret = 0;
 				etatTrain = 1;
+				System.out.println("[" + idTrain + "] - arrets desservis : " + printArrets(arrets));
 			}
 			break;
 		case 1:
-			if (arrets.get(curentIdArret + 1).getheureArrive().isBefore(LocalDateTime.now())) {
+			while (arrets.get(curentIdArret).getHeureDepart() != null
+					&& !arrets.get(curentIdArret).getHeureDepart().isAfter(LocalDateTime.now())) {
 				curentIdArret++;
-				GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
-				System.out.println("[" + idTrain + "] - : " + this.arrets.get(curentIdArret).getNomGare());
 			}
+			GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
+			System.out.println("[" + idTrain + "] - arret actuel : " + this.arrets.get(curentIdArret).getNomGare());
 			if (arrets.get(curentIdArret).getHeureDepart() == null) {
 				etatTrain = 0;
 			}
@@ -129,6 +132,14 @@ public class Train implements Runnable {
 			return true;
 		}
 		return false;
+	}
+
+	public String printArrets(List<ArretTrain> arrets) {
+		String str = "";
+		for (ArretTrain arretTrain : arrets) {
+			str += arretTrain.getNomGare() + " / ";
+		}
+		return str.substring(0, str.length() - 3);
 	}
 
 	public static LocalDateTime xmlGregorianCalendar2LocalDateTime(XMLGregorianCalendar xgc) {
