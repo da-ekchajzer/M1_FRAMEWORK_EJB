@@ -66,10 +66,8 @@ public class IncidentRepository {
 	public Incident getIncidentByIdTrain(int idTrain) {
 		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-
 		// Récupération de l'incident associé à l'itinéraire itinéraire
 		Incident incident = getIncidentById(itineraire.getIncident().getId());
-		
 		return incident;
 	}
 

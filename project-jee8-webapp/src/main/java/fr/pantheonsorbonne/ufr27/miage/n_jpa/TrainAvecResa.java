@@ -1,7 +1,8 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,25 +14,29 @@ import lombok.ToString;
 @ToString
 public class TrainAvecResa extends Train {
 
-	List<Voyageur> voyageurs;
+	Set<Voyageur> voyageurs;
 
 	public TrainAvecResa() {
 	}
 
 	public TrainAvecResa(int id, String marque) {
 		super(id, marque);
-		this.voyageurs = new ArrayList<Voyageur>();
+		this.voyageurs = new HashSet<Voyageur>();
 	}
 
-	public List<Voyageur> getVoyageurs() {
+	public Set<Voyageur> getVoyageurs() {
 		return voyageurs;
 	}
 
-	public void setVoyageurs(List<Voyageur> voyageursAyantReserves) {
+	public void setVoyageurs(Set<Voyageur> voyageursAyantReserves) {
 		this.voyageurs = voyageursAyantReserves;
 	}
 
-	public void addVoyageurInTrain(Voyageur voyageur) {
+	public void addVoyageur(Voyageur voyageur) {
 		this.voyageurs.add(voyageur);
+	}
+
+	public void removeVoyageur(Voyageur voyageur) {
+		this.voyageurs.remove(voyageur);
 	}
 }

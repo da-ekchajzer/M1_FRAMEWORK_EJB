@@ -1,6 +1,8 @@
 package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -48,9 +50,8 @@ public class VoyageurDAO {
 				break;
 			}
 		}
-		
-		List<Voyageur> v = itineraire.getVoyageurs();
-		for (Voyageur voyageur : v) {
+
+		for (Voyageur voyageur : itineraire.getVoyageurs()) {
 			// Les voyageurs qui doivent descendre
 			trajetsVoyageur = new TreeSet<Trajet>(voyageur.getVoyageActuel().getTrajets());
 			it = trajetsVoyageur.iterator();
@@ -59,21 +60,22 @@ public class VoyageurDAO {
 				t = it.next();
 				// Voyageurs qui ont une correspondance
 				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && !t.equals(nextTrajet)) {
-					train.getVoyageurs().remove(voyageur);
-					itineraire.getVoyageurs().remove(voyageur);
+					train.removeVoyageur(voyageur);
+					itineraire.removeVoyageur(voyageur);
 				}
 				// Les voyageurs qui doivent monter
 				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && t.equals(nextTrajet)
 						&& LocalDateTime.now().isBefore(itineraire.getArretActuel().getHeureDepartDeGare())) {
-					train.getVoyageurs().add(voyageur);
+					train.addVoyageur(voyageur);
 				}
 			}
 			// Les voyageurs qui doivent descendre
 			if (voyageur.getVoyageActuel().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
-				train.getVoyageurs().remove(voyageur);
-				itineraire.getVoyageurs().remove(voyageur);
+				train.removeVoyageur(voyageur);
+				itineraire.removeVoyageur(voyageur);
 			}
 		}
+		System.out.println(train.getVoyageurs().size() + " : " + train.getVoyageurs().toString());
 		em.getTransaction().commit();
 	}
 
