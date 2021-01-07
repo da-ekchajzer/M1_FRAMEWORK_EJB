@@ -47,7 +47,6 @@ public class InfoGare implements Runnable {
 		for(String s : itineraires.keySet()) {
 			System.out.println(s + " : " + itineraires.get(s).getHeureArriveeEnGare());
 		}
-		
 	}
 
 	public String getGare() {

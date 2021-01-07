@@ -4,6 +4,7 @@
 <xsd:element name="arretJAXB" type="arretJAXB"></xsd:element>
 <xsd:element name="incidentJAXB" type="incidentJAXB"></xsd:element>
 <xsd:element name="GareConcerneeJAXB" type="GareConcerneeJAXB"></xsd:element>
+<xsd:element name="ItineraireInfoJAXB" type="ItineraireInfoJAXB"></xsd:element>
 
 	<xsd:complexType name="ItineraireInfoJAXB">
 		<xsd:sequence>

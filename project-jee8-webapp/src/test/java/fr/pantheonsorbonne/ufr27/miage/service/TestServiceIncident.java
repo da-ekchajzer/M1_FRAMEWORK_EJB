@@ -42,6 +42,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeTypeIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
@@ -97,10 +98,11 @@ public class TestServiceIncident {
 		Gare g3 = new Gare("Gare3");
 		
 		Train t = new TrainAvecResa(1, "Marque");
+		Train t2 = new TrainAvecResa(2,"TGV");
 		Itineraire i1 = new Itineraire(t);
 		i1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
 		
-		Itineraire i2 = new Itineraire(t);
+		Itineraire i2 = new Itineraire(t2);
 		i2.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
 		Arret arret1 = new Arret(g1, null, HEURE_ACTUELLE.plus(1, ChronoUnit.MINUTES));
 		Arret arret2 = new Arret(g2, HEURE_ACTUELLE.plus(2, ChronoUnit.MINUTES), HEURE_ACTUELLE.plus(3, ChronoUnit.MINUTES));
@@ -116,6 +118,7 @@ public class TestServiceIncident {
 		em.persist(g2);
 		em.persist(g3);
 		em.persist(t);
+		em.persist(t2);
 		em.persist(arret1);
 		em.persist(arret2);
 		em.persist(arret3);
@@ -149,16 +152,30 @@ public class TestServiceIncident {
 	@Test
 	@Order(2)
 	void testMajEtatIncident() {
+		int ajoutDuree = 3;
 		Train t = this.trainRepository.getTrainById(1);
-		assertEquals(true,  this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(), 3));
 		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
+		assertEquals(1, itineraire.getEtat());
+		assertEquals(true,  this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(), ajoutDuree));
 		assertNotNull(itineraire);
+		assertEquals(2, itineraire.getEtat()); //Itineraire = EN_COURS +  Etat incident = EN_COURS --> on set l'etat à EN_INCIDENT
 		Incident incident = this.incidentRepository.getIncidentByIdTrain(t.getId());
+		System.out.println(incident.getTypeIncident()); //Type 1 -- Animal sur voie -- 5 minutes
 		assertEquals(5, incident.getDuree());
 		assertEquals(incident.getHeureDebut().plusMinutes(5), incident.getHeureTheoriqueDeFin());
+		
+		
+		ajoutDuree = 10;
+		int incidentDureeInit = incident.getDuree();
+		LocalDateTime heureTheoriqueInit = incident.getHeureTheoriqueDeFin();
+		assertEquals(true,  this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(), ajoutDuree));
+		assertEquals(incidentDureeInit+ajoutDuree, incident.getDuree());
+		assertEquals(heureTheoriqueInit.plusMinutes(ajoutDuree), incident.getHeureTheoriqueDeFin());
 
-		Itineraire it2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_ATTENTE);
-		assertNotNull(it2);
+		
+		assertEquals(2, itineraire.getEtat());
+		assertEquals(true, this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode(), ajoutDuree));
+		assertEquals(1, itineraire.getEtat());
 		
 		// TODO : Finir ce cas de test
 		
@@ -166,6 +183,8 @@ public class TestServiceIncident {
 		// 2. Voir l'impact de la terminaison de l'incident avant les 5min de rallongement sur it2
 		
 		// NB : it2 est après itineraire (ptetre init des données à revoir dans le BeforeAll)
+		
+		// ==> Voir comment tester la dernière partie de la méthode
 	}
-
+	
 }

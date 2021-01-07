@@ -14,7 +14,6 @@ public class MapperUtils {
 		GregorianCalendar gc = xgc.toGregorianCalendar();
 		ZonedDateTime zdt = gc.toZonedDateTime();
 		LocalDateTime ldt = zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-		System.out.println("&&& ldt = " + ldt);
 		return ldt;
 	}
 

@@ -10,8 +10,12 @@ public class ItineraireMapper {
 	public static Itineraire mapItineraireJAXBToItineraire(ItineraireInfoJAXB itineraireInfoJAXB, String idTrain) {
 		Itineraire i = new Itineraire();
 		
-		i.setHeureArriveeEnGare(MapperUtils.xmlGregorianCalendarToLocalDateTime(itineraireInfoJAXB.getHeureArrivee()));
-		i.setHeureDepartDeGare(MapperUtils.xmlGregorianCalendarToLocalDateTime(itineraireInfoJAXB.getHeureDepart()));
+		if(itineraireInfoJAXB.getHeureArrivee() != null) {
+			i.setHeureArriveeEnGare(MapperUtils.xmlGregorianCalendarToLocalDateTime(itineraireInfoJAXB.getHeureArrivee()));
+		}
+		if(itineraireInfoJAXB.getHeureDepart() != null) {
+			i.setHeureDepartDeGare(MapperUtils.xmlGregorianCalendarToLocalDateTime(itineraireInfoJAXB.getHeureDepart()));
+		}
 		i.setEtatItineraire(itineraireInfoJAXB.getEtatItineraire());
 		i.setIdItineraire(idTrain);
 		
