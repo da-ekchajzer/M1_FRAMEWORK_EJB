@@ -12,6 +12,9 @@ import javax.ws.rs.core.Response;
 
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
+import fr.pantheonsorbonne.ufr27.miage.n_jms.ItineraireResponderBean;
+import fr.pantheonsorbonne.ufr27.miage.n_jms.MessageGateway;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceItineraire;
 
 @Path("itineraire/")
@@ -20,6 +23,15 @@ public class ItineraireEndpoint {
 	@Inject
 	ServiceItineraire service;
 
+	@Inject
+	MessageGateway messageGateway;
+	
+	@Inject
+	ItineraireRepository itineraireRepository;
+	
+	@Inject
+	ItineraireResponderBean responder;
+	
 	@Produces(value = { MediaType.APPLICATION_XML })
 	@Path("{trainId}")
 	@GET
@@ -27,6 +39,7 @@ public class ItineraireEndpoint {
 		System.out.println("== Infocentre - getItineraire ==\nidTrain : " + trainId);
 		ItineraireJAXB itineraireJAXB = service.getItineraire(trainId);
 		if (itineraireJAXB != null) {
+			messageGateway.publishCreation(itineraireRepository.recupItineraireEnCoursOuLeProchain(trainId));
 			return Response.ok(itineraireJAXB).build();
 		}
 		return Response.noContent().build();

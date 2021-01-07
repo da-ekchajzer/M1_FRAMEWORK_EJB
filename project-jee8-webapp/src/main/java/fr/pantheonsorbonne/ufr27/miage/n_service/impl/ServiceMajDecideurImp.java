@@ -110,9 +110,4 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		retards.addAll(mapRetards.values());
 	}
 
-	@Override
-	public void decideMajTrainFin(int idTrain) {
-		// TODO Auto-generated method stub
-	}
-
 }

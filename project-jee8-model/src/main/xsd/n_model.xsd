@@ -3,7 +3,7 @@
 <xsd:element name="itineraireJAXB" type="itineraireJAXB"></xsd:element>
 <xsd:element name="arretJAXB" type="arretJAXB"></xsd:element>
 <xsd:element name="incidentJAXB" type="incidentJAXB"></xsd:element>
-
+<xsd:element name="GareConcerneeJAXB" type="GareConcerneeJAXB"></xsd:element>
 
 	<xsd:complexType name="ItineraireInfoJAXB">
 		<xsd:sequence>

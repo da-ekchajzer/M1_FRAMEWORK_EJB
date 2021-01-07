@@ -37,20 +37,18 @@ public class GatewayInfocentre {
 				.put(Entity.xml(arretJAXB));
 	}
 
-	//TODO : Entity must be not null
+
 	public static void updateIncident(int etatIncident, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
 		Response resp = webTarget.path("incident").path("" + idTrain).path("" + etatIncident).request()
-				.put(Entity.xml(null));
+				.put(Entity.text(""));
 	}
 
-	//TODO : notfound 404
+
 	public static void sendIncident(IncidentJAXB incidentJAXB, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
-//		Response resp = client.target(webTarget.path("incident").path("" + idTrain).getUri()).request()
-//				.accept(MediaType.APPLICATION_XML).post(Entity.xml(incidentJAXB));
 		Response resp = client.target(webTarget.path("incident").path("" + idTrain).getUri()).request()
-				.put(Entity.xml(incidentJAXB));
+				.accept(MediaType.APPLICATION_XML).post(Entity.xml(incidentJAXB));
 	}
 
 }

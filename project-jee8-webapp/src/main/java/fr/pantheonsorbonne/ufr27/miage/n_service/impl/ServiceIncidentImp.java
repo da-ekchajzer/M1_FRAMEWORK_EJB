@@ -4,15 +4,19 @@ import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeTypeIncident;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.IncidentMapper;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.utils.Retard;
@@ -29,29 +33,43 @@ public class ServiceIncidentImp implements ServiceIncident {
 	@Inject
 	ItineraireRepository itineraireRepository;
 	
+	@Inject
+	TrainRepository trainRepository;
+	
 	@Override
 	public boolean creerIncident(int idTrain, IncidentJAXB inc) {
 		Incident i = IncidentMapper.mapIncidentJAXBToIncident(inc);
 		incidentRepository.creerIncident(idTrain, i);
 		Retard r = new Retard(itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS), estimationTempsRetard(inc.getTypeIncident()));
 		serviceMajDecideur.decideRetard(r);
-		return false;
+		return true;
 	}
 
 	@Override
-	public boolean majEtatIncident(int idTrain, int newEtatIncident) {
+	public boolean majEtatIncident(int idTrain, int newEtatIncident, int ajoutDuree) {
 		boolean res = false;
-		// Incident i = incidentRepository.updateEtatIncident(idTrain, newEtatIncident);		
+		Incident incident = this.incidentRepository.getIncidentByIdTrain(idTrain);
+		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 		if(newEtatIncident == CodeEtatIncident.EN_COURS.getCode()) {
-			// serviceMajDecideur.decideMajTrainEnCours(idTrain, estimationTempsRetard(i.getTypeIncident()));
+			if(itineraire.getEtat() == CodeEtatItinieraire.EN_COURS.getCode()) {
+				itineraire.setEtat(CodeEtatItinieraire.EN_INCIDENT.getCode());
+			}
+			if(incident.getHeureDebut().plusMinutes(incident.getDuree()).isBefore(LocalDateTime.now().plusMinutes(ajoutDuree))) {
+				incident.setDuree(incident.getDuree()+ajoutDuree);
+				incident.setHeureTheoriqueDeFin(LocalTime.of(0, incident.getDuree()));
+			}
 			res = true;
 		} else if(newEtatIncident == CodeEtatIncident.RESOLU.getCode()){
-			serviceMajDecideur.decideMajTrainFin(idTrain);
+			// On remet l'itinéraire à l'état en cours
+			itineraire.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
+			// Si on a rallongé l'incident de 5min et qu'au bout d'1min il est finalement résolu,
+			// on veut raccourcir les retards concernés de 4min
+			LocalTime avancementHeureFin = incident.getHeureTheoriqueDeFin().minusMinutes(LocalDateTime.now().getMinute()).toLocalTime();
+			this.serviceMajDecideur.decideRetard(new Retard(itineraire, avancementHeureFin));
 			res = true;
 		}
 		return res;
 	}
-
 
 	private LocalTime estimationTempsRetard(int codeTypeIncident) {
 		return CodeTypeIncident.getTempEstimation(codeTypeIncident);

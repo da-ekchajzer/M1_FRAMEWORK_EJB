@@ -40,7 +40,7 @@ public class Train implements Runnable {
 	public void run() {
 		while (etatTrain != -1) {
 			actionTrain();
-
+      
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {

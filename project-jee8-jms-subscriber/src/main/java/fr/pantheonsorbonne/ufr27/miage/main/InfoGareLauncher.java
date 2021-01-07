@@ -12,7 +12,7 @@ public class InfoGareLauncher {
 	
 	public static void main(String[] args) throws InterruptedException, JMSException {
 		
-		String[] gare = { "Paris-Montparnasse", "Lyon Pardieux" };
+		String[] gare = { "Tours", "Bordeaux - Saint-Jean" };
 		int infogareId = 0;
 
 		

@@ -29,6 +29,7 @@ public class Incident {
 
 	int typeIncident;
 	LocalDateTime heureDebut;
+	LocalDateTime heureTheoriqueDeFin;
 	int duree;
 	int etat;
 
@@ -50,6 +51,14 @@ public class Incident {
 
 	public void setHeureDebut(LocalDateTime heureDebut) {
 		this.heureDebut = heureDebut;
+	}
+	
+	public LocalDateTime getHeureTheoriqueDeFin() {
+		return heureTheoriqueDeFin;
+	}
+
+	public void setHeureTheoriqueDeFin(LocalTime duree) {
+		this.heureTheoriqueDeFin = this.heureDebut.plusMinutes(duree.getMinute());
 	}
 
 	public int getDuree() {
