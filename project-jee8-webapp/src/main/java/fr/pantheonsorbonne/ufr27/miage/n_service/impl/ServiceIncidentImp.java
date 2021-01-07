@@ -6,13 +6,13 @@ import javax.inject.Inject;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeTypeIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.IncidentMapper;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;

@@ -1,6 +1,9 @@
 package fr.pantheonsorbonne.ufr27.miage.main;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -40,7 +43,7 @@ public class Train implements Runnable {
 	public void run() {
 		while (etatTrain != -1) {
 			actionTrain();
-      
+
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
@@ -67,15 +70,16 @@ public class Train implements Runnable {
 				curentIdArret = 0;
 				etatTrain = 1;
 				System.out.println("[" + idTrain + "] - arrets desservis : " + printArrets(arrets));
+				GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
+				System.out.println("[" + idTrain + "] - arret actuel : " + this.arrets.get(curentIdArret).getNomGare());
 			}
 			break;
+
 		case 1:
-			while (arrets.get(curentIdArret).getHeureDepart() != null
-					&& !arrets.get(curentIdArret).getHeureDepart().isAfter(LocalDateTime.now())) {
-				curentIdArret++;
+			if (LocalDateTime.now().isAfter(arrets.get(curentIdArret + 1).getheureArrivee())) {
+				GatewayInfocentre.sendCurrenArret(this.arrets.get(++curentIdArret).getXMLArret(), this.idTrain);
+				System.out.println("[" + idTrain + "] - arret actuel : " + this.arrets.get(curentIdArret).getNomGare());
 			}
-			GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
-			System.out.println("[" + idTrain + "] - arret actuel : " + this.arrets.get(curentIdArret).getNomGare());
 			if (arrets.get(curentIdArret).getHeureDepart() == null) {
 				etatTrain = 0;
 			}
@@ -92,9 +96,13 @@ public class Train implements Runnable {
 			}
 			GatewayInfocentre.updateIncident(incident.getXMLIncident().getEtatIncident(), this.idTrain);
 			break;
+
+		default:
+			break;
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void genererRandomIncident() {
 		boolean isIncident = bernouilliGenerator(0.001);
 
@@ -146,10 +154,10 @@ public class Train implements Runnable {
 		if (xgc == null) {
 			return null;
 		}
-		LocalDateTime ldt = LocalDateTime.of(xgc.getYear(), xgc.getMonth(), xgc.getDay(), xgc.getHour(),
-				xgc.getMinute());
+		GregorianCalendar gc = xgc.toGregorianCalendar();
+		ZonedDateTime zdt = gc.toZonedDateTime();
+		LocalDateTime ldt = zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
 		return ldt;
-
 	}
 
 }

@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 
 @ManagedBean
 @RequestScoped
@@ -23,21 +22,21 @@ public class ArretDAO {
 		em.remove(arret);
 		em.getTransaction().commit();
 	}
-	
+
 	public void avancerHeureArriveeEnGare(Arret a, int tempsAvance) {
 		LocalDateTime newHeureArriveeEnGare = a.getHeureArriveeEnGare().minusSeconds(tempsAvance);
 		em.getTransaction().begin();
 		a.setHeureArriveeEnGare(newHeureArriveeEnGare);
 		em.getTransaction().commit();
 	}
-	
+
 	public void retarderHeureArriveeEnGare(Arret a, int tempsRetard) {
 		LocalDateTime newHeureArriveeEnGare = a.getHeureArriveeEnGare().plusSeconds(tempsRetard);
 		em.getTransaction().begin();
 		a.setHeureArriveeEnGare(newHeureArriveeEnGare);
 		em.getTransaction().commit();
 	}
-	
+
 	public void retardHeureDepartDeGare(Arret a, int tempsRetard) {
 		LocalDateTime newHeureDepartDeGare = a.getHeureDepartDeGare().plusSeconds(tempsRetard);
 		em.getTransaction().begin();

@@ -114,10 +114,10 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 				LocalDateTime.now().plus(50, ChronoUnit.SECONDS));
 		Arret arret11 = new Arret(gares.get("Perpignan"), LocalDateTime.now().plus(55, ChronoUnit.SECONDS), null);
 
-		Arret arret12 = new Arret(gares.get("Paris - Montparnasse"), null, LocalDateTime.now().plus(40, ChronoUnit.SECONDS));
-		Arret arret13 = new Arret(gares.get("Tours"), LocalDateTime.now().plus(55, ChronoUnit.SECONDS),
-				LocalDateTime.now().plus(65, ChronoUnit.SECONDS));
-		Arret arret14 = new Arret(gares.get("Bordeaux - Saint-Jean"), LocalDateTime.now().plus(85, ChronoUnit.SECONDS),
+		Arret arret12 = new Arret(gares.get("Paris - Montparnasse"), null, LocalDateTime.now().plus(20, ChronoUnit.SECONDS));
+		Arret arret13 = new Arret(gares.get("Tours"), LocalDateTime.now().plus(35, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(45, ChronoUnit.SECONDS));
+		Arret arret14 = new Arret(gares.get("Bordeaux - Saint-Jean"), LocalDateTime.now().plus(60, ChronoUnit.SECONDS),
 				null);
 
 		Arret arret15 = new Arret(gares.get("Bordeaux - Saint-Jean"), null,

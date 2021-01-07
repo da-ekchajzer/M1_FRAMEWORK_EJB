@@ -2,11 +2,9 @@ package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
@@ -33,14 +31,9 @@ public class VoyageurDAO {
 
 	public void majVoyageursDansTrainAvecResa(TrainAvecResa train, Itineraire itineraire,
 			Set<Trajet> trajetsItineraire) {
-		Set<Trajet> trajetsVoyageur;
+		List<Trajet> trajetsVoyageur;
 		Iterator<Trajet> it;
 		Trajet t, nextTrajet = null;
-
-		// TODO : est-ce que les voyageurs sont ajoutés dans la liste de l'itinéraire au
-		// moment de leur réservation ?
-		// => Non il faut appeler au bons endroits dans les services la méthode
-		// mettreVoyageursDansItineraire (elle est plus bas)
 
 		em.getTransaction().begin();
 
@@ -50,10 +43,10 @@ public class VoyageurDAO {
 				break;
 			}
 		}
-
+		List<Voyageur> voyageursToRemove = new ArrayList<Voyageur>();
 		for (Voyageur voyageur : itineraire.getVoyageurs()) {
 			// Les voyageurs qui doivent descendre
-			trajetsVoyageur = new TreeSet<Trajet>(voyageur.getVoyageActuel().getTrajets());
+			trajetsVoyageur = voyageur.getVoyageActuel().getTrajets();
 			it = trajetsVoyageur.iterator();
 
 			while (it.hasNext()) {
@@ -61,7 +54,7 @@ public class VoyageurDAO {
 				// Voyageurs qui ont une correspondance
 				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && !t.equals(nextTrajet)) {
 					train.removeVoyageur(voyageur);
-					itineraire.removeVoyageur(voyageur);
+					voyageursToRemove.add(voyageur);
 				}
 				// Les voyageurs qui doivent monter
 				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && t.equals(nextTrajet)
@@ -72,10 +65,11 @@ public class VoyageurDAO {
 			// Les voyageurs qui doivent descendre
 			if (voyageur.getVoyageActuel().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
 				train.removeVoyageur(voyageur);
-				itineraire.removeVoyageur(voyageur);
+				voyageursToRemove.add(voyageur);
 			}
 		}
-		System.out.println(train.getVoyageurs().size() + " : " + train.getVoyageurs().toString());
+		itineraire.getVoyageurs().removeAll(voyageursToRemove);
+		
 		em.getTransaction().commit();
 	}
 

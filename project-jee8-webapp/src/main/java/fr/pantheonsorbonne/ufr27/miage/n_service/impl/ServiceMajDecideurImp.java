@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainSansResa;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
@@ -44,6 +45,11 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 
 	@Override
 	public void decideRetard(Retard retard) {
+		if (retard.getItineraire().getTrain().getClass().isInstance(TrainSansResa.class)) {
+			serviceMajExecuteur.retarderItineraire(retard.getItineraire(), retard.getTempsDeRetard());
+			return;
+		}
+
 		Queue<Retard> retards = new LinkedList<Retard>();
 		retards.add(retard);
 		Retard retardEnTraitement;
@@ -67,8 +73,9 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		Collection<Arret> arretRestants = itineraireRepository.getAllNextArrets(itineraire);
 
 		for (Itineraire i : itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard)) {
-			// L'itinéraire lié au retard sera contenu dans la liste des itinéraires partant dans - de 2h
-			if(!i.equals(itineraire)) {
+			// L'itinéraire lié au retard sera contenu dans la liste des itinéraires partant
+			// dans - de 2h
+			if (!i.equals(itineraire)) {
 				Arret1Loop: for (Arret a1 : itineraireRepository.getAllNextArrets(i)) {
 					for (Arret a2 : arretRestants) {
 						if (a1.getGare().equals(a2.getGare())) {
