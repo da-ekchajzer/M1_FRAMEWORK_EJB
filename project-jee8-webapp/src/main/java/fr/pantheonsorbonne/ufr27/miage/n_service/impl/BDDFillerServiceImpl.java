@@ -204,7 +204,6 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 
 		for (Itineraire i : itineraires) {
 			em.persist(i);
-			// messageGateway.publishCreation(i);
 		}
 
 		// --------------------------------- Remplissage de la table Trajet

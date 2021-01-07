@@ -38,24 +38,24 @@ public class Train implements Runnable {
 
 	@Override
 	public void run() {
-//		while (etatTrain != -1) {
-//			actionTrain();
-//			
-//			try {
-//				Thread.sleep(10000);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//		}
-
-		actionTrain();
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		while (etatTrain != -1) {
+			actionTrain();
+			
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		incident = new IncidentTrain(4);
-		GatewayInfocentre.updateIncident(1, idTrain);
+
+//		actionTrain();
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//		incident = new IncidentTrain(4);
+//		GatewayInfocentre.sendIncident(incident.getXMLIncident(), idTrain);
 	}
 
 	private void actionTrain() {

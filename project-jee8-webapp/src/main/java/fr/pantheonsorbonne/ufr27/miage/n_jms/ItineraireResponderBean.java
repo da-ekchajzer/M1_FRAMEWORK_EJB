@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jms;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,16 +11,17 @@ import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBException;
 
 @ApplicationScoped
+@ManagedBean
 public class ItineraireResponderBean implements MessageListener{
 
 	@Inject
 	EntityManager em;
 
+	@Inject
 	MessageGateway messageGateway;
 
 	@PostConstruct
 	private void init() {
-		messageGateway = new MessageGateway();
 		new Thread(new Runnable() {
 
 			@Override

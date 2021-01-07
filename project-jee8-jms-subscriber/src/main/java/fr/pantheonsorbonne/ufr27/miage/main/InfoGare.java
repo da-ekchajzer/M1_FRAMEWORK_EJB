@@ -39,10 +39,18 @@ public class InfoGare implements Runnable {
 		while (true) {
 			try {
 				processor.consume();
+				affichage();
 			} catch (JMSException | JAXBException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void affichage() {
+		for(String s : itineraires.keySet()) {
+			System.out.println(s + " : " + itineraires.get(s).getHeureArriveeEnGare());
+		}
+		
 	}
 
 	public String getGare() {

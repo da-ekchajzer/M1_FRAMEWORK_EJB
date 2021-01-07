@@ -35,7 +35,7 @@ public class ServiceIncidentImp implements ServiceIncident {
 		incidentRepository.creerIncident(idTrain, i);
 		Retard r = new Retard(itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS), estimationTempsRetard(inc.getTypeIncident()));
 		serviceMajDecideur.decideRetard(r);
-		return false;
+		return true;
 	}
 
 	@Override
