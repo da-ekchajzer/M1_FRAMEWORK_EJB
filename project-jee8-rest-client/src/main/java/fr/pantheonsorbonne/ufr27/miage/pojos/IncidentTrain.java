@@ -1,8 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.pojos;
 
 import java.time.LocalDateTime;
-import java.util.Random;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 

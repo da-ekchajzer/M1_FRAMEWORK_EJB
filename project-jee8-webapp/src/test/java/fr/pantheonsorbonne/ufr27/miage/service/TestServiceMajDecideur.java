@@ -12,7 +12,6 @@ import java.util.Queue;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.jms.ConnectionFactory;
 import javax.persistence.EntityManager;
 
 import org.jboss.weld.junit5.EnableWeld;
@@ -58,14 +57,14 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 @TestMethodOrder(OrderAnnotation.class)
 public class TestServiceMajDecideur {
 
-
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class, 
-			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, ServiceUtilisateur.class, ServiceUtilisateurImp.class, 
-			TrainRepository.class, TrainDAO.class, ItineraireRepository.class, ItineraireDAO.class, TrajetRepository.class, 
-			TrajetDAO.class, ArretRepository.class, ArretDAO.class, VoyageurRepository.class, VoyageurDAO.class, 
-			VoyageRepository.class, VoyageDAO.class, MessageGateway.class, JMSProducer.class, 
-			TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator
+			.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class, ServiceMajExecuteur.class,
+					ServiceMajExecuteurImp.class, ServiceUtilisateur.class, ServiceUtilisateurImp.class,
+					TrainRepository.class, TrainDAO.class, ItineraireRepository.class, ItineraireDAO.class,
+					TrajetRepository.class, TrajetDAO.class, ArretRepository.class, ArretDAO.class,
+					VoyageurRepository.class, VoyageurDAO.class, VoyageRepository.class, VoyageDAO.class,
+					MessageGateway.class, JMSProducer.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
@@ -83,12 +82,11 @@ public class TestServiceMajDecideur {
 	@Inject
 	ItineraireRepository itineraireRepository;
 
-
 	@BeforeAll
 	void initVarInDB() {
 		new BDDFillerServiceImpl(em).fill();
 	}
-	
+
 	@Test
 	@Order(1)
 	void testDecideRetard() {
@@ -99,47 +97,58 @@ public class TestServiceMajDecideur {
 		it6.setArretActuel(it6.getArretsDesservis().get(0));
 		this.serviceUtilisateur.initUtilisateursItineraire(t6.getId());
 		assertEquals(6, it6.getVoyageurs().size());
-		LocalTime heureArriveeTerminusItineraire6 = it6.getArretsDesservis().get(it6.getArretsDesservis().size()-1).getHeureArriveeEnGare().toLocalTime();
+		LocalTime heureArriveeTerminusItineraire6 = it6.getArretsDesservis().get(it6.getArretsDesservis().size() - 1)
+				.getHeureArriveeEnGare().toLocalTime();
 		Train t7 = this.trainRepository.getTrainById(7);
 		Itineraire it7 = itineraireRepository.getItineraireByTrainEtEtat(t7.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertNotNull(it7);
-		LocalTime heureArriveeTerminusItineraire7 = it7.getArretsDesservis().get(it7.getArretsDesservis().size()-1).getHeureArriveeEnGare().toLocalTime();
-		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0,  30)));
+		LocalTime heureArriveeTerminusItineraire7 = it7.getArretsDesservis().get(it7.getArretsDesservis().size() - 1)
+				.getHeureArriveeEnGare().toLocalTime();
+		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 30)));
 		heureArriveeTerminusItineraire6 = heureArriveeTerminusItineraire6.plusMinutes(30);
 		heureArriveeTerminusItineraire7 = heureArriveeTerminusItineraire7.plusMinutes(30);
-		assertEquals(heureArriveeTerminusItineraire6, it6.getArretsDesservis().get(it6.getArretsDesservis().size()-1).getHeureArriveeEnGare().toLocalTime());
-		assertEquals(heureArriveeTerminusItineraire7, it7.getArretsDesservis().get(it7.getArretsDesservis().size()-1).getHeureArriveeEnGare().toLocalTime());
+		assertEquals(heureArriveeTerminusItineraire6, it6.getArretsDesservis().get(it6.getArretsDesservis().size() - 1)
+				.getHeureArriveeEnGare().toLocalTime());
+		assertEquals(heureArriveeTerminusItineraire7, it7.getArretsDesservis().get(it7.getArretsDesservis().size() - 1)
+				.getHeureArriveeEnGare().toLocalTime());
 
 		it6.setArretActuel(it6.getArretsDesservis().get(1));
-		LocalTime heureDepartPremierGareItineraire6 = it6.getArretsDesservis().get(1).getHeureArriveeEnGare().toLocalTime();
-		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0,  15)));
+		LocalTime heureDepartPremierGareItineraire6 = it6.getArretsDesservis().get(1).getHeureArriveeEnGare()
+				.toLocalTime();
+		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 15)));
 		heureDepartPremierGareItineraire6 = heureDepartPremierGareItineraire6.plusMinutes(15);
 		heureArriveeTerminusItineraire7 = heureArriveeTerminusItineraire7.plusMinutes(15);
-		assertNotEquals(heureDepartPremierGareItineraire6, it6.getArretsDesservis().get(0).getHeureDepartDeGare().toLocalTime());
-		assertEquals(heureArriveeTerminusItineraire7, it7.getArretsDesservis().get(it7.getArretsDesservis().size()-1).getHeureArriveeEnGare().toLocalTime());
+		assertNotEquals(heureDepartPremierGareItineraire6,
+				it6.getArretsDesservis().get(0).getHeureDepartDeGare().toLocalTime());
+		assertEquals(heureArriveeTerminusItineraire7, it7.getArretsDesservis().get(it7.getArretsDesservis().size() - 1)
+				.getHeureArriveeEnGare().toLocalTime());
 
 	}
-	
-	// TODO : suppr la méthode getItineraireByTrainEtEtat et n'utiliser que getAllItinerairesByTrainEtEtat (renvoyer une liste à chaque fois)
-	// TODO : s'assurer qu'on ne peut pas avoir, pour le mm train, un itinéraire en cours et un en incident
+
+	// TODO : suppr la méthode getItineraireByTrainEtEtat et n'utiliser que
+	// getAllItinerairesByTrainEtEtat (renvoyer une liste à chaque fois)
+	// TODO : s'assurer qu'on ne peut pas avoir, pour le mm train, un itinéraire en
+	// cours et un en incident
 	@Test
 	@Order(2)
 	void testGetRetardsItineraireEnCorespondance() {
 		Train t = this.trainRepository.getTrainById(6);
 		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		assertNotNull(it6);
-		Retard r1 = new Retard(it6, LocalTime.of(0,  30));
+		Retard r1 = new Retard(it6, LocalTime.of(0, 30));
 		assertEquals(1, this.serviceMajDecideur.getRetardsItineraireEnCorespondance(r1).size());
 	}
-	
+
 	@Test
 	@Order(3)
 	void testFactoriseRetard() {
-		Itineraire it1 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(1).getId(), CodeEtatItinieraire.EN_ATTENTE);
-		Itineraire it2 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(2).getId(), CodeEtatItinieraire.EN_ATTENTE);
-		Retard r1 = new Retard(it1, LocalTime.of(0,  10));
-		Retard r2 = new Retard(it1, LocalTime.of(0,  20));
-		Retard r3 = new Retard(it2, LocalTime.of(0,  15));
+		Itineraire it1 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(1).getId(),
+				CodeEtatItinieraire.EN_ATTENTE);
+		Itineraire it2 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(2).getId(),
+				CodeEtatItinieraire.EN_ATTENTE);
+		Retard r1 = new Retard(it1, LocalTime.of(0, 10));
+		Retard r2 = new Retard(it1, LocalTime.of(0, 20));
+		Retard r3 = new Retard(it2, LocalTime.of(0, 15));
 
 		Queue<Retard> retards = new LinkedList<Retard>();
 		retards.add(r1);

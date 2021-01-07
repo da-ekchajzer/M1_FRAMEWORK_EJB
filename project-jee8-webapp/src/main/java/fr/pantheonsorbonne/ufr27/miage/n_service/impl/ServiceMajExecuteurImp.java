@@ -6,8 +6,6 @@ import java.util.List;
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.jms.JMSException;
-import javax.xml.bind.JAXBException;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;

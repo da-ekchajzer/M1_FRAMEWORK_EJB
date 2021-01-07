@@ -22,7 +22,7 @@ public class IncidentEndPoint {
 	@Path("{trainId}")
 	@POST
 	public Response creerIncident(@PathParam("trainId") int trainId, IncidentJAXB incident) {
-		System.out.println("== Infocentre - creerIncident ==\nidTrain : "+ trainId);
+		System.out.println("== Infocentre - creerIncident ==\nidTrain : " + trainId);
 
 		if (service.creerIncident(trainId, incident)) {
 			return Response.noContent().build();
@@ -33,8 +33,8 @@ public class IncidentEndPoint {
 	@Path("{trainId}/{etatIncident}")
 	@PUT
 	public Response majIncident(@PathParam("trainId") int trainId, @PathParam("etatIncident") int etatIncident) {
-		System.out.println("== Infocentre - majIncident ==\nidTrain : "+ trainId);
-		if(service.majEtatIncident(trainId, etatIncident, 5)) {
+		System.out.println("== Infocentre - majIncident ==\nidTrain : " + trainId);
+		if (service.majEtatIncident(trainId, etatIncident, 5)) {
 			return Response.noContent().build();
 		}
 		return Response.serverError().build();

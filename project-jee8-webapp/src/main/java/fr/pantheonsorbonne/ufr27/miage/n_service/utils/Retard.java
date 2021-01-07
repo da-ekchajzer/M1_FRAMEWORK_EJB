@@ -1,12 +1,13 @@
 package fr.pantheonsorbonne.ufr27.miage.n_service.utils;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 
 public class Retard {
+
 	Itineraire itineraire;
+
 	LocalTime tempsDeRetard;
 
 	public Retard(Itineraire it, LocalTime tempsDeRetard) {
