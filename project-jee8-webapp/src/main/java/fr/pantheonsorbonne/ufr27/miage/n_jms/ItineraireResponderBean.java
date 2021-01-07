@@ -28,6 +28,7 @@ public class ItineraireResponderBean implements MessageListener{
 			public void run() {
 				while (true) {
 					try {
+						System.out.println("Thread launch");
 						Message msg = messageGateway.ackInfogare();
 						onMessage(msg);
 					} catch (JMSException e) {
@@ -37,7 +38,6 @@ public class ItineraireResponderBean implements MessageListener{
 
 			}
 		}).start();
-
 	}
 
 	@Override

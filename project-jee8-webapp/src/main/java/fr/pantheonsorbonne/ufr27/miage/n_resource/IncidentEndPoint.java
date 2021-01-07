@@ -10,7 +10,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
-import fr.pantheonsorbonne.ufr27.miage.n_jms.ItineraireResponderBean;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 
 @Path("incident/")

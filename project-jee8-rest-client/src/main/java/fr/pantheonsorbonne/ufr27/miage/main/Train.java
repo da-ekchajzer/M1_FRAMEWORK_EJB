@@ -62,10 +62,12 @@ public class Train implements Runnable {
 		switch (etatTrain) {
 
 		case 0:
+			
 			if (updateItineraire(GatewayInfocentre.getItineraire(this.idTrain))) {
 				curentIdArret = 0;
 				etatTrain = 1;
 			}
+			System.out.println("[" + idTrain + "] - : Fetching - Etat : " + this.etatTrain);
 			break;
 		case 1:
 			if (arrets.get(curentIdArret + 1).getheureArrive().isBefore(LocalDateTime.now())) {
@@ -76,6 +78,7 @@ public class Train implements Runnable {
 			if (arrets.get(curentIdArret).getHeureDepart() == null) {
 				etatTrain = 0;
 			}
+			System.out.println("[" + idTrain + "] - : Fetching - Etat : " + this.etatTrain);
 			updateItineraire(GatewayInfocentre.getItineraire(this.idTrain));
 
 			// genererRandomIncident();

@@ -86,8 +86,13 @@ public class MessageGateway {
 		Itineraire i = itineraireRepository.getItineraireByBusinessId(idItineraire);
 		Arret a = arretRepository.getArretParItineraireEtNomGare(i, nomGare);
 		itineraireInfoJAXB.setEtatItineraire(i.getEtat());
-		itineraireInfoJAXB.setHeureArrivee(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureArriveeEnGare()));
-		itineraireInfoJAXB.setHeureDepart(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureDepartDeGare()));
+		
+		if(a.getHeureArriveeEnGare() != null) {
+			itineraireInfoJAXB.setHeureArrivee(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureArriveeEnGare()));
+		}
+		if(a.getHeureDepartDeGare() != null) {
+			itineraireInfoJAXB.setHeureDepart(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureDepartDeGare()));
+		}
 
 		StringWriter writer = new StringWriter();
 		jaxbMarshaller.marshal(itineraireInfoJAXB, writer);

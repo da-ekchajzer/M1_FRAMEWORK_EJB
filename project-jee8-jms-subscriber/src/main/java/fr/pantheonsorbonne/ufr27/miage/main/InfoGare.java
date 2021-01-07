@@ -5,10 +5,8 @@ import java.util.Map;
 
 import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jms.JMSException;
-import javax.jms.Queue;
+
 import javax.xml.bind.JAXBException;
 
 import fr.pantheonsorbonne.ufr27.miage.POJO.Itineraire;
@@ -50,7 +48,6 @@ public class InfoGare implements Runnable {
 		for(String s : itineraires.keySet()) {
 			System.out.println(s + " : " + itineraires.get(s).getHeureArriveeEnGare());
 		}
-		
 	}
 
 	public String getGare() {
