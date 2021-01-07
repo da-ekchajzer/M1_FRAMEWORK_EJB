@@ -14,7 +14,8 @@ public class ItineraireResponderBean implements MessageListener{
 
 	@Inject
 	EntityManager em;
-
+	
+	@Inject
 	MessageGateway messageGateway;
 
 	@PostConstruct

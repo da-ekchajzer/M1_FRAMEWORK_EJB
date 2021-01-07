@@ -61,7 +61,7 @@ public class ArretTrain {
 	public void setHeureDepart(LocalDateTime heureDepart) {
 		this.heureDepart = heureDepart;
 	}
-	public LocalDateTime getheureArrive() {
+	public LocalDateTime getheureArrivee() {
 		return heureArrive;
 	}
 	public void setheureArrive(LocalDateTime heureArrive) {

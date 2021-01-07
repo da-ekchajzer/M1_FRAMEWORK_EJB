@@ -20,7 +20,6 @@ public class GatewayInfocentre {
 		WebTarget webTarget = client.target("http://localhost:8080");
 		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri()).request()
 				.get(Response.class);
-
 		if (resp.getStatusInfo().getFamily().equals(Family.SUCCESSFUL)) {
 			if (resp.hasEntity()) {
 				ItineraireJAXB itineraireJAXB = resp.readEntity(ItineraireJAXB.class);
@@ -29,7 +28,6 @@ public class GatewayInfocentre {
 				}
 			}
 		}
-
 		return null;
 	}
 

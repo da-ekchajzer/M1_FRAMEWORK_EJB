@@ -107,7 +107,8 @@ public class TestVoyageurDAO {
 
 		// --------------------------------- Arrêts
 
-		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now());
+		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null,
+				LocalDateTime.now().plus(20, ChronoUnit.SECONDS));
 		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plus(1, ChronoUnit.MINUTES),
 				LocalDateTime.now().plus(1, ChronoUnit.MINUTES).plus(30, ChronoUnit.SECONDS));
 		Arret arret3 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plus(3, ChronoUnit.MINUTES),
@@ -216,21 +217,15 @@ public class TestVoyageurDAO {
 	void testMajVoyageursDansTrainAvecResa() {
 		Itineraire itineraire1 = itineraireDAO.getItineraireByBusinessId("IT1");
 		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraire1);
-		System.out.println(trajets.size());
 		Set<Trajet> trajetsItineraire = new TreeSet<>(trajets);
 		Train train = trainDAO.getTrainById(1);
 		TrainAvecResa trainAvecResa = null;
-		List<Voyageur> list = new ArrayList<Voyageur>();
 		if (train instanceof TrainAvecResa) {
 			trainAvecResa = (TrainAvecResa) train;
-			list = trainAvecResa.getVoyageurs();
-			for (Voyageur v : list) {
-				System.out.println(v.getPrenom());
-			}
-			System.out.println(list.size());
 		}
+		int prevSize = trainAvecResa.getVoyageurs().size();
 		voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire1, trajetsItineraire);
-		assertTrue(trainAvecResa.getVoyageurs().size() > 0);
+		assertTrue(trainAvecResa.getVoyageurs().size() > prevSize);
 	}
 
 }
