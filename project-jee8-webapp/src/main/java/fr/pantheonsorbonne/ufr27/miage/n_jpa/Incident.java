@@ -2,6 +2,7 @@ package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,14 +16,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter @Setter @ToString
-@NamedQueries({
-	@NamedQuery(name="Incident.getAllIncidents", query="SELECT i FROM Incident i"),
-	@NamedQuery(name="Incident.getNbIncidents", query="SELECT COUNT(i) FROM Incident i"),
-	@NamedQuery(name="Incident.getIncidentById", query="SELECT i FROM Incident i WHERE i.id = :id")
-})
+@Getter
+@Setter
+@ToString
+@NamedQueries({ @NamedQuery(name = "Incident.getAllIncidents", query = "SELECT i FROM Incident i"),
+		@NamedQuery(name = "Incident.getNbIncidents", query = "SELECT COUNT(i) FROM Incident i"),
+		@NamedQuery(name = "Incident.getIncidentById", query = "SELECT i FROM Incident i WHERE i.id = :id") })
 public class Incident {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
@@ -30,7 +31,7 @@ public class Incident {
 	int typeIncident;
 	LocalDateTime heureDebut;
 	LocalDateTime heureTheoriqueDeFin;
-	int duree;
+	long duree;
 	int etat;
 
 	public int getId() {
@@ -52,20 +53,25 @@ public class Incident {
 	public void setHeureDebut(LocalDateTime heureDebut) {
 		this.heureDebut = heureDebut;
 	}
-	
+
 	public LocalDateTime getHeureTheoriqueDeFin() {
 		return heureTheoriqueDeFin;
 	}
 
-	public void setHeureTheoriqueDeFin(LocalTime duree) {
-		this.heureTheoriqueDeFin = this.heureDebut.plusMinutes(duree.getMinute());
+	public void setHeureTheoriqueDeFin(LocalTime ldtDuree) {
+		this.heureTheoriqueDeFin = this.heureDebut.plusHours(ldtDuree.getHour()).plusMinutes(ldtDuree.getMinute())
+				.plusSeconds(ldtDuree.getSecond()).plusNanos(ldtDuree.getNano());
 	}
 
-	public int getDuree() {
+	public void setHeureTheoriqueDeFin(long duree, ChronoUnit chronoUnit) {
+		this.heureTheoriqueDeFin = this.heureDebut.plus(duree, chronoUnit);
+	}
+
+	public long getDuree() {
 		return duree;
 	}
 
-	public void setDuree(int duree) {
+	public void setDuree(long duree) {
 		this.duree = duree;
 	}
 
@@ -76,7 +82,7 @@ public class Incident {
 	public void setEtat(int etat) {
 		this.etat = etat;
 	}
-	
+
 	public enum CodeEtatIncident {
 
 		EN_COURS(1), RESOLU(0);
@@ -91,10 +97,11 @@ public class Incident {
 			return code;
 		}
 	}
-	
+
 	public enum CodeTypeIncident {
 
-		ANIMAL_SUR_VOIE(1), ARBRE_SUR_VOIE(2), MALAISE_PASSAGER(3), FEUILLE_MOUILLIE_SUR_VOIE(4), PANNE_ELECTRIQUE(5), PERSONNE_SUR_VOIE(6);
+		ANIMAL_SUR_VOIE(1), ARBRE_SUR_VOIE(2), MALAISE_PASSAGER(3), FEUILLE_MOUILLIE_SUR_VOIE(4), PANNE_ELECTRIQUE(5),
+		PERSONNE_SUR_VOIE(6);
 
 		private int code;
 
@@ -105,29 +112,29 @@ public class Incident {
 		public static LocalTime getTempEstimation(int code) {
 			switch (code) {
 			case 1:
-				return LocalTime.of(0, 5);
+				return LocalTime.of(0, 5, 0, 0);
 
 			case 2:
-				return LocalTime.of(3, 0);
-			
+				return LocalTime.of(3, 0, 0, 0);
+
 			case 3:
-				return LocalTime.of(1, 0);
-			
+				return LocalTime.of(1, 0, 0, 0);
+
 			case 4:
-				return LocalTime.of(1, 30);
-			
+				return LocalTime.of(1, 30, 0, 0);
+
 			case 5:
-				return LocalTime.of(2, 0);
-				
+				return LocalTime.of(2, 0, 0, 0);
+
 			case 6:
-				return LocalTime.of(0, 30);
-			
+				return LocalTime.of(0, 30, 0, 0);
+
 			default:
-				return LocalTime.of(0, 0);
+				return LocalTime.of(0, 0, 0, 0);
 			}
 
 		}
-		
+
 		public int getCode() {
 			return code;
 		}

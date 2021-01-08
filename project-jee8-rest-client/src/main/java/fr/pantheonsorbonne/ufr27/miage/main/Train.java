@@ -62,30 +62,29 @@ public class Train implements Runnable {
 	}
 
 	private void actionTrain() {
-		System.out.println("[" + idTrain + "] - etat train : " + etatTrain);
 		switch (etatTrain) {
 
 		case 0:
-			
+
 			if (updateItineraire(GatewayInfocentre.getItineraire(this.idTrain))) {
 				curentIdArret = 0;
 				etatTrain = 1;
-				System.out.println("[" + idTrain + "] - arrets desservis : " + printArrets(arrets));
+				System.out.println("[ " + idTrain + " ] - Début de l'itineraire...");
+				System.out.println("[ " + idTrain + " ] >> arrets desservis : " + printArrets(arrets));
 				GatewayInfocentre.sendCurrenArret(this.arrets.get(curentIdArret).getXMLArret(), this.idTrain);
-				System.out.println("[" + idTrain + "] - arret actuel : " + this.arrets.get(curentIdArret).getNomGare());
+				System.out.println("[ " + idTrain + " ] >> arret actuel : " + this.arrets.get(curentIdArret).getNomGare());
 			}
-			System.out.println("[" + idTrain + "] - : Fetching - Etat : " + this.etatTrain);
 			break;
 
 		case 1:
 			if (LocalDateTime.now().isAfter(arrets.get(curentIdArret + 1).getheureArrivee())) {
 				GatewayInfocentre.sendCurrenArret(this.arrets.get(++curentIdArret).getXMLArret(), this.idTrain);
-				System.out.println("[" + idTrain + "] - arret actuel : " + this.arrets.get(curentIdArret).getNomGare());
+				System.out.println("[ " + idTrain + " ] >> arret actuel : " + this.arrets.get(curentIdArret).getNomGare());
 			}
 			if (arrets.get(curentIdArret).getHeureDepart() == null) {
 				etatTrain = 0;
+				System.out.println("[ " + idTrain + " ] - ...fin de l'itineraire.");
 			}
-			System.out.println("[" + idTrain + "] - : Fetching - Etat : " + this.etatTrain);
 			updateItineraire(GatewayInfocentre.getItineraire(this.idTrain));
 
 			// genererRandomIncident();

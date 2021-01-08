@@ -70,13 +70,13 @@ public class TestServiceIncident {
 	private final static LocalDateTime HEURE_ACTUELLE = LocalDateTime.now();
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(ServiceIncident.class, ServiceIncidentImp.class, 
-			TrainRepository.class, TrainDAO.class, IncidentRepository.class, IncidentDAO.class, 
-			ItineraireRepository.class, ItineraireDAO.class, TrajetRepository.class, TrajetDAO.class, 
-			ArretRepository.class, ArretDAO.class, ServiceMajDecideur.class, ServiceMajDecideurImp.class, 
-			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, VoyageurRepository.class, 
-			VoyageurDAO.class, VoyageRepository.class, VoyageDAO.class, MessageGateway.class, 
-			JMSProducer.class, TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator
+			.from(ServiceIncident.class, ServiceIncidentImp.class, TrainRepository.class, TrainDAO.class,
+					IncidentRepository.class, IncidentDAO.class, ItineraireRepository.class, ItineraireDAO.class,
+					TrajetRepository.class, TrajetDAO.class, ArretRepository.class, ArretDAO.class,
+					ServiceMajDecideur.class, ServiceMajDecideurImp.class, ServiceMajExecuteur.class,
+					ServiceMajExecuteurImp.class, VoyageurRepository.class, VoyageurDAO.class, VoyageRepository.class,
+					VoyageDAO.class, MessageGateway.class, JMSProducer.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
@@ -90,29 +90,31 @@ public class TestServiceIncident {
 	@Inject
 	ItineraireRepository itineraireRepository;
 
-
 	@BeforeAll
 	void initVarInDB() {
 		Gare g1 = new Gare("Gare1");
 		Gare g2 = new Gare("Gare2");
 		Gare g3 = new Gare("Gare3");
-		
+
 		Train t = new TrainAvecResa(1, "Marque");
-		Train t2 = new TrainAvecResa(2,"TGV");
+		Train t2 = new TrainAvecResa(2, "TGV");
 		Itineraire i1 = new Itineraire(t);
 		i1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
-		
+
 		Itineraire i2 = new Itineraire(t2);
 		i2.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
 		Arret arret1 = new Arret(g1, null, HEURE_ACTUELLE.plus(1, ChronoUnit.MINUTES));
-		Arret arret2 = new Arret(g2, HEURE_ACTUELLE.plus(2, ChronoUnit.MINUTES), HEURE_ACTUELLE.plus(3, ChronoUnit.MINUTES));
+		Arret arret2 = new Arret(g2, HEURE_ACTUELLE.plus(2, ChronoUnit.MINUTES),
+				HEURE_ACTUELLE.plus(3, ChronoUnit.MINUTES));
 		Arret arret3 = new Arret(g3, HEURE_ACTUELLE.plus(4, ChronoUnit.MINUTES), null);
 		List<Arret> arretsI2 = new ArrayList<Arret>();
-		arretsI2.add(arret1); arretsI2.add(arret2); arretsI2.add(arret3);
+		arretsI2.add(arret1);
+		arretsI2.add(arret2);
+		arretsI2.add(arret3);
 		i1.setArretsDesservis(arretsI2);
 		i2.setArretsDesservis(arretsI2);
 		i2.setArretActuel(arret1);
-		
+
 		em.getTransaction().begin();
 		em.persist(g1);
 		em.persist(g2);
@@ -126,65 +128,70 @@ public class TestServiceIncident {
 		em.persist(i2);
 		em.getTransaction().commit();
 	}
-	
+
 	@Test
 	@Order(1)
 	void testCreerIncident() throws DatatypeConfigurationException {
 		Train t = this.trainRepository.getTrainById(1);
 		IncidentJAXB incidentJAXB = new IncidentJAXB();
-		
+
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(new Date());
 		XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
 		incidentJAXB.setHeureIncident(date2);
 		incidentJAXB.setTypeIncident(1);
 		incidentJAXB.setEtatIncident(CodeEtatIncident.EN_COURS.getCode());
-		
+
 		assertEquals(0, this.incidentRepository.getNbIncidents());
 		this.serviceIncident.creerIncident(t.getId(), incidentJAXB);
-		assertEquals(1, this.incidentRepository.getNbIncidents());	
-		
+		assertEquals(1, this.incidentRepository.getNbIncidents());
+
 		Incident incidentCree = this.incidentRepository.getIncidentByIdTrain(t.getId());
 		assertEquals(incidentCree.getHeureDebut().plusMinutes(5), incidentCree.getHeureTheoriqueDeFin());
 		assertEquals(5, incidentCree.getDuree());
 	}
-	
+
 	@Test
 	@Order(2)
 	void testMajEtatIncident() {
-		int ajoutDuree = 3;
+		long ajoutDuree = 3;
 		Train t = this.trainRepository.getTrainById(1);
-		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
+		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(),
+				CodeEtatItinieraire.EN_COURS);
 		assertEquals(1, itineraire.getEtat());
-		assertEquals(true,  this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(), ajoutDuree));
+		assertEquals(true, this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
+				ajoutDuree, ChronoUnit.MINUTES));
 		assertNotNull(itineraire);
-		assertEquals(2, itineraire.getEtat()); //Itineraire = EN_COURS +  Etat incident = EN_COURS --> on set l'etat à EN_INCIDENT
+		// Itineraire = EN_COURS + Incident = EN_COURS --> on set l'etat à EN_INCIDENT
+		assertEquals(2, itineraire.getEtat());
 		Incident incident = this.incidentRepository.getIncidentByIdTrain(t.getId());
-		System.out.println(incident.getTypeIncident()); //Type 1 -- Animal sur voie -- 5 minutes
+		System.out.println(incident.getTypeIncident()); // Type 1 -- Animal sur voie -- 5 minutes
 		assertEquals(5, incident.getDuree());
 		assertEquals(incident.getHeureDebut().plusMinutes(5), incident.getHeureTheoriqueDeFin());
-		
-		
+
 		ajoutDuree = 10;
-		int incidentDureeInit = incident.getDuree();
+		long incidentDureeInit = incident.getDuree();
 		LocalDateTime heureTheoriqueInit = incident.getHeureTheoriqueDeFin();
-		assertEquals(true,  this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(), ajoutDuree));
-		assertEquals(incidentDureeInit+ajoutDuree, incident.getDuree());
+		assertEquals(true, this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
+				ajoutDuree, ChronoUnit.MINUTES));
+		assertEquals(incidentDureeInit + ajoutDuree, incident.getDuree());
 		assertEquals(heureTheoriqueInit.plusMinutes(ajoutDuree), incident.getHeureTheoriqueDeFin());
 
-		
 		assertEquals(2, itineraire.getEtat());
-		assertEquals(true, this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode(), ajoutDuree));
+		assertEquals(true, this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode(),
+				ajoutDuree, ChronoUnit.MINUTES));
 		assertEquals(1, itineraire.getEtat());
-		
+
 		// TODO : Finir ce cas de test
-		
+
 		// 1. Voir l'impact du rallongement de l'incident sur it2
-		// 2. Voir l'impact de la terminaison de l'incident avant les 5min de rallongement sur it2
-		
-		// NB : it2 est après itineraire (ptetre init des données à revoir dans le BeforeAll)
-		
+		// 2. Voir l'impact de la terminaison de l'incident avant les 5min de
+		// rallongement sur it2
+
+		// NB : it2 est après itineraire (ptetre init des données à revoir dans le
+		// BeforeAll)
+
 		// ==> Voir comment tester la dernière partie de la méthode
 	}
-	
+
 }
