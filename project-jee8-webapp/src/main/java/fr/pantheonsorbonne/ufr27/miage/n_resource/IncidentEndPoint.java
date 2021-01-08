@@ -1,5 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.n_resource;
 
+import java.time.temporal.ChronoUnit;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -34,7 +36,7 @@ public class IncidentEndPoint {
 	@PUT
 	public Response majIncident(@PathParam("trainId") int trainId, @PathParam("etatIncident") int etatIncident) {
 		System.out.println("== Infocentre - majIncident ==\nidTrain : " + trainId);
-		if (service.majEtatIncident(trainId, etatIncident, 5)) {
+		if (service.majEtatIncident(trainId, etatIncident, 5, ChronoUnit.MINUTES)) {
 			return Response.noContent().build();
 		}
 		return Response.serverError().build();
