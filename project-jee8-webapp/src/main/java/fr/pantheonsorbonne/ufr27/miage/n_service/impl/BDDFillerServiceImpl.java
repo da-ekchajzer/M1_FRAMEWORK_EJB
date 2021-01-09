@@ -93,19 +93,19 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 				LocalDateTime.now().plus(130, ChronoUnit.SECONDS));
 		Arret arret11 = new Arret(gares.get("Lyon - Pardieu"), LocalDateTime.now().plus(150, ChronoUnit.SECONDS), null);
 
-		Arret arret12 = new Arret(gares.get("Lyon - Pardieu"), null, LocalDateTime.now().plus(100, ChronoUnit.SECONDS));
-		Arret arret13 = new Arret(gares.get("Dijon-Ville"), LocalDateTime.now().plus(120, ChronoUnit.SECONDS),
-				LocalDateTime.now().plus(130, ChronoUnit.SECONDS));
+		Arret arret12 = new Arret(gares.get("Lyon - Pardieu"), null, LocalDateTime.now().plus(10, ChronoUnit.SECONDS));
+		Arret arret13 = new Arret(gares.get("Dijon-Ville"), LocalDateTime.now().plus(30, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(40, ChronoUnit.SECONDS));
 		Arret arret14 = new Arret(gares.get("Marseille - St Charles"),
-				LocalDateTime.now().plus(150, ChronoUnit.SECONDS), null);
+				LocalDateTime.now().plus(60, ChronoUnit.SECONDS), null);
 
 		Arret arret15 = new Arret(gares.get("Marseille - St Charles"), null,
+				LocalDateTime.now().plus(70, ChronoUnit.SECONDS));
+		Arret arret16 = new Arret(gares.get("Narbonne"), LocalDateTime.now().plus(90, ChronoUnit.SECONDS),
 				LocalDateTime.now().plus(100, ChronoUnit.SECONDS));
-		Arret arret16 = new Arret(gares.get("Narbonne"), LocalDateTime.now().plus(120, ChronoUnit.SECONDS),
+		Arret arret17 = new Arret(gares.get("Sete"), LocalDateTime.now().plus(120, ChronoUnit.SECONDS),
 				LocalDateTime.now().plus(130, ChronoUnit.SECONDS));
-		Arret arret17 = new Arret(gares.get("Sete"), LocalDateTime.now().plus(150, ChronoUnit.SECONDS),
-				LocalDateTime.now().plus(160, ChronoUnit.SECONDS));
-		Arret arret18 = new Arret(gares.get("Perpignan"), LocalDateTime.now().plus(180, ChronoUnit.SECONDS), null);
+		Arret arret18 = new Arret(gares.get("Perpignan"), LocalDateTime.now().plus(150, ChronoUnit.SECONDS), null);
 
 		Arret arret19 = new Arret(gares.get("Paris - Montparnasse"), null,
 				LocalDateTime.now().plus(10, ChronoUnit.SECONDS));

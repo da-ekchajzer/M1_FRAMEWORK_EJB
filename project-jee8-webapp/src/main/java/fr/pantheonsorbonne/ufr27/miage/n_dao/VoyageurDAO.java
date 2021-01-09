@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
@@ -29,48 +30,53 @@ public class VoyageurDAO {
 				.setParameter("id", v.getId()).getResultList();
 	}
 
-	public void majVoyageursDansTrainAvecResa(TrainAvecResa train, Itineraire itineraire,
-			Set<Trajet> trajetsItineraire) {
-		List<Trajet> trajetsVoyageur;
-		Iterator<Trajet> it;
-		Trajet t, nextTrajet = null;
+	public void majVoyageursDansTrainAvecResa(Train train, Itineraire itineraire, Set<Trajet> trajetsItineraire)
+			throws TrainSansResaNotExpectedException {
+		if (train instanceof TrainAvecResa) {
+			TrainAvecResa trainAvecResa = (TrainAvecResa) train;
+			List<Trajet> trajetsVoyageur;
+			Iterator<Trajet> it;
+			Trajet t, nextTrajet = null;
 
-		em.getTransaction().begin();
+			em.getTransaction().begin();
 
-		for (Trajet trajet : trajetsItineraire) {
-			if (itineraire.getArretActuel().getGare().equals(trajet.getGareDepart())) {
-				nextTrajet = trajet;
-				break;
+			for (Trajet trajet : trajetsItineraire) {
+				if (itineraire.getArretActuel().getGare().equals(trajet.getGareDepart())) {
+					nextTrajet = trajet;
+					break;
+				}
 			}
-		}
-		List<Voyageur> voyageursToRemove = new ArrayList<Voyageur>();
-		for (Voyageur voyageur : itineraire.getVoyageurs()) {
-			// Les voyageurs qui doivent descendre
-			trajetsVoyageur = voyageur.getVoyageActuel().getTrajets();
-			it = trajetsVoyageur.iterator();
+			List<Voyageur> voyageursToRemove = new ArrayList<Voyageur>();
+			for (Voyageur voyageur : itineraire.getVoyageurs()) {
+				// Les voyageurs qui doivent descendre
+				trajetsVoyageur = voyageur.getVoyageActuel().getTrajets();
+				it = trajetsVoyageur.iterator();
 
-			while (it.hasNext()) {
-				t = it.next();
-				// Voyageurs qui ont une correspondance
-				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && !t.equals(nextTrajet)) {
-					train.removeVoyageur(voyageur);
+				while (it.hasNext()) {
+					t = it.next();
+					// Voyageurs qui ont une correspondance
+					if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && !t.equals(nextTrajet)) {
+						trainAvecResa.removeVoyageur(voyageur);
+						voyageursToRemove.add(voyageur);
+					}
+					// Les voyageurs qui doivent monter
+					if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && t.equals(nextTrajet)
+							&& LocalDateTime.now().isBefore(itineraire.getArretActuel().getHeureDepartDeGare())) {
+						trainAvecResa.addVoyageur(voyageur);
+					}
+				}
+				// Les voyageurs qui doivent descendre
+				if (voyageur.getVoyageActuel().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
+					trainAvecResa.removeVoyageur(voyageur);
 					voyageursToRemove.add(voyageur);
 				}
-				// Les voyageurs qui doivent monter
-				if (itineraire.getArretActuel().getGare().equals(t.getGareDepart()) && t.equals(nextTrajet)
-						&& LocalDateTime.now().isBefore(itineraire.getArretActuel().getHeureDepartDeGare())) {
-					train.addVoyageur(voyageur);
-				}
 			}
-			// Les voyageurs qui doivent descendre
-			if (voyageur.getVoyageActuel().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
-				train.removeVoyageur(voyageur);
-				voyageursToRemove.add(voyageur);
-			}
+			itineraire.getVoyageurs().removeAll(voyageursToRemove);
+
+			em.getTransaction().commit();
+		} else {
+			throw new TrainSansResaNotExpectedException("Expected only an instance of 'TrainAvecResa'");
 		}
-		itineraire.getVoyageurs().removeAll(voyageursToRemove);
-		
-		em.getTransaction().commit();
 	}
 
 	public void mettreVoyageursDansItineraire(Itineraire itineraire, List<Voyageur> voyageursToAdd) {
@@ -87,6 +93,19 @@ public class VoyageurDAO {
 			v.setVoyageActuel(newVoyageActuel);
 		}
 		em.getTransaction().commit();
+	}
+
+	public class TrainSansResaNotExpectedException extends Exception {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 3544186233862870340L;
+
+		public TrainSansResaNotExpectedException(String message) {
+			super(message);
+		}
+
 	}
 
 }

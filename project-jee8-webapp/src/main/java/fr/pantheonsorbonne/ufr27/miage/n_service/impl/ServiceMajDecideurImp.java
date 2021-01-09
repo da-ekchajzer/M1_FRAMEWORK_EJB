@@ -45,7 +45,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 
 	@Override
 	public void decideRetard(Retard retard) {
-		if (retard.getItineraire().getTrain().getClass().isInstance(TrainSansResa.class)) {
+		if (retard.getItineraire().getTrain() instanceof TrainSansResa) {
 			serviceMajExecuteur.retarderItineraire(retard.getItineraire(), retard.getTempsDeRetard());
 			return;
 		}

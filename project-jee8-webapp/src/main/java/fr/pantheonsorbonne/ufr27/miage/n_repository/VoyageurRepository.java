@@ -10,12 +10,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO.TrainSansResaNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
-import fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Train;
 
 @ManagedBean
 @RequestScoped
@@ -33,20 +34,20 @@ public class VoyageurRepository {
 	@Inject
 	TrajetRepository trajetRepository;
 
-	@Inject
-	TrainRepository trainRepository;
-
 	public List<Voyageur> getVoyageursByVoyageActuel(Voyage v) {
 		return voyageurDAO.getVoyageursByVoyageActuel(v);
 	}
 
-	public void majVoyageursDansTrainAvecResa(int idTrain) {
-		TrainAvecResa train = (TrainAvecResa) trainRepository.getTrainById(idTrain);
-
-		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+	public void majVoyageursDansTrainAvecResa(Train train) {
+		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(train.getId(),
+				CodeEtatItinieraire.EN_COURS);
 		Set<Trajet> trajetsItineraire = new TreeSet<Trajet>(trajetRepository.getTrajetsByItineraire(itineraire));
 
-		voyageurDAO.majVoyageursDansTrainAvecResa(train, itineraire, trajetsItineraire);
+		try {
+			voyageurDAO.majVoyageursDansTrainAvecResa(train, itineraire, trajetsItineraire);
+		} catch (TrainSansResaNotExpectedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void mettreVoyageursDansItineraire(int idTrain) {
