@@ -31,22 +31,25 @@ public class GatewayInfocentre {
 		return null;
 	}
 
-	public static void sendCurrenArret(ArretJAXB arretJAXB, int idTrain) {
+	public static Response sendCurrenArret(ArretJAXB arretJAXB, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
 		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri()).request()
 				.put(Entity.xml(arretJAXB));
+		return resp;
 	}
 
-	public static void updateIncident(int etatIncident, int idTrain) {
+	public static Response updateIncident(int etatIncident, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
 		Response resp = client.target(webTarget.path("incident").path("" + idTrain).path("" + etatIncident).getUri())
 				.request().put(Entity.text(""));
+		return resp;
 	}
 
-	public static void sendIncident(IncidentJAXB incidentJAXB, int idTrain) {
+	public static Response sendIncident(IncidentJAXB incidentJAXB, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
 		Response resp = webTarget.path("incident").path("" + idTrain).request().accept(MediaType.APPLICATION_XML)
 				.post(Entity.xml(incidentJAXB));
+		return resp;
 	}
 
 }

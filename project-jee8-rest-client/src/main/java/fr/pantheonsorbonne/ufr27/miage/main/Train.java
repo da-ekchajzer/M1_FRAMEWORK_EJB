@@ -1,6 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.main;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
@@ -30,6 +31,8 @@ public class Train implements Runnable {
 	// liste des arrêts de l'Itinéraire correspondant
 	List<ArretTrain> arrets;
 	int curentIdArret;
+	LocalTime retardtotal;
+	LocalDateTime initialArrivalTime;
 
 	IncidentTrain incident;
 
@@ -38,6 +41,8 @@ public class Train implements Runnable {
 		this.idTrain = idTrain;
 		this.etatTrain = 0;
 		this.curentIdArret = 0;
+		this.retardtotal = LocalTime.MIN;
+		this.initialArrivalTime = null;
 	}
 
 	@Override
@@ -70,10 +75,14 @@ public class Train implements Runnable {
 			if (updateItineraire(GatewayInfocentre.getItineraire(idTrain))) {
 				curentIdArret = 0;
 				etatTrain = 1;
-				System.out.println("[ " + idTrain + " ] - Début de l'itineraire...");
+				System.out.println("[ " + idTrain + " ] - Debut de l'itineraire...");
 				System.out.println("[ " + idTrain + " ] >> arrets desservis : " + printArrets(arrets));
 				GatewayInfocentre.sendCurrenArret(arrets.get(curentIdArret).getXMLArret(), idTrain);
 				System.out.println("[ " + idTrain + " ] >> arret actuel : " + arrets.get(curentIdArret).getNomGare());
+				initialArrivalTime = arrets.get(arrets.size() - 1).getheureArrivee();
+				System.out.println(
+						"[ " + idTrain + " ] >> arrivée prevue au terminus : " + initialArrivalTime.toLocalTime());
+				printRetardTotal();
 			}
 			break;
 
@@ -83,10 +92,13 @@ public class Train implements Runnable {
 				GatewayInfocentre.sendCurrenArret(arrets.get(++curentIdArret).getXMLArret(), idTrain);
 				System.out.println("[ " + idTrain + " ] >> arret actuel : " + arrets.get(curentIdArret).getNomGare());
 				updateItineraire(GatewayInfocentre.getItineraire(idTrain));
+				printRetardTotal();
 			}
 			if (arrets.get(curentIdArret).getHeureDepart() == null) {
 				etatTrain = 0;
 				System.out.println("[ " + idTrain + " ] - ...fin de l'itineraire.");
+				System.out.println("[ " + idTrain + " ] >> arrivee reelle au terminus : "
+						+ arrets.get(curentIdArret).getheureArrivee().toLocalTime());
 			} else {
 				genererRandomIncident();
 			}
@@ -99,11 +111,10 @@ public class Train implements Runnable {
 			}
 			GatewayInfocentre.updateIncident(incident.getXMLIncident().getEtatIncident(), idTrain);
 			if (etatTrain == 1) {
-				System.out.println(
-						"[ " + idTrain + " ] ***** ...fin de l'incident de type " + incident.getTypeIncident() + ".");
+				updateItineraire(GatewayInfocentre.getItineraire(idTrain));
+				System.out.println("[ " + idTrain + " ] ** ...fin de l'incident.");
 			} else {
-				System.out.println("[ " + idTrain + " ] ***** L'incident de type " + incident.getTypeIncident()
-						+ " est toujours en cours...");
+				System.out.println("[ " + idTrain + " ] ** ...");
 			}
 			break;
 
@@ -121,8 +132,9 @@ public class Train implements Runnable {
 			etatTrain = 2;
 			IncidentJAXB incidentJAXB = incident.getXMLIncident();
 			GatewayInfocentre.sendIncident(incidentJAXB, idTrain);
-			System.out.println(
-					"[ " + idTrain + " ] ***** Début d'un incident de type " + incident.getTypeIncident() + "...");
+			System.out.println("[ " + idTrain + " ] ** Declaration d'un incident...");
+		} else {
+			System.out.println("[ " + idTrain + " ] -");
 		}
 	}
 
@@ -142,7 +154,6 @@ public class Train implements Runnable {
 			ArretJAXB arreti = arretsJAXB.get(i);
 			arrets.add(new ArretTrain(arreti.getGare(), xmlGregorianCalendar2LocalDateTime(arreti.getHeureArrivee()),
 					xmlGregorianCalendar2LocalDateTime(arreti.getHeureDepart())));
-			System.out.println("[ " + idTrain + " ] - / " + arrets.get(i).toString());
 		}
 		return true;
 	}
@@ -154,7 +165,30 @@ public class Train implements Runnable {
 		return false;
 	}
 
-	public String printArrets(List<ArretTrain> arrets) {
+	private void printRetardTotal() {
+		retardtotal = arrets.get(arrets.size() - 1).getheureArrivee().toLocalTime()
+				.minusSeconds(initialArrivalTime.toLocalTime().toSecondOfDay());
+		int h = retardtotal.getHour();
+		int m = retardtotal.getMinute();
+		int s = retardtotal.getSecond();
+		String str = "";
+		if (h == m && m == s && s == 0) {
+			str += "le train est à l'heure";
+		} else {
+			if (h != 0) {
+				str += h + " heure(s) ";
+			}
+			if (m != 0) {
+				str += m + " minute(s) ";
+			}
+			if (s != 0) {
+				str += s + " seconde(s)";
+			}
+		}
+		System.out.println("[ " + idTrain + " ] $ retard total depuis le debut : " + str);
+	}
+
+	private String printArrets(List<ArretTrain> arrets) {
 		String str = "";
 		for (ArretTrain arretTrain : arrets) {
 			str += arretTrain.getNomGare() + " / ";

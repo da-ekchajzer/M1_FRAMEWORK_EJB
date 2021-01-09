@@ -160,8 +160,8 @@ public class TestServiceIncident {
 		ChronoUnit chronoUnitIncident = ChronoUnit.MINUTES;
 		Train t = this.trainRepository.getTrainById(1);
 		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(),
-				CodeEtatItinieraire.EN_COURS);
-		assertEquals(1, itineraire.getEtat());
+				CodeEtatItinieraire.EN_INCIDENT);
+		assertEquals(2, itineraire.getEtat());
 		assertTrue(this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
 				ajoutDureeIncident, chronoUnitIncident));
 		assertNotNull(itineraire);

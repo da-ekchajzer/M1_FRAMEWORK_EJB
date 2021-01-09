@@ -100,31 +100,24 @@ public class Incident {
 		public static LocalTime getTempEstimation(int code) {
 			switch (code) {
 			case 1:
-				// return LocalTime.of(0, 5, 0, 0);
-				return LocalTime.of(1, 0, 0, 0);
+				return LocalTime.of(0, 5, 0, 0);
 
 			case 2:
-				// return LocalTime.of(3, 0, 0, 0);
-				return LocalTime.of(1, 0, 0, 0);
+				return LocalTime.of(3, 0, 0, 0);
 
 			case 3:
-				// return LocalTime.of(1, 0, 0, 0);
 				return LocalTime.of(1, 0, 0, 0);
 
 			case 4:
-				// return LocalTime.of(1, 30, 0, 0);
-				return LocalTime.of(1, 0, 0, 0);
+				return LocalTime.of(1, 30, 0, 0);
 
 			case 5:
-				// return LocalTime.of(2, 0, 0, 0);
-				return LocalTime.of(1, 0, 0, 0);
+				return LocalTime.of(2, 0, 0, 0);
 
 			case 6:
-				// return LocalTime.of(0, 30, 0, 0);
-				return LocalTime.of(1, 0, 0, 0);
+				return LocalTime.of(0, 30, 0, 0);
 
 			default:
-				// return LocalTime.of(0, 0, 0, 0);
 				return LocalTime.of(0, 0, 0, 0);
 			}
 
