@@ -16,12 +16,9 @@ public class ArretMapper {
 		LocalDateTime heureDepart = a.getHeureDepartDeGare();
 
 		arretJAXB.setGare(a.getGare().getNom());
-		if (heureArrivee != null) {
-			arretJAXB.setHeureArrivee(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureArriveeEnGare()));
-		}
-		if (heureDepart != null) {
-			arretJAXB.setHeureDepart(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureDepartDeGare()));
-		}
+		arretJAXB.setHeureArrivee(MapperUtils.localDateTimeToXmlGregorianCalendar(heureArrivee));
+		arretJAXB.setHeureDepart(MapperUtils.localDateTimeToXmlGregorianCalendar(heureDepart));
+
 		return arretJAXB;
 
 	}

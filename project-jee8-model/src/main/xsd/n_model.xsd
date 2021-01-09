@@ -39,7 +39,7 @@
 
 	<xsd:complexType name="incidentJAXB">
 		<xsd:sequence>
-			<xsd:element name="heure_incident" type="xsd:date"></xsd:element>
+			<xsd:element name="debut_incident" type="xsd:dateTime"></xsd:element>
 			<xsd:element name="type_incident" type="xsd:int"></xsd:element>
 			<xsd:element name="etat_incident" type="xsd:int"></xsd:element>
 		</xsd:sequence>

@@ -80,8 +80,8 @@ public class TestIncidentDAO {
 
 	@Test
 	void testMajEtatIncidentEnBDD() {
-		incidentDAO.majEtatIncidentEnBD(incidentDAO.getIncidentById(1), 0);
-		assertEquals(0, incidentDAO.getIncidentById(1).getEtat());
+		incidentDAO.majEtatIncidentEnBD(incidentDAO.getIncidentById(1), CodeEtatIncident.RESOLU);
+		assertEquals(CodeEtatIncident.RESOLU.getCode(), incidentDAO.getIncidentById(1).getEtat());
 	}
 
 	@Test

@@ -5,14 +5,13 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeTypeIncident;
 
 public class IncidentMapper {
-	
-	public static Incident mapIncidentJAXBToIncident(IncidentJAXB  i) {
+
+	public static Incident mapIncidentJAXBToIncident(IncidentJAXB i) {
 		Incident incident = new Incident();
 		incident.setEtat(i.getEtatIncident());
-		incident.setHeureDebut(MapperUtils.xmlGregorianCalendarToLocalDateTime(i.getHeureIncident()));
 		incident.setTypeIncident(i.getTypeIncident());
-		incident.setHeureTheoriqueDeFin(CodeTypeIncident.getTempEstimation(i.getTypeIncident()));
-		incident.setDuree(CodeTypeIncident.getTempEstimation(i.getTypeIncident()).getMinute());
+		incident.setHeureDebut(MapperUtils.xmlGregorianCalendarToLocalDateTime(i.getDebutIncident()));
+		incident.initHeureTheoriqueDeFin(CodeTypeIncident.getTempEstimation(i.getTypeIncident()));
 		return incident;
 	}
 }

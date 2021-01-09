@@ -9,30 +9,46 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 
 @RequestScoped
 public class ArretRepository {
-	
+
 	@Inject
 	ArretDAO arretDAO;
-	
+
 	public void supprimerArret(Arret arret) {
-		this.arretDAO.supprimerArret(arret);
+		arretDAO.supprimerArret(arret);
 	}
-	
+
 	public void avancerHeureArriveeEnGare(Arret a, int tempsAvance) {
-		this.arretDAO.avancerHeureArriveeEnGare(a, tempsAvance);
-	}
-	
-	public void retarderHeureArriveeEnGare(Arret a, int tempsRetard) {
-		if(a.getHeureArriveeEnGare() != null) this.arretDAO.retarderHeureArriveeEnGare(a, tempsRetard);
-	}
-	
-	public void retardHeureDepartDeGare(Arret a, int tempsRetard) {
-		if(a.getHeureDepartDeGare() != null) this.arretDAO.retardHeureDepartDeGare(a, tempsRetard);
-	}
-	
-	public Arret getArretParItineraireEtNomGare(Itineraire itineraire, String nomGare) {
-		for(Arret a : itineraire.getArretsDesservis()) {
-			if(a.getGare().getNom().equals(nomGare)) return a;
+		if (a.getHeureArriveeEnGare() != null) {
+			arretDAO.avancerHeureArriveeEnGare(a, tempsAvance);
 		}
-		return null;
+	}
+
+	public void avancerHeureHeureDepartDeGare(Arret a, int tempsAvance) {
+		if (a.getHeureDepartDeGare() != null) {
+			arretDAO.avancerHeureDepartDeGare(a, tempsAvance);
+		}
+	}
+
+	public void retarderHeureArriveeEnGare(Arret a, int tempsRetard) {
+		if (a.getHeureArriveeEnGare() != null) {
+			arretDAO.retarderHeureArriveeEnGare(a, tempsRetard);
+		}
+	}
+
+	public void retarderHeureDepartDeGare(Arret a, int tempsRetard) {
+		if (a.getHeureDepartDeGare() != null) {
+			arretDAO.retardHeureDepartDeGare(a, tempsRetard);
+		}
+	}
+
+	public Arret getArretParItineraireEtNomGare(Itineraire itineraire, String nomGare) {
+		Arret arret = null;
+		for (Arret a : itineraire.getArretsDesservis()) {
+			if (a.getGare().getNom().equals(nomGare)) {
+				arret = a;
+				break;
+			}
+		}
+		return arret;
 	}
 }

@@ -15,12 +15,12 @@ import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ObjectFactory;
 public class ArretTrain {
 
 	String nomGare;
-	LocalDateTime heureArrive;
+	LocalDateTime heureArrivee;
 	LocalDateTime heureDepart;
 
 	public ArretTrain(String nomGare, LocalDateTime heureArrive, LocalDateTime heureDepart) {
 		this.nomGare = nomGare;
-		this.heureArrive = heureArrive;
+		this.heureArrivee = heureArrive;
 		this.heureDepart = heureDepart;
 	}
 
@@ -29,8 +29,8 @@ public class ArretTrain {
 		ArretJAXB arret = factory.createArretJAXB();
 
 		arret.setGare(nomGare);
-		arret.setHeureArrivee(this.localDateTimeToXmlGregorianCalendar(this.heureArrive));
-		arret.setHeureDepart(this.localDateTimeToXmlGregorianCalendar(this.heureDepart));
+		arret.setHeureArrivee(localDateTimeToXmlGregorianCalendar(heureArrivee));
+		arret.setHeureDepart(localDateTimeToXmlGregorianCalendar(heureDepart));
 		return arret;
 	}
 
@@ -65,11 +65,16 @@ public class ArretTrain {
 	}
 
 	public LocalDateTime getheureArrivee() {
-		return heureArrive;
+		return heureArrivee;
 	}
 
 	public void setheureArrive(LocalDateTime heureArrive) {
-		this.heureArrive = heureArrive;
+		this.heureArrivee = heureArrive;
+	}
+
+	@Override
+	public String toString() {
+		return "[nomGare = " + nomGare + ", heureArrivee = " + heureArrivee + ", heureDepart = " + heureDepart + "]";
 	}
 
 }

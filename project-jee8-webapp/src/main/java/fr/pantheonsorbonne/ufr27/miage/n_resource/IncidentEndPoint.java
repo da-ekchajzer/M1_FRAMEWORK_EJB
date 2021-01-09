@@ -27,7 +27,7 @@ public class IncidentEndPoint {
 		System.out.println("== Infocentre - creerIncident ==\nidTrain : " + trainId);
 
 		if (service.creerIncident(trainId, incident)) {
-			return Response.noContent().build();
+			return Response.ok().build();
 		}
 		return Response.serverError().build();
 	}
@@ -37,7 +37,7 @@ public class IncidentEndPoint {
 	public Response majIncident(@PathParam("trainId") int trainId, @PathParam("etatIncident") int etatIncident) {
 		System.out.println("== Infocentre - majIncident ==\nidTrain : " + trainId);
 		if (service.majEtatIncident(trainId, etatIncident, 5, ChronoUnit.MINUTES)) {
-			return Response.noContent().build();
+			return Response.ok().build();
 		}
 		return Response.serverError().build();
 	}

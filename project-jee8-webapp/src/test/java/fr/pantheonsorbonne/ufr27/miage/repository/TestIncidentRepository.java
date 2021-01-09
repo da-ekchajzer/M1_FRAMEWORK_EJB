@@ -44,15 +44,14 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestIncidentRepository {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(IncidentRepository.class, IncidentDAO.class,
-			 ItineraireRepository.class, ItineraireDAO.class, TrainRepository.class,
-			 TrainDAO.class, TrajetRepository.class, TrajetDAO.class, 
-			 ArretRepository.class, ArretDAO.class, TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator
+			.from(IncidentRepository.class, IncidentDAO.class, ItineraireRepository.class, ItineraireDAO.class,
+					TrainRepository.class, TrainDAO.class, TrajetRepository.class, TrajetDAO.class,
+					ArretRepository.class, ArretDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
-	
 	@Inject
 	TrainRepository trainRepository;
 	@Inject
@@ -60,56 +59,48 @@ public class TestIncidentRepository {
 	@Inject
 	IncidentRepository incidentRepository;
 
-
 	@BeforeAll
 	void initVarInDB() {
 		Train train1 = new TrainAvecResa(1, "Marque");
 		Itineraire itineraire1 = new Itineraire();
 		itineraire1.setTrain(train1);
 		itineraire1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
-		
+
 		em.getTransaction().begin();
 		em.persist(train1);
 		em.persist(itineraire1);
 		em.getTransaction().commit();
 	}
-	
+
 	@Test
 	@Order(1)
 	void testCreerIncident() {
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = trainRepository.getTrainById(1);
 		assertNotNull(t);
 		Incident i = new Incident();
 		i.setTypeIncident(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode());
 		i.setEtat(CodeEtatIncident.EN_COURS.getCode());
-		i.setDuree(30);
 		assertNotNull(i);
-		assertTrue(this.incidentRepository.creerIncident(t.getId(), i));
-		Itineraire itAssocieT = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		assertEquals(itAssocieT.getIncident(), i);
-		
-		em.getTransaction().begin();
-		em.persist(i);
-		itAssocieT.setIncident(i);
-		em.getTransaction().commit();
-		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), itAssocieT.getIncident().getTypeIncident());
+		assertTrue(incidentRepository.creerIncident(t.getId(), i));
+		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_INCIDENT);
+		assertEquals(it.getIncident(), i);
+		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), it.getIncident().getTypeIncident());
 	}
-	
+
 	@Test
 	@Order(2)
 	void testGetIncidentByIdTrain() {
-		Train t = this.trainRepository.getTrainById(1);
-		assertEquals(30, this.incidentRepository.getIncidentByIdTrain(t.getId()).getDuree());
+		Train t = trainRepository.getTrainById(1);
+		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(),
+				incidentRepository.getIncidentByIdTrain(t.getId()).getTypeIncident());
 	}
-	
+
 	@Test
 	@Order(3)
 	void testUpdateEtatIncident() {
-		Train t = this.trainRepository.getTrainById(1);		
-		this.incidentRepository.updateEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode());
-		assertEquals(CodeEtatIncident.RESOLU.getCode(),  this.incidentRepository.getIncidentByIdTrain(t.getId()).getEtat());
+		Train t = trainRepository.getTrainById(1);
+		incidentRepository.majEtatIncident(incidentRepository.getIncidentByIdTrain(t.getId()), CodeEtatIncident.RESOLU);
+		assertEquals(CodeEtatIncident.RESOLU.getCode(), incidentRepository.getIncidentByIdTrain(t.getId()).getEtat());
 	}
-	
-	
 
 }

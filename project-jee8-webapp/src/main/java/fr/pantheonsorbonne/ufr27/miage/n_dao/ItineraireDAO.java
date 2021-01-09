@@ -28,10 +28,10 @@ public class ItineraireDAO {
 		return em.createNamedQuery("Itineraire.getItineraireById", Itineraire.class).setParameter("id", idItineraire)
 				.getSingleResult();
 	}
-	
+
 	public Itineraire getItineraireByBusinessId(String businessIdItineraire) {
-		return em.createNamedQuery("Itineraire.getItineraireByBusinessId", Itineraire.class).setParameter("id", businessIdItineraire)
-				.getSingleResult();
+		return em.createNamedQuery("Itineraire.getItineraireByBusinessId", Itineraire.class)
+				.setParameter("id", businessIdItineraire).getSingleResult();
 	}
 
 	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat)
@@ -50,13 +50,17 @@ public class ItineraireDAO {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getItineraireByTrainEtEtat", Itineraire.class)
 				.setParameter("idTrain", idTrain).setParameter("etat", etat.getCode()).getResultList();
 	}
-	
+
 	public List<Itineraire> getAllItineraires() {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getAllItineraires", Itineraire.class).getResultList();
 	}
 
 	public void majEtatItineraire(Itineraire itineraire, CodeEtatItinieraire newEtat) {
 		em.getTransaction().begin();
+		if (itineraire.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()
+				&& newEtat.equals(CodeEtatItinieraire.EN_COURS)) {
+			itineraire.setIncident(null);
+		}
 		itineraire.setEtat(newEtat.getCode());
 		em.getTransaction().commit();
 	}
@@ -66,53 +70,54 @@ public class ItineraireDAO {
 		itineraire.setArretActuel(arret);
 		em.getTransaction().commit();
 	}
-	
+
 	public void ajouterUnArretEnCoursItineraire(Itineraire itineraire, Arret arret) {
 		List<Arret> arretsDeTransition = new LinkedList<Arret>();
-		
+
 		// Ajouter l'arrêt à la fin de l'itinéraire
-		if(arret.getHeureDepartDeGare() == null || arret.getHeureArriveeEnGare() == null) {
+		if (arret.getHeureDepartDeGare() == null || arret.getHeureArriveeEnGare() == null) {
 			System.err.println("Veuillez utiliser la méthode 'ajouterUnArretEnBoutItineraire()'");
 			return;
 		}
 		// Ajouter l'arrêt en cours d'itinéraire
 		else {
 			// Déterminer la position à laquelle on doit ajouter l'arrêt
-			for (int i = 0 ; i < itineraire.getArretsDesservis().size() ; i++) {
-				if(itineraire.getArretsDesservis().get(i).getHeureDepartDeGare() != null && 
-						itineraire.getArretsDesservis().get(i).getHeureDepartDeGare().isBefore(arret.getHeureDepartDeGare())) {
+			for (int i = 0; i < itineraire.getArretsDesservis().size(); i++) {
+				if (itineraire.getArretsDesservis().get(i).getHeureDepartDeGare() != null && itineraire
+						.getArretsDesservis().get(i).getHeureDepartDeGare().isBefore(arret.getHeureDepartDeGare())) {
 					arretsDeTransition.add(itineraire.getArretsDesservis().get(i));
 				} else {
 					arretsDeTransition.add(arret);
-					for(int j = i ; j < itineraire.getArretsDesservis().size() ; j++) {
+					for (int j = i; j < itineraire.getArretsDesservis().size(); j++) {
 						arretsDeTransition.add(itineraire.getArretsDesservis().get(j));
 					}
 					break;
 				}
 			}
 		}
-		
+
 		em.getTransaction().begin();
 		itineraire.setArretsDesservis(arretsDeTransition);
 		em.getTransaction().commit();
 	}
-	
+
 	/**
 	 * 
 	 * @param itineraire
 	 * @param arret
-	 * @param heure heureDeDepart de l'ancienne gare d'arrivée ou heureArrivee de l'ancienne gare de départ
+	 * @param heure      heureDeDepart de l'ancienne gare d'arrivée ou heureArrivee
+	 *                   de l'ancienne gare de départ
 	 */
 	public void ajouterUnArretEnBoutItineraire(Itineraire itineraire, Arret arret, LocalDateTime heure) {
 		List<Arret> arretsDeTransition = new LinkedList<Arret>();
 
-		if(arret.getHeureArriveeEnGare() == null) {
+		if (arret.getHeureArriveeEnGare() == null) {
 			Arret ancienDepartus = itineraire.getArretsDesservis().get(0);
 			ancienDepartus.setHeureArriveeEnGare(heure);
 			arretsDeTransition.add(arret);
 			arretsDeTransition.addAll(itineraire.getArretsDesservis());
-		} else if(arret.getHeureDepartDeGare() == null) {
-			Arret ancienTerminus = itineraire.getArretsDesservis().get(itineraire.getArretsDesservis().size()-1);
+		} else if (arret.getHeureDepartDeGare() == null) {
+			Arret ancienTerminus = itineraire.getArretsDesservis().get(itineraire.getArretsDesservis().size() - 1);
 			ancienTerminus.setHeureDepartDeGare(heure);
 			arretsDeTransition.addAll(itineraire.getArretsDesservis());
 			arretsDeTransition.add(arret);
@@ -120,7 +125,7 @@ public class ItineraireDAO {
 			System.err.println("Veuillez utiliser la méthode 'ajouterUnArretEnCoursItineraire()'");
 			return;
 		}
-		
+
 		em.getTransaction().begin();
 		itineraire.setArretsDesservis(arretsDeTransition);
 		em.getTransaction().commit();
@@ -129,8 +134,9 @@ public class ItineraireDAO {
 	public void retarderTrain(LocalTime tempsRetard, Arret arretRetarde, Itineraire itineraire) {
 		em.getTransaction().begin();
 
-		// S'il n'y a pas d'arrêt actuel (=> Itineraire en attente) alors on retarde tous les arrêts
-		if(arretRetarde == null) {
+		// S'il n'y a pas d'arrêt actuel (=> Itineraire en attente) alors on retarde
+		// tous les arrêts
+		if (arretRetarde == null) {
 			for (Arret a : itineraire.getArretsDesservis()) {
 				a.setHeureArriveeEnGare(
 						a.getHeureArriveeEnGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
@@ -139,32 +145,36 @@ public class ItineraireDAO {
 							a.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
 				}
 			}
-		} 
-		// Sinon l'itinéraire est en cours, on retarde que les arrêts après l'arret actuel (arretRetarde)
+		}
+		// Sinon l'itinéraire est en cours, on retarde que les arrêts après l'arret
+		// actuel (arretRetarde)
 		else {
-			if (arretRetarde.getHeureArriveeEnGare() != null && 
-					LocalDateTime.now().isBefore(arretRetarde.getHeureArriveeEnGare())) {
+			if (arretRetarde.getHeureArriveeEnGare() != null
+					&& LocalDateTime.now().isBefore(arretRetarde.getHeureArriveeEnGare())) {
 				arretRetarde.setHeureArriveeEnGare(
 						arretRetarde.getHeureArriveeEnGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
 			}
-			
-			if (arretRetarde.getHeureDepartDeGare() != null && 
-					LocalDateTime.now().isBefore(arretRetarde.getHeureDepartDeGare())) {
+
+			if (arretRetarde.getHeureDepartDeGare() != null
+					&& LocalDateTime.now().isBefore(arretRetarde.getHeureDepartDeGare())) {
 				arretRetarde.setHeureDepartDeGare(
 						arretRetarde.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
 			}
-			
+
 			// On va y stocker les différents arrêts à retarder en fonction des cas suivants
 			Set<Arret> arretsARetardes = new TreeSet<>();
-			// Si l'arret actuel est la gare de départ (arretRetarde.getHeureArriveeEnGare == null), 
+			// Si l'arret actuel est la gare de départ (arretRetarde.getHeureArriveeEnGare
+			// == null),
 			// on retarde tous les arrêts de l'itinéraire sauf le premier
-			if(arretRetarde.getHeureArriveeEnGare() == null) {
+			if (arretRetarde.getHeureArriveeEnGare() == null) {
 				arretsARetardes.addAll(itineraire.getArretsDesservis());
 			}
-			// Si l'arret actuel est le dernier de l'itinéraire, on n'a aucun arret a retarder
-			// Si l'arret actuel est un arret en plein milieu de l'itinéraire, on ne retarde que les suivants			
-			else if(arretRetarde.getHeureArriveeEnGare() != null && arretRetarde.getHeureDepartDeGare() != null) {
-				for(Arret a : itineraire.getArretsDesservis()) {
+			// Si l'arret actuel est le dernier de l'itinéraire, on n'a aucun arret a
+			// retarder
+			// Si l'arret actuel est un arret en plein milieu de l'itinéraire, on ne retarde
+			// que les suivants
+			else if (arretRetarde.getHeureArriveeEnGare() != null && arretRetarde.getHeureDepartDeGare() != null) {
+				for (Arret a : itineraire.getArretsDesservis()) {
 					if (a.getHeureArriveeEnGare().isAfter(arretRetarde.getHeureArriveeEnGare())) {
 						arretsARetardes.add(a);
 					}
@@ -172,12 +182,14 @@ public class ItineraireDAO {
 			}
 			// On retarde chaque arret compris dans arretsARetardes
 			for (Arret a : arretsARetardes) {
-				// Si arretActuel = gare de départ de l'itinéraire on ne touche pas son heure d'arrivée en gare
-				if(a.getHeureArriveeEnGare() != null) {
+				// Si arretActuel = gare de départ de l'itinéraire on ne touche pas son heure
+				// d'arrivée en gare
+				if (a.getHeureArriveeEnGare() != null) {
 					a.setHeureArriveeEnGare(
 							a.getHeureArriveeEnGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
 				}
-				// Si arretActuel = gare d'arrivée de l'itinéraire on ne touche pas son heure de départ de gare
+				// Si arretActuel = gare d'arrivée de l'itinéraire on ne touche pas son heure de
+				// départ de gare
 				if (a.getHeureDepartDeGare() != null) {
 					a.setHeureDepartDeGare(
 							a.getHeureDepartDeGare().plus(tempsRetard.toSecondOfDay(), ChronoUnit.SECONDS));
@@ -191,7 +203,7 @@ public class ItineraireDAO {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getAllItinerairesByEtat", Itineraire.class)
 				.setParameter("etat", codeEtatItinieraire.getCode()).getResultList();
 	}
-	
+
 	public class MulitpleResultsNotExpectedException extends Exception {
 
 		/**
