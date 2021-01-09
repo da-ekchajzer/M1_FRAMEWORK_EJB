@@ -33,6 +33,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO;
+import fr.pantheonsorbonne.ufr27.miage.n_dao.VoyageurDAO.TrainSansResaNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
@@ -223,7 +224,11 @@ public class TestVoyageurDAO {
 			trainAvecResa = (TrainAvecResa) train;
 		}
 		int prevSize = trainAvecResa.getVoyageurs().size();
-		voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire1, trajetsItineraire);
+		try {
+			voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire1, trajetsItineraire);
+		} catch (TrainSansResaNotExpectedException e) {
+			e.printStackTrace();
+		}
 		assertTrue(trainAvecResa.getVoyageurs().size() > prevSize);
 	}
 
