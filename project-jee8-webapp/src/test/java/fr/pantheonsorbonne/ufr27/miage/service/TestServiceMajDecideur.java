@@ -104,7 +104,7 @@ public class TestServiceMajDecideur {
 		assertNotNull(it7);
 		LocalTime heureArriveeTerminusItineraire7 = it7.getArretsDesservis().get(it7.getArretsDesservis().size() - 1)
 				.getHeureArriveeEnGare().toLocalTime();
-		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 30)));
+		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 30)), true);
 		heureArriveeTerminusItineraire6 = heureArriveeTerminusItineraire6.plusMinutes(30);
 		heureArriveeTerminusItineraire7 = heureArriveeTerminusItineraire7.plusMinutes(30);
 		assertEquals(heureArriveeTerminusItineraire6, it6.getArretsDesservis().get(it6.getArretsDesservis().size() - 1)
@@ -115,7 +115,7 @@ public class TestServiceMajDecideur {
 		it6.setArretActuel(it6.getArretsDesservis().get(1));
 		LocalTime heureDepartPremierGareItineraire6 = it6.getArretsDesservis().get(1).getHeureArriveeEnGare()
 				.toLocalTime();
-		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 15)));
+		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 15)), true);
 		heureDepartPremierGareItineraire6 = heureDepartPremierGareItineraire6.plusMinutes(15);
 		heureArriveeTerminusItineraire7 = heureArriveeTerminusItineraire7.plusMinutes(15);
 		assertNotEquals(heureDepartPremierGareItineraire6,

@@ -30,6 +30,13 @@ public class ArretDAO {
 		em.getTransaction().commit();
 	}
 
+	public void avancerHeureDepartDeGare(Arret a, int tempsAvance) {
+		LocalDateTime newHeureDepartDeGare = a.getHeureDepartDeGare().minusSeconds(tempsAvance);
+		em.getTransaction().begin();
+		a.setHeureDepartDeGare(newHeureDepartDeGare);
+		em.getTransaction().commit();
+	}
+
 	public void retarderHeureArriveeEnGare(Arret a, int tempsRetard) {
 		LocalDateTime newHeureArriveeEnGare = a.getHeureArriveeEnGare().plusSeconds(tempsRetard);
 		em.getTransaction().begin();

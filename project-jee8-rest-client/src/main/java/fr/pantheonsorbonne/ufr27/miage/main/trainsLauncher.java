@@ -5,11 +5,11 @@ import javax.xml.datatype.DatatypeConfigurationException;
 public class trainsLauncher {
 
 	public static void main(String[] args) throws DatatypeConfigurationException, InterruptedException {
-		int nbtrain = 10;
+		int nbtrain = 3;
 
 		Thread.sleep(5000);
 
-		for (int idTrain = 1; idTrain < nbtrain; idTrain++) {
+		for (int idTrain = 2; idTrain < nbtrain; idTrain++) {
 			Train train = new Train(idTrain);
 			Thread thread = new Thread(train);
 			thread.start();

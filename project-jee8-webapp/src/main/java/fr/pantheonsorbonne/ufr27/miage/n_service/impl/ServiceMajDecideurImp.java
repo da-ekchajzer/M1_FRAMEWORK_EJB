@@ -44,21 +44,39 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 	VoyageurRepository voyageurRepository;
 
 	@Override
-	public void decideRetard(Retard retard) {
-		if (retard.getItineraire().getTrain() instanceof TrainSansResa) {
-			serviceMajExecuteur.retarderItineraire(retard.getItineraire(), retard.getTempsDeRetard());
-			return;
-		}
+	public void decideRetard(Retard retard, boolean isRetard) {
+		if (isRetard) {
+			if (retard.getItineraire().getTrain() instanceof TrainSansResa) {
+				serviceMajExecuteur.retarderItineraire(retard.getItineraire(), retard.getTempsDeRetard());
+				return;
+			}
 
-		Queue<Retard> retards = new LinkedList<Retard>();
-		retards.add(retard);
-		Retard retardEnTraitement;
+			Queue<Retard> retards = new LinkedList<Retard>();
+			retards.add(retard);
+			Retard retardEnTraitement;
 
-		while (!retards.isEmpty()) {
-			retardEnTraitement = retards.poll();
-			serviceMajExecuteur.retarderItineraire(retardEnTraitement.getItineraire(), retard.getTempsDeRetard());
-			retards.addAll(getRetardsItineraireEnCorespondance(retardEnTraitement));
-			factoriseRetard(retards);
+			while (!retards.isEmpty()) {
+				retardEnTraitement = retards.poll();
+				serviceMajExecuteur.retarderItineraire(retardEnTraitement.getItineraire(), retard.getTempsDeRetard());
+				retards.addAll(getRetardsItineraireEnCorespondance(retardEnTraitement));
+				factoriseRetard(retards);
+			}
+		} else {
+			if (retard.getItineraire().getTrain() instanceof TrainSansResa) {
+				serviceMajExecuteur.avancerItineraire(retard.getItineraire(), retard.getTempsDeRetard());
+				return;
+			}
+
+			Queue<Retard> retards = new LinkedList<Retard>();
+			retards.add(retard);
+			Retard retardEnTraitement;
+
+			while (!retards.isEmpty()) {
+				retardEnTraitement = retards.poll();
+				serviceMajExecuteur.avancerItineraire(retardEnTraitement.getItineraire(), retard.getTempsDeRetard());
+				retards.addAll(getRetardsItineraireEnCorespondance(retardEnTraitement));
+				factoriseRetard(retards);
+			}
 		}
 	}
 

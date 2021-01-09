@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.ManagedBean;
@@ -8,6 +9,7 @@ import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.n_dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 
@@ -48,24 +50,28 @@ public class IncidentRepository {
 		}
 
 		// Ajout de l'INCIDENT_ID dans l'itinéraire associé au train
-		ajouterIncidentItineraire(idTrain, incident);
+		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		associerIncidentItineraire(itineraire, incident);
 		return res;
 	}
 
-	private void ajouterIncidentItineraire(int idTrain, Incident inc) {
-		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		incidentDAO.associerIncidentItineraire(it, inc);
+	private void associerIncidentItineraire(Itineraire itineraire, Incident incident) {
+		itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_INCIDENT);
+		incidentDAO.associerIncidentItineraire(itineraire, incident);
 	}
 
-	public Incident updateEtatIncident(int idTrain, int etat) {
-		Incident incident = this.getIncidentByIdTrain(idTrain);
-		incidentDAO.majEtatIncidentEnBD(incident, etat);
-		return incident;
+	public void majEtatIncident(Incident incident, CodeEtatIncident newEtat) {
+		incidentDAO.majEtatIncidentEnBD(incident, newEtat);
 	}
-	
+
+	public void majHeureDeFinIncident(Incident incident, LocalDateTime newHeureDeFin) {
+		incidentDAO.majHeureDeFinEnBD(incident, newHeureDeFin);
+	}
+
 	public Incident getIncidentByIdTrain(int idTrain) {
-		// Récupération de l'itinéraire EN COURS (=1) de TRAIN_ID idTrain
-		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+		// Récupération de l'itinéraire EN INCIDENT (=2) de TRAIN_ID idTrain
+		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain,
+				CodeEtatItinieraire.EN_INCIDENT);
 		// Récupération de l'incident associé à l'itinéraire itinéraire
 		Incident incident = getIncidentById(itineraire.getIncident().getId());
 		return incident;

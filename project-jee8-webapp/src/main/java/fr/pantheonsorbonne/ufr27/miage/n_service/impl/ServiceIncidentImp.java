@@ -25,6 +25,7 @@ import fr.pantheonsorbonne.ufr27.miage.n_service.utils.Retard;
 @ManagedBean
 @RequestScoped
 public class ServiceIncidentImp implements ServiceIncident {
+
 	@Inject
 	ServiceMajDecideur serviceMajDecideur;
 
@@ -38,41 +39,45 @@ public class ServiceIncidentImp implements ServiceIncident {
 	TrainRepository trainRepository;
 
 	@Override
-	public boolean creerIncident(int idTrain, IncidentJAXB inc) {
-		Incident i = IncidentMapper.mapIncidentJAXBToIncident(inc);
-		incidentRepository.creerIncident(idTrain, i);
-		Retard r = new Retard(itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS),
-				estimationTempsRetard(inc.getTypeIncident()));
-		serviceMajDecideur.decideRetard(r);
+	public boolean creerIncident(int idTrain, IncidentJAXB incidentJAXB) {
+		Incident incident = IncidentMapper.mapIncidentJAXBToIncident(incidentJAXB);
+		incidentRepository.creerIncident(idTrain, incident);
+		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain,
+				CodeEtatItinieraire.EN_INCIDENT);
+		Retard retard = new Retard(itineraire, estimationTempsRetard(incidentJAXB.getTypeIncident()));
+		serviceMajDecideur.decideRetard(retard, true);
 		return true;
 	}
 
+	/**
+	 * Si besoin, cf. la description de cette méthode dans l'interface
+	 * ServiceIncident pour bien la comprendre
+	 */
 	@Override
-	public boolean majEtatIncident(int idTrain, int newEtatIncident, long ajoutDuree, ChronoUnit chronoUnit) {
+	public boolean majEtatIncident(int idTrain, int etatIncident, long ajoutDuree, ChronoUnit chronoUnitDuree) {
 		boolean res = false;
-		Incident incident = this.incidentRepository.getIncidentByIdTrain(idTrain);
-		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(idTrain,
-				CodeEtatItinieraire.EN_COURS);
-		if (newEtatIncident == CodeEtatIncident.EN_COURS.getCode()) {
-			if (itineraire.getEtat() == CodeEtatItinieraire.EN_COURS.getCode()) {
-				itineraire.setEtat(CodeEtatItinieraire.EN_INCIDENT.getCode());
-			}
-			if (incident.getHeureDebut().plusMinutes(incident.getDuree())
-					.isBefore(LocalDateTime.now().plus(ajoutDuree, chronoUnit))) {
-				incident.setDuree(incident.getDuree() + ajoutDuree);
-				incident.setHeureTheoriqueDeFin(incident.getDuree(), chronoUnit);
+		Incident incident = incidentRepository.getIncidentByIdTrain(idTrain);
+		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain,
+				CodeEtatItinieraire.EN_INCIDENT);
+		if (etatIncident == CodeEtatIncident.EN_COURS.getCode()) {
+			// Si l'heure théorique de fin de l'incident est dépassée mais que ce dernier
+			// est toujours en cours...
+			if (LocalDateTime.now().isAfter(incident.getHeureTheoriqueDeFin())) {
+				LocalDateTime oldEnd = incident.getHeureTheoriqueDeFin();
+				incidentRepository.majHeureDeFinIncident(incident, oldEnd.plus(ajoutDuree, chronoUnitDuree));
+				LocalTime dureeProlongation = LocalTime.MIN.plus(ajoutDuree, chronoUnitDuree);
+				serviceMajDecideur.decideRetard(new Retard(itineraire, dureeProlongation), false);
 			}
 			res = true;
-		} else if (newEtatIncident == CodeEtatIncident.RESOLU.getCode()) {
+		} else if (etatIncident == CodeEtatIncident.RESOLU.getCode()) {
 			// On remet l'itinéraire à l'état en cours
-			itineraire.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
+			incidentRepository.majEtatIncident(incident, CodeEtatIncident.RESOLU);
+			itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_COURS);
 			// Si on a rallongé l'incident de 5min et qu'au bout d'1min il est finalement
 			// résolu, on veut raccourcir les retards concernés de 4min
-			LocalDateTime now = LocalDateTime.now();
-			LocalTime avancementHeureFin = incident.getHeureTheoriqueDeFin().minusHours(now.getHour())
-					.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano())
-					.toLocalTime();
-			this.serviceMajDecideur.decideRetard(new Retard(itineraire, avancementHeureFin));
+			LocalTime now = LocalDateTime.now().toLocalTime();
+			LocalTime regulation = incident.getHeureTheoriqueDeFin().minusSeconds(now.toSecondOfDay()).toLocalTime();
+			serviceMajDecideur.decideRetard(new Retard(itineraire, regulation), false);
 			res = true;
 		}
 		return res;

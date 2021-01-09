@@ -37,18 +37,16 @@ public class GatewayInfocentre {
 				.put(Entity.xml(arretJAXB));
 	}
 
-
 	public static void updateIncident(int etatIncident, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
-		Response resp = webTarget.path("incident").path("" + idTrain).path("" + etatIncident).request()
-				.put(Entity.text(""));
+		Response resp = client.target(webTarget.path("incident").path("" + idTrain).path("" + etatIncident).getUri())
+				.request().put(Entity.text(""));
 	}
-
 
 	public static void sendIncident(IncidentJAXB incidentJAXB, int idTrain) {
 		WebTarget webTarget = client.target("http://localhost:8080");
-		Response resp = client.target(webTarget.path("incident").path("" + idTrain).getUri()).request()
-				.accept(MediaType.APPLICATION_XML).post(Entity.xml(incidentJAXB));
+		Response resp = webTarget.path("incident").path("" + idTrain).request().accept(MediaType.APPLICATION_XML)
+				.post(Entity.xml(incidentJAXB));
 	}
 
 }

@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.ManagedBean;
@@ -10,6 +11,7 @@ import javax.persistence.TypedQuery;
 
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident.CodeEtatIncident;
 
 @ManagedBean
 @RequestScoped
@@ -40,10 +42,16 @@ public class IncidentDAO {
 		em.getTransaction().commit();
 	}
 
-	public void majEtatIncidentEnBD(Incident incident, int etat) {
+	public void majEtatIncidentEnBD(Incident incident, CodeEtatIncident newEtat) {
 		// MàJ de l'état de l'incident associé au train
 		em.getTransaction().begin();
-		incident.setEtat(etat);
+		incident.setEtat(newEtat.getCode());
+		em.getTransaction().commit();
+	}
+
+	public void majHeureDeFinEnBD(Incident incident, LocalDateTime newHeureDeFin) {
+		em.getTransaction().begin();
+		incident.setHeureTheoriqueDeFin(newHeureDeFin);
 		em.getTransaction().commit();
 	}
 

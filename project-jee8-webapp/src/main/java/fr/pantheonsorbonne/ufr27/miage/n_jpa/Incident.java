@@ -2,8 +2,6 @@ package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,7 +29,6 @@ public class Incident {
 	int typeIncident;
 	LocalDateTime heureDebut;
 	LocalDateTime heureTheoriqueDeFin;
-	long duree;
 	int etat;
 
 	public int getId() {
@@ -58,21 +55,12 @@ public class Incident {
 		return heureTheoriqueDeFin;
 	}
 
-	public void setHeureTheoriqueDeFin(LocalTime ldtDuree) {
-		this.heureTheoriqueDeFin = this.heureDebut.plusHours(ldtDuree.getHour()).plusMinutes(ldtDuree.getMinute())
-				.plusSeconds(ldtDuree.getSecond()).plusNanos(ldtDuree.getNano());
+	public void setHeureTheoriqueDeFin(LocalDateTime heureTheoriqueDeFin) {
+		this.heureTheoriqueDeFin = heureTheoriqueDeFin;
 	}
 
-	public void setHeureTheoriqueDeFin(long duree, ChronoUnit chronoUnit) {
-		this.heureTheoriqueDeFin = this.heureDebut.plus(duree, chronoUnit);
-	}
-
-	public long getDuree() {
-		return duree;
-	}
-
-	public void setDuree(long duree) {
-		this.duree = duree;
+	public void initHeureTheoriqueDeFin(LocalTime ldtDuree) {
+		this.heureTheoriqueDeFin = this.heureDebut.plusSeconds(ldtDuree.toSecondOfDay());
 	}
 
 	public int getEtat() {
@@ -112,24 +100,31 @@ public class Incident {
 		public static LocalTime getTempEstimation(int code) {
 			switch (code) {
 			case 1:
-				return LocalTime.of(0, 5, 0, 0);
+				// return LocalTime.of(0, 5, 0, 0);
+				return LocalTime.of(1, 0, 0, 0);
 
 			case 2:
-				return LocalTime.of(3, 0, 0, 0);
+				// return LocalTime.of(3, 0, 0, 0);
+				return LocalTime.of(1, 0, 0, 0);
 
 			case 3:
+				// return LocalTime.of(1, 0, 0, 0);
 				return LocalTime.of(1, 0, 0, 0);
 
 			case 4:
-				return LocalTime.of(1, 30, 0, 0);
+				// return LocalTime.of(1, 30, 0, 0);
+				return LocalTime.of(1, 0, 0, 0);
 
 			case 5:
-				return LocalTime.of(2, 0, 0, 0);
+				// return LocalTime.of(2, 0, 0, 0);
+				return LocalTime.of(1, 0, 0, 0);
 
 			case 6:
-				return LocalTime.of(0, 30, 0, 0);
+				// return LocalTime.of(0, 30, 0, 0);
+				return LocalTime.of(1, 0, 0, 0);
 
 			default:
+				// return LocalTime.of(0, 0, 0, 0);
 				return LocalTime.of(0, 0, 0, 0);
 			}
 

@@ -2,8 +2,10 @@ package fr.pantheonsorbonne.ufr27.miage.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -138,7 +140,7 @@ public class TestServiceIncident {
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(new Date());
 		XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-		incidentJAXB.setHeureIncident(date2);
+		incidentJAXB.setDebutIncident(date2);
 		incidentJAXB.setTypeIncident(1);
 		incidentJAXB.setEtatIncident(CodeEtatIncident.EN_COURS.getCode());
 
@@ -148,38 +150,44 @@ public class TestServiceIncident {
 
 		Incident incidentCree = this.incidentRepository.getIncidentByIdTrain(t.getId());
 		assertEquals(incidentCree.getHeureDebut().plusMinutes(5), incidentCree.getHeureTheoriqueDeFin());
-		assertEquals(5, incidentCree.getDuree());
+		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), incidentCree.getTypeIncident());
 	}
 
 	@Test
 	@Order(2)
 	void testMajEtatIncident() {
-		long ajoutDuree = 3;
+		long ajoutDureeIncident = 5;
+		ChronoUnit chronoUnitIncident = ChronoUnit.MINUTES;
 		Train t = this.trainRepository.getTrainById(1);
 		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(),
 				CodeEtatItinieraire.EN_COURS);
 		assertEquals(1, itineraire.getEtat());
-		assertEquals(true, this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
-				ajoutDuree, ChronoUnit.MINUTES));
+		assertTrue(this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
+				ajoutDureeIncident, chronoUnitIncident));
 		assertNotNull(itineraire);
-		// Itineraire = EN_COURS + Incident = EN_COURS --> on set l'etat à EN_INCIDENT
+		// Itinéraire = EN_COURS + Incident = EN_COURS --> on set l'etat à EN_INCIDENT
 		assertEquals(2, itineraire.getEtat());
 		Incident incident = this.incidentRepository.getIncidentByIdTrain(t.getId());
-		System.out.println(incident.getTypeIncident()); // Type 1 -- Animal sur voie -- 5 minutes
-		assertEquals(5, incident.getDuree());
-		assertEquals(incident.getHeureDebut().plusMinutes(5), incident.getHeureTheoriqueDeFin());
+		// Type 1 -- Animal sur voie
+		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), incident.getTypeIncident());
+		LocalDateTime heureDebutIncident = incident.getHeureDebut();
+		LocalTime retardIncident = CodeTypeIncident.getTempEstimation(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode());
+		LocalDateTime heureCalculeeDeFin = heureDebutIncident.plusSeconds(retardIncident.toSecondOfDay());
+		assertEquals(heureCalculeeDeFin, incident.getHeureTheoriqueDeFin());
 
-		ajoutDuree = 10;
-		long incidentDureeInit = incident.getDuree();
-		LocalDateTime heureTheoriqueInit = incident.getHeureTheoriqueDeFin();
-		assertEquals(true, this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
-				ajoutDuree, ChronoUnit.MINUTES));
-		assertEquals(incidentDureeInit + ajoutDuree, incident.getDuree());
-		assertEquals(heureTheoriqueInit.plusMinutes(ajoutDuree), incident.getHeureTheoriqueDeFin());
+		ajoutDureeIncident = 10;
+		LocalDateTime heureTheoriqueDeFin = LocalDateTime.now().minusSeconds(1);
+		incident.setHeureTheoriqueDeFin(heureTheoriqueDeFin);
+		System.out.println(incident.getHeureTheoriqueDeFin());
+		assertTrue(this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
+				ajoutDureeIncident, chronoUnitIncident));
+		System.out.println(incident.getHeureTheoriqueDeFin());
+		assertEquals(heureTheoriqueDeFin.plus(ajoutDureeIncident, chronoUnitIncident),
+				incident.getHeureTheoriqueDeFin());
 
 		assertEquals(2, itineraire.getEtat());
-		assertEquals(true, this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode(),
-				ajoutDuree, ChronoUnit.MINUTES));
+		assertTrue(this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode(),
+				ajoutDureeIncident, chronoUnitIncident));
 		assertEquals(1, itineraire.getEtat());
 
 		// TODO : Finir ce cas de test

@@ -10,21 +10,26 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 public class MapperUtils {
-	public static LocalDateTime xmlGregorianCalendarToLocalDateTime(XMLGregorianCalendar xgc) {	
-		GregorianCalendar gc = xgc.toGregorianCalendar();
-		ZonedDateTime zdt = gc.toZonedDateTime();
-		LocalDateTime ldt = zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+	public static LocalDateTime xmlGregorianCalendarToLocalDateTime(XMLGregorianCalendar xgc) {
+		LocalDateTime ldt = null;
+		if (xgc != null) {
+			GregorianCalendar gc = xgc.toGregorianCalendar();
+			ZonedDateTime zdt = gc.toZonedDateTime();
+			ldt = zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+		}
 		return ldt;
 	}
 
 	public static XMLGregorianCalendar localDateTimeToXmlGregorianCalendar(LocalDateTime ldt) {
-		ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
-		GregorianCalendar gc = GregorianCalendar.from(zdt);
 		XMLGregorianCalendar xgc = null;
-		try {
-			xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
-		} catch (DatatypeConfigurationException e) {
-			e.printStackTrace();
+		if (ldt != null) {
+			ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
+			GregorianCalendar gc = GregorianCalendar.from(zdt);
+			try {
+				xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
+			} catch (DatatypeConfigurationException e) {
+				e.printStackTrace();
+			}
 		}
 		return xgc;
 	}
