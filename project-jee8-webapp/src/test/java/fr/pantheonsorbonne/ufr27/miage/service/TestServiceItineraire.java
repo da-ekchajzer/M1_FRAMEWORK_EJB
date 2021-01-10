@@ -72,7 +72,7 @@ public class TestServiceItineraire {
 	void initVarInDB() {
 
 		LocalDateTime now = LocalDateTime.now();
-		Train train1 = new TrainAvecResa(1, "Marque");
+		Train train1 = new TrainAvecResa("Marque");
 
 		Gare g1 = new Gare("Gare1");
 		Gare g2 = new Gare("Gare2");
@@ -111,7 +111,7 @@ public class TestServiceItineraire {
 
 	@Test
 	void testGetItineraireJaxbByIdTrain() {
-		Train t = trainRepository.getTrainById(1);
+		Train t = trainRepository.getTrainByBusinessId(1);
 		ItineraireJAXB itineraireJAXB = this.serviceItineraire.getItineraire(t.getId());
 		assertEquals(CodeEtatItinieraire.EN_COURS.getCode(), itineraireJAXB.getEtatItineraire());
 		assertEquals("Gare1", itineraireJAXB.getArrets().get(0).getGare());
@@ -120,7 +120,7 @@ public class TestServiceItineraire {
 
 	@Test
 	void testMajItineraire() {
-		Train t = trainRepository.getTrainById(1);
+		Train t = trainRepository.getTrainByBusinessId(1);
 		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		Arret newArret = arretRepository.getArretParItineraireEtNomGare(it, "Gare3");
 		ArretJAXB arretJAXB = ArretMapper.mapArretToArretJAXB(newArret);

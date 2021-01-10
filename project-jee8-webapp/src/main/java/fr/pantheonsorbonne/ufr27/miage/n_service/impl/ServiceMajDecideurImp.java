@@ -91,6 +91,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		Collection<Arret> arretRestants = itineraireRepository.getAllNextArrets(itineraire);
 
 		for (Itineraire i : itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard)) {
+			int n = 3;
 			// L'itinéraire lié au retard sera contenu dans la liste des itinéraires partant
 			// dans - de 2h
 			if (!i.equals(itineraire)) {
@@ -99,11 +100,13 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 						if (a1.getGare().equals(a2.getGare())) {
 							count = 0;
 							for (Voyageur v : itineraire.getVoyageurs()) {
-								if (voyageurRepository.voyageurHaveItineraire(v, i)) {
+								if (voyageurRepository.isVoyageurCorrespondance(v, itineraire, i)) {
 									count++;
 								}
 							}
-							if (count > 5) {
+							// S'il y a plus de n voyageurs ont la même correspondance alors on retarde leur
+							// prochain itinéraire pour qu'ils puissent avoir leur train
+							if (count > n) {
 								retards.add(new Retard(i, tempsRetard));
 								break Arret1Loop;
 							}

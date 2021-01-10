@@ -64,7 +64,7 @@ public class TestVoyageDAO {
 		}
 		
 		
-		Train train1 = new TrainAvecResa(1, "TGV");
+		Train train1 = new TrainAvecResa("TGV");
 		em.persist(train1);
 		
 		Itineraire itineraire1 = new Itineraire(train1);

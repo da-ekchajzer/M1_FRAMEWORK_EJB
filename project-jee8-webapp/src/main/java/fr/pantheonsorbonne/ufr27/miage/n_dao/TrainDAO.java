@@ -1,5 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.n_dao;
 
+import java.util.List;
+
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -16,6 +18,15 @@ public class TrainDAO {
 
 	public Train getTrainById(int idTrain) {
 		return em.createNamedQuery("Train.getTrainById", Train.class).setParameter("id", idTrain).getSingleResult();
+	}
+
+	public Train getTrainByBusinessId(String businessIdTrain) {
+		return em.createNamedQuery("Train.getTrainByBusinessId", Train.class).setParameter("id", businessIdTrain)
+				.getSingleResult();
+	}
+
+	public List<Train> getAllItineraires() {
+		return (List<Train>) em.createNamedQuery("Train.getAllTrains", Train.class).getResultList();
 	}
 
 }

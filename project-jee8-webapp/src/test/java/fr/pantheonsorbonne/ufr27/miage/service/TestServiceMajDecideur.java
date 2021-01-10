@@ -90,7 +90,7 @@ public class TestServiceMajDecideur {
 	@Test
 	@Order(1)
 	void testDecideRetard() {
-		Train t6 = this.trainRepository.getTrainById(6);
+		Train t6 = this.trainRepository.getTrainByBusinessId(6);
 		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(t6.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertNotNull(it6);
 		itineraireRepository.majEtatItineraire(it6, CodeEtatItinieraire.EN_COURS);
@@ -99,7 +99,7 @@ public class TestServiceMajDecideur {
 		assertEquals(6, it6.getVoyageurs().size());
 		LocalTime heureArriveeTerminusItineraire6 = it6.getArretsDesservis().get(it6.getArretsDesservis().size() - 1)
 				.getHeureArriveeEnGare().toLocalTime();
-		Train t7 = this.trainRepository.getTrainById(7);
+		Train t7 = this.trainRepository.getTrainByBusinessId(7);
 		Itineraire it7 = itineraireRepository.getItineraireByTrainEtEtat(t7.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertNotNull(it7);
 		LocalTime heureArriveeTerminusItineraire7 = it7.getArretsDesservis().get(it7.getArretsDesservis().size() - 1)
@@ -132,7 +132,7 @@ public class TestServiceMajDecideur {
 	@Test
 	@Order(2)
 	void testGetRetardsItineraireEnCorespondance() {
-		Train t = this.trainRepository.getTrainById(6);
+		Train t = this.trainRepository.getTrainByBusinessId(6);
 		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		assertNotNull(it6);
 		Retard r1 = new Retard(it6, LocalTime.of(0, 30));
@@ -142,9 +142,9 @@ public class TestServiceMajDecideur {
 	@Test
 	@Order(3)
 	void testFactoriseRetard() {
-		Itineraire it1 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(1).getId(),
+		Itineraire it1 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainByBusinessId(1).getId(),
 				CodeEtatItinieraire.EN_ATTENTE);
-		Itineraire it2 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainById(2).getId(),
+		Itineraire it2 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainByBusinessId(2).getId(),
 				CodeEtatItinieraire.EN_ATTENTE);
 		Retard r1 = new Retard(it1, LocalTime.of(0, 10));
 		Retard r2 = new Retard(it1, LocalTime.of(0, 20));

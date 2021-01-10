@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
+import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 
 @Path("incident/")
@@ -20,13 +21,16 @@ public class IncidentEndPoint {
 	@Inject
 	ServiceIncident service;
 
+	@Inject
+	TrainRepository trainRepository;
+
 	@Consumes(value = { MediaType.APPLICATION_XML })
 	@Path("{trainId}")
 	@POST
 	public Response creerIncident(@PathParam("trainId") int trainId, IncidentJAXB incident) {
-		System.out.println("== Infocentre - creerIncident ==\nidTrain : " + trainId);
-
-		if (service.creerIncident(trainId, incident)) {
+		System.out.println("== Infocentre - creerIncident ==\nidTrain : T" + trainId);
+		int idTrain = trainRepository.getTrainByBusinessId(trainId).getId();
+		if (service.creerIncident(idTrain, incident)) {
 			return Response.ok().build();
 		}
 		return Response.serverError().build();
@@ -35,8 +39,9 @@ public class IncidentEndPoint {
 	@Path("{trainId}/{etatIncident}")
 	@PUT
 	public Response majIncident(@PathParam("trainId") int trainId, @PathParam("etatIncident") int etatIncident) {
-		System.out.println("== Infocentre - majIncident ==\nidTrain : " + trainId);
-		if (service.majEtatIncident(trainId, etatIncident, 5, ChronoUnit.MINUTES)) {
+		System.out.println("== Infocentre - majIncident ==\nidTrain : T" + trainId);
+		int idTrain = trainRepository.getTrainByBusinessId(trainId).getId();
+		if (service.majEtatIncident(idTrain, etatIncident, 5, ChronoUnit.MINUTES)) {
 			return Response.ok().build();
 		}
 		return Response.serverError().build();

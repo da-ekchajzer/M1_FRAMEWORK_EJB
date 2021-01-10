@@ -98,8 +98,8 @@ public class TestServiceIncident {
 		Gare g2 = new Gare("Gare2");
 		Gare g3 = new Gare("Gare3");
 
-		Train t = new TrainAvecResa(1, "Marque");
-		Train t2 = new TrainAvecResa(2, "TGV");
+		Train t = new TrainAvecResa("Marque");
+		Train t2 = new TrainAvecResa("TGV");
 		Itineraire i1 = new Itineraire(t);
 		i1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
 
@@ -115,6 +115,7 @@ public class TestServiceIncident {
 		arretsI2.add(arret3);
 		i1.setArretsDesservis(arretsI2);
 		i2.setArretsDesservis(arretsI2);
+		i1.setArretActuel(arret1);
 		i2.setArretActuel(arret1);
 
 		em.getTransaction().begin();
@@ -134,7 +135,7 @@ public class TestServiceIncident {
 	@Test
 	@Order(1)
 	void testCreerIncident() throws DatatypeConfigurationException {
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = this.trainRepository.getTrainByBusinessId(1);
 		IncidentJAXB incidentJAXB = new IncidentJAXB();
 
 		GregorianCalendar c = new GregorianCalendar();
@@ -158,7 +159,7 @@ public class TestServiceIncident {
 	void testMajEtatIncident() {
 		long ajoutDureeIncident = 5;
 		ChronoUnit chronoUnitIncident = ChronoUnit.MINUTES;
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = this.trainRepository.getTrainByBusinessId(1);
 		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(),
 				CodeEtatItinieraire.EN_INCIDENT);
 		assertEquals(2, itineraire.getEtat());

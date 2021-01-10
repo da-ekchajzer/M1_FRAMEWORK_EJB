@@ -17,7 +17,6 @@ import fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.n_mapper.IncidentMapper;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_repository.ItineraireRepository;
-import fr.pantheonsorbonne.ufr27.miage.n_repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.n_service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.n_service.utils.Retard;
@@ -34,9 +33,6 @@ public class ServiceIncidentImp implements ServiceIncident {
 
 	@Inject
 	ItineraireRepository itineraireRepository;
-
-	@Inject
-	TrainRepository trainRepository;
 
 	@Override
 	public boolean creerIncident(int idTrain, IncidentJAXB incidentJAXB) {

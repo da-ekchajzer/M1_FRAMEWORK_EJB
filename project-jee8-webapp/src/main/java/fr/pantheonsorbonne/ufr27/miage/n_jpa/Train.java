@@ -1,6 +1,8 @@
 package fr.pantheonsorbonne.ufr27.miage.n_jpa;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -13,21 +15,31 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@NamedQueries({ @NamedQuery(name = "Train.getTrainById", query = "SELECT t FROM Train t WHERE t.id = :id") })
+@NamedQueries({ @NamedQuery(name = "Train.getTrainById", query = "SELECT t FROM Train t WHERE t.id = :id"),
+		@NamedQuery(name = "Train.getTrainByBusinessId", query = "SELECT t FROM Train t WHERE t.businessId = :id"),
+		@NamedQuery(name = "Train.getAllTrains", query = "SELECT t FROM Train t")
+
+})
 public abstract class Train {
 
-	@Id
-	int id;
-
-	String marque;
+	public static int businessIdTrainCount = 1;
 
 	public Train() {
+		this.marque = "not mentioned";
 	}
 
-	public Train(int id, String marque) {
-		this.id = id;
+	public Train(String marque) {
+		this.businessId = "T" + businessIdTrainCount++;
 		this.marque = marque;
 	}
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	int id;
+
+	String businessId;
+
+	String marque;
 
 	public String getMarque() {
 		return marque;
@@ -39,6 +51,10 @@ public abstract class Train {
 
 	public int getId() {
 		return id;
+	}
+
+	public String getBusinessId() {
+		return businessId;
 	}
 
 }

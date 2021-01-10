@@ -67,7 +67,7 @@ public class TestTrajetDAO {
 		}
 
 		// --------------------------------- Train
-		Train train1 = new TrainAvecResa(1, "TGV");
+		Train train1 = new TrainAvecResa("TGV");
 		em.persist(train1);
 
 		// --------------------------------- Arrêts

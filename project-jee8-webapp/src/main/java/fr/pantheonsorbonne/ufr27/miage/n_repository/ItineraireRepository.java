@@ -75,6 +75,11 @@ public class ItineraireRepository {
 		return itineraireDAO.getItineraireById(idItineraire);
 	}
 
+	public Itineraire getItineraireByBusinessId(int businessIdItineraire) {
+		String businessId = "IT" + businessIdItineraire;
+		return itineraireDAO.getItineraireByBusinessId(businessId);
+	}
+	
 	public Itineraire getItineraireByBusinessId(String businessIdItineraire) {
 		return itineraireDAO.getItineraireByBusinessId(businessIdItineraire);
 	}
@@ -161,6 +166,7 @@ public class ItineraireRepository {
 			arretsSuivants.addAll(itineraire.getArretsDesservis());
 		} else if (itineraire.getEtat() == CodeEtatItinieraire.EN_COURS.getCode()
 				|| itineraire.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
+			arretsSuivants.add(arretActuel);
 			// Si on est au dernier arrêt, y en a pas après donc on renvoie une liste vide
 			if (arretActuel != null && arretActuel.getHeureDepartDeGare() != null) {
 				for (Arret a : itineraire.getArretsDesservis()) {
@@ -178,9 +184,8 @@ public class ItineraireRepository {
 		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
 
 		List<Itineraire> itinerairesEnCoursOuEnIncident = new ArrayList<Itineraire>();
-		itinerairesEnCoursOuEnIncident.addAll(this.itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
-		itinerairesEnCoursOuEnIncident
-				.addAll(this.itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
+		itinerairesEnCoursOuEnIncident.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
+		itinerairesEnCoursOuEnIncident.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
 
 		for (Itineraire i : itinerairesEnCoursOuEnIncident) {
 			for (Arret a : i.getArretsDesservis()) {
@@ -205,8 +210,7 @@ public class ItineraireRepository {
 		for (Itineraire i : itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE)) {
 
 			if (i.getArretsDesservis().get(0).getHeureDepartDeGare()
-					.isBefore(LocalDateTime.now().plusHours(duration.getHour()).plusMinutes(duration.getMinute())
-							.plusSeconds(duration.getSecond()))) {
+					.isBefore(LocalDateTime.now().plusSeconds(duration.toSecondOfDay()))) {
 				itineraires.add(i);
 			}
 		}
@@ -215,7 +219,7 @@ public class ItineraireRepository {
 
 	public List<Itineraire> getAllItinerairesByGare(Gare g) {
 		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
-		List<Itineraire> allItineraires = this.itineraireDAO.getAllItineraires();
+		List<Itineraire> allItineraires = itineraireDAO.getAllItineraires();
 		for (Itineraire i : allItineraires) {
 			for (Arret a : i.getArretsDesservis()) {
 				if (a.getGare().equals(g)) {

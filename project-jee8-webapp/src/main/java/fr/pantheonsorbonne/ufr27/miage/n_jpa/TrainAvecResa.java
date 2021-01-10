@@ -17,10 +17,11 @@ public class TrainAvecResa extends Train {
 	Set<Voyageur> voyageurs;
 
 	public TrainAvecResa() {
+		super();
 	}
 
-	public TrainAvecResa(int id, String marque) {
-		super(id, marque);
+	public TrainAvecResa(String marque) {
+		super(marque);
 		this.voyageurs = new HashSet<Voyageur>();
 	}
 

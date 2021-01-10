@@ -67,7 +67,7 @@ public class TestItineraireRepository {
 
 	@BeforeAll
 	void initVarInDB() {
-		Train t = new TrainAvecResa(1, "Marque");
+		Train t = new TrainAvecResa("Marque");
 		
 		Gare g1 = new Gare("Gare1");
 		Gare g2 = new Gare("Gare2");
@@ -142,7 +142,7 @@ public class TestItineraireRepository {
 	@Test
 	@Order(1)
 	void testRecupItineraireEnCoursOuLeProchain() {
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = this.trainRepository.getTrainByBusinessId(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		assertEquals(i2,  this.itineraireRepository.recupItineraireEnCoursOuLeProchain(t.getId()));
 	}
@@ -155,7 +155,7 @@ public class TestItineraireRepository {
 		List<Itineraire> itinerairesDansLes2H = itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard);
 		assertEquals(3, itinerairesDansLes2H.size());
 		// On vérifie qu'il y ait bien 2 itinéraires en attente pour le train t
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = this.trainRepository.getTrainByBusinessId(1);
 		List<Itineraire> its = this.itineraireRepository.getAllItinerairesByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertEquals(2, its.size());
 		Itineraire i5 = its.get(1);
@@ -172,7 +172,7 @@ public class TestItineraireRepository {
 	@Test
 	@Order(3)
 	void testGetItineraireByTrainEtEtatNullSiPlusieursResultats() {
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = this.trainRepository.getTrainByBusinessId(1);
 		Itineraire i1 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		this.itineraireRepository.majEtatItineraire(i1, CodeEtatItinieraire.EN_COURS);
 		assertNull(this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS));
@@ -182,7 +182,7 @@ public class TestItineraireRepository {
 	@Test
 	@Order(4)
 	void testGetNextArretByIdTrainEtArret() {
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = this.trainRepository.getTrainByBusinessId(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		// Renvoie le nextArret si on est pas à la fin de l'itinéraire
 		i2.setArretActuel(this.itineraireRepository.getNextArret(t.getId(), i2.getArretActuel()));
@@ -197,10 +197,10 @@ public class TestItineraireRepository {
 	@Test
 	@Order(5)
 	void testGetAllNextArrets() {
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = this.trainRepository.getTrainByBusinessId(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		// Si on est au dernier arrêt, il n'y en a plus après
-		assertEquals(0, this.itineraireRepository.getAllNextArrets(i2).size());
+		// Si on est au dernier arrêt, il n'y plus que l'arrêt actuel
+		assertEquals(1, this.itineraireRepository.getAllNextArrets(i2).size());
 	}
 	
 	@Test
@@ -220,7 +220,7 @@ public class TestItineraireRepository {
 	@Test
 	@Order(8)
 	void testSupprimerArretDansUnItineraire() {
-		Train t = this.trainRepository.getTrainById(1);
+		Train t = this.trainRepository.getTrainByBusinessId(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		int nbArrets = i2.getArretsDesservis().size();
 		i2 = this.itineraireRepository.supprimerArretDansUnItineraire(t.getId(), i2.getArretsDesservis().get(1));

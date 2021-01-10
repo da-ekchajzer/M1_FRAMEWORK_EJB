@@ -91,15 +91,15 @@ public class TestVoyageurDAO {
 		}
 
 		// --------------------------------- Remplissage de la table Train
-		Train train1 = new TrainAvecResa(1, "TGV");
-		Train train2 = new TrainSansResa(2, "TER");
-		Train train3 = new TrainAvecResa(3, "OUIGO");
-		Train train4 = new TrainAvecResa(4, "OUIGO");
-		Train train5 = new TrainSansResa(5, "TER");
-		Train train6 = new TrainAvecResa(6, "TGV");
-		Train train7 = new TrainSansResa(7, "TER");
-		Train train8 = new TrainAvecResa(8, "TGV");
-		Train train9 = new TrainAvecResa(9, "TGV");
+		Train train1 = new TrainAvecResa("TGV");
+		Train train2 = new TrainSansResa("TER");
+		Train train3 = new TrainAvecResa("OUIGO");
+		Train train4 = new TrainAvecResa("OUIGO");
+		Train train5 = new TrainSansResa("TER");
+		Train train6 = new TrainAvecResa("TGV");
+		Train train7 = new TrainSansResa("TER");
+		Train train8 = new TrainAvecResa("TGV");
+		Train train9 = new TrainAvecResa("TGV");
 
 		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
 		for (Train t : trains)
@@ -218,7 +218,7 @@ public class TestVoyageurDAO {
 		Itineraire itineraire1 = itineraireDAO.getItineraireByBusinessId("IT1");
 		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraire1);
 		Set<Trajet> trajetsItineraire = new TreeSet<>(trajets);
-		Train train = trainDAO.getTrainById(1);
+		Train train = trainDAO.getTrainByBusinessId("T1");
 		TrainAvecResa trainAvecResa = null;
 		if (train instanceof TrainAvecResa) {
 			trainAvecResa = (TrainAvecResa) train;
