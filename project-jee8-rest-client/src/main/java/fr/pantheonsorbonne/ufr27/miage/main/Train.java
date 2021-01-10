@@ -8,7 +8,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
@@ -19,6 +18,8 @@ import fr.pantheonsorbonne.ufr27.miage.pojos.IncidentTrain;
 import fr.pantheonsorbonne.ufr27.miage.restClient.GatewayInfocentre;
 
 public class Train implements Runnable {
+
+	private final static int PERIODICITY = 5000;
 
 	private int idTrain;
 	private Random random;
@@ -32,7 +33,9 @@ public class Train implements Runnable {
 	List<ArretTrain> arrets;
 	int curentIdArret;
 	LocalTime retardtotal;
+	LocalDateTime initialDepartureTime;
 	LocalDateTime initialArrivalTime;
+	LocalDateTime now;
 
 	IncidentTrain incident;
 
@@ -42,7 +45,9 @@ public class Train implements Runnable {
 		this.etatTrain = 0;
 		this.curentIdArret = 0;
 		this.retardtotal = LocalTime.MIN;
+		this.initialDepartureTime = null;
 		this.initialArrivalTime = null;
+		this.now = null;
 	}
 
 	@Override
@@ -51,7 +56,7 @@ public class Train implements Runnable {
 			actionTrain();
 
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(PERIODICITY);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -68,6 +73,8 @@ public class Train implements Runnable {
 	}
 
 	private void actionTrain() {
+		now = LocalDateTime.now();
+
 		switch (etatTrain) {
 
 		case 0:
@@ -79,6 +86,7 @@ public class Train implements Runnable {
 				System.out.println("[ " + idTrain + " ] >> arrets desservis : " + printArrets(arrets));
 				GatewayInfocentre.sendCurrenArret(arrets.get(curentIdArret).getXMLArret(), idTrain);
 				System.out.println("[ " + idTrain + " ] >> arret actuel : " + arrets.get(curentIdArret).getNomGare());
+				initialDepartureTime = arrets.get(0).getHeureDepart();
 				initialArrivalTime = arrets.get(arrets.size() - 1).getheureArrivee();
 				System.out.println(
 						"[ " + idTrain + " ] >> arrivée prevue au terminus : " + initialArrivalTime.toLocalTime());
@@ -88,17 +96,19 @@ public class Train implements Runnable {
 
 		case 1:
 
-			if (LocalDateTime.now().isAfter(arrets.get(curentIdArret + 1).getheureArrivee())) {
+			if (now.isAfter(arrets.get(curentIdArret + 1).getheureArrivee())) {
 				GatewayInfocentre.sendCurrenArret(arrets.get(++curentIdArret).getXMLArret(), idTrain);
 				System.out.println("[ " + idTrain + " ] >> arret actuel : " + arrets.get(curentIdArret).getNomGare());
 				updateItineraire(GatewayInfocentre.getItineraire(idTrain));
 				printRetardTotal();
+			} else {
+				updateItineraire(GatewayInfocentre.getItineraire(idTrain));
 			}
 			if (arrets.get(curentIdArret).getHeureDepart() == null) {
 				etatTrain = 0;
 				System.out.println("[ " + idTrain + " ] - ...fin de l'itineraire.");
 				System.out.println("[ " + idTrain + " ] >> arrivee reelle au terminus : "
-						+ arrets.get(curentIdArret).getheureArrivee().toLocalTime());
+						+ arrets.get(curentIdArret).getheureArrivee().toLocalTime() + "( " + now.toLocalTime() + " )");
 			} else {
 				genererRandomIncident();
 			}
@@ -124,7 +134,13 @@ public class Train implements Runnable {
 	}
 
 	private void genererRandomIncident() {
-		boolean isIncident = bernouilliGenerator(0.5);
+		boolean isIncident = false;
+
+		if (now.isAfter(initialDepartureTime.plusSeconds(retardtotal.toSecondOfDay()))) {
+			isIncident = bernouilliGenerator(0.5);
+		} else {
+			isIncident = bernouilliGenerator(0.1);
+		}
 
 		if (isIncident) {
 			int typeIncident = random.nextInt(6) + 1;
@@ -133,9 +149,16 @@ public class Train implements Runnable {
 			IncidentJAXB incidentJAXB = incident.getXMLIncident();
 			GatewayInfocentre.sendIncident(incidentJAXB, idTrain);
 			System.out.println("[ " + idTrain + " ] ** Declaration d'un incident...");
-		} else {
+		} else if (now.isAfter(initialDepartureTime.plusSeconds(retardtotal.toSecondOfDay()))) {
 			System.out.println("[ " + idTrain + " ] -");
 		}
+	}
+
+	private boolean bernouilliGenerator(double p) {
+		if (random.nextDouble() < p) {
+			return true;
+		}
+		return false;
 	}
 
 	private boolean solvedRandomIncident() {
@@ -155,19 +178,14 @@ public class Train implements Runnable {
 			arrets.add(new ArretTrain(arreti.getGare(), xmlGregorianCalendar2LocalDateTime(arreti.getHeureArrivee()),
 					xmlGregorianCalendar2LocalDateTime(arreti.getHeureDepart())));
 		}
+		if (initialArrivalTime != null) {
+			retardtotal = arrets.get(arrets.size() - 1).getheureArrivee().toLocalTime()
+					.minusSeconds(initialArrivalTime.toLocalTime().toSecondOfDay());
+		}
 		return true;
 	}
 
-	private boolean bernouilliGenerator(double p) {
-		if (random.nextDouble() < p) {
-			return true;
-		}
-		return false;
-	}
-
 	private void printRetardTotal() {
-		retardtotal = arrets.get(arrets.size() - 1).getheureArrivee().toLocalTime()
-				.minusSeconds(initialArrivalTime.toLocalTime().toSecondOfDay());
 		int h = retardtotal.getHour();
 		int m = retardtotal.getMinute();
 		int s = retardtotal.getSecond();

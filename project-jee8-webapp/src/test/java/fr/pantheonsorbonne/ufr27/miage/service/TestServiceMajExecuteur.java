@@ -75,7 +75,7 @@ public class TestServiceMajExecuteur {
 	@BeforeAll
 	void initVarInDB() {
 		LocalDateTime now = LocalDateTime.now();
-		Train train1 = new TrainAvecResa(1, "Marque");
+		Train train1 = new TrainAvecResa("Marque");
 
 		Gare g1 = new Gare("Gare1");
 		Gare g2 = new Gare("Gare2");
@@ -114,7 +114,7 @@ public class TestServiceMajExecuteur {
 
 	@Test
 	void testSupprimerArret() {
-		Train t = trainRepository.getTrainById(1);
+		Train t = trainRepository.getTrainByBusinessId(1);
 		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		Arret arretToSuppr = arretRepository.getArretParItineraireEtNomGare(it, "Gare2");
 		int nbArrets = it.getArretsDesservis().size();// 3
@@ -124,7 +124,7 @@ public class TestServiceMajExecuteur {
 
 	@Test
 	void testRetarderItineraire() {
-		Train t = trainRepository.getTrainById(1);
+		Train t = trainRepository.getTrainByBusinessId(1);
 		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		LocalDateTime heureArriveeDernierArret = it.getArretsDesservis().get(it.getArretsDesservis().size() - 1)
 				.getHeureArriveeEnGare();

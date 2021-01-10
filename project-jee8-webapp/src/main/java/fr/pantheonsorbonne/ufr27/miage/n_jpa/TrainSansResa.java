@@ -7,14 +7,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 public class TrainSansResa extends Train {
-	
-	public TrainSansResa() {}
-	
-	public TrainSansResa(int id, String marque) {
-		super(id, marque);
+
+	public TrainSansResa() {
+		super();
+	}
+
+	public TrainSansResa(String marque) {
+		super(marque);
 		this.marque = marque;
 	}
-	
+
 }

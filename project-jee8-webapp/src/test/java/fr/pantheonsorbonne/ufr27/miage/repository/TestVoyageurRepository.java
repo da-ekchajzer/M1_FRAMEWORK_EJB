@@ -47,17 +47,16 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestVoyageurRepository {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(VoyageurRepository.class, VoyageurDAO.class, 
-			VoyageRepository.class, VoyageDAO.class, ItineraireRepository.class, ItineraireDAO.class, 
-			TrajetRepository.class, TrajetDAO.class, TrainRepository.class, TrainDAO.class, 
-			ArretRepository.class, ArretDAO.class, TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator.from(VoyageurRepository.class, VoyageurDAO.class, VoyageRepository.class,
+			VoyageDAO.class, ItineraireRepository.class, ItineraireDAO.class, TrajetRepository.class, TrajetDAO.class,
+			TrainRepository.class, TrainDAO.class, ArretRepository.class, ArretDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
 	@Inject
 	VoyageurRepository voyageurRepository;
-	
+
 	@BeforeAll
 	public void setup() {
 		em.getTransaction().begin();
@@ -75,15 +74,15 @@ public class TestVoyageurRepository {
 		}
 
 		// --------------------------------- Remplissage de la table Train
-		Train train1 = new TrainAvecResa(1, "TGV");
-		Train train2 = new TrainSansResa(2, "TER");
-		Train train3 = new TrainAvecResa(3, "OUIGO");
-		Train train4 = new TrainAvecResa(4, "OUIGO");
-		Train train5 = new TrainSansResa(5, "TER");
-		Train train6 = new TrainAvecResa(6, "TGV");
-		Train train7 = new TrainSansResa(7, "TER");
-		Train train8 = new TrainAvecResa(8, "TGV");
-		Train train9 = new TrainAvecResa(9, "TGV");
+		Train train1 = new TrainAvecResa("TGV");
+		Train train2 = new TrainSansResa("TER");
+		Train train3 = new TrainAvecResa("OUIGO");
+		Train train4 = new TrainAvecResa("OUIGO");
+		Train train5 = new TrainSansResa("TER");
+		Train train6 = new TrainAvecResa("TGV");
+		Train train7 = new TrainSansResa("TER");
+		Train train8 = new TrainAvecResa("TGV");
+		Train train9 = new TrainAvecResa("TGV");
 
 		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
 		for (Train t : trains)
@@ -152,15 +151,15 @@ public class TestVoyageurRepository {
 				voyage1.addVoyageur(v);
 			em.persist(v);
 		}
-		
+
 		em.getTransaction().commit();
 	}
-	
+
 	@Test
 	void testMajVoyageursDansTrainAvecResa() {
 		// TODO
 	}
-	
+
 	@Test
 	void testMettreVoyageursDansItineraire() {
 		// TODO

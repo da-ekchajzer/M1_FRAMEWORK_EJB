@@ -62,7 +62,7 @@ public class TestItineraireDAO {
 
 	@Test
 	void testGetItineraireByTrainEtEtat() throws MulitpleResultsNotExpectedException {
-		Train train = new TrainAvecResa(1, "TGV");
+		Train train = new TrainAvecResa("TGV");
 		Itineraire itineraire = new Itineraire(train);
 		em.getTransaction().begin();
 		em.persist(train);
@@ -83,9 +83,9 @@ public class TestItineraireDAO {
 
 	@Test
 	void testGetAllItinerairesByTrainEtEtat() throws MulitpleResultsNotExpectedException {
-		Train train2 = new TrainAvecResa(2, "OUIGO");
-		Train train3 = new TrainAvecResa(3, "TGV");
-		Train train4 = new TrainAvecResa(4, "TER");
+		Train train2 = new TrainAvecResa("OUIGO");
+		Train train3 = new TrainAvecResa("TGV");
+		Train train4 = new TrainAvecResa("TER");
 		Itineraire itineraire1 = new Itineraire(train2);
 		Itineraire itineraire2 = new Itineraire(train3);
 		Itineraire itineraire3 = new Itineraire(train3);
@@ -108,7 +108,7 @@ public class TestItineraireDAO {
 
 	@Test
 	void testMajEtatItineraire() {
-		Train train5 = new TrainAvecResa(5, "OUIGO");
+		Train train5 = new TrainAvecResa("OUIGO");
 		Itineraire itineraire = new Itineraire(train5);
 		em.getTransaction().begin();
 		em.persist(train5);
@@ -158,9 +158,9 @@ public class TestItineraireDAO {
 		em.getTransaction().commit();
 
 		assertEquals(3, i1.getArretsDesservis().size());
-		this.itineraireDAO.ajouterUnArretEnCoursItineraire(i1, arret1ToAdd);
+		itineraireDAO.ajouterUnArretEnCoursItineraire(i1, arret1ToAdd);
 		assertEquals(4, i1.getArretsDesservis().size());
-		this.itineraireDAO.ajouterUnArretEnCoursItineraire(i1, arret2ToAdd);
+		itineraireDAO.ajouterUnArretEnCoursItineraire(i1, arret2ToAdd);
 		assertEquals(4, i1.getArretsDesservis().size());
 	}
 
@@ -195,15 +195,15 @@ public class TestItineraireDAO {
 		assertEquals(3, i1.getArretsDesservis().size());
 		// Ajouter en tant que terminus (fonctionne pas car arret1ToAdd n'est pas un
 		// terminus)
-		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret1ToAdd,
+		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret1ToAdd,
 				arret1ToAdd.getHeureArriveeEnGare().minusSeconds(30));
 		assertEquals(3, i1.getArretsDesservis().size());
 		// Ajouter en tant que terminus
-		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret2ToAdd,
+		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret2ToAdd,
 				arret2ToAdd.getHeureArriveeEnGare().minusSeconds(30));
 		assertEquals(4, i1.getArretsDesservis().size());
 		// Ajouter en tant que départus
-		this.itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret3ToAdd,
+		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret3ToAdd,
 				arret3ToAdd.getHeureDepartDeGare().minusSeconds(30));
 		assertEquals(5, i1.getArretsDesservis().size());
 	}

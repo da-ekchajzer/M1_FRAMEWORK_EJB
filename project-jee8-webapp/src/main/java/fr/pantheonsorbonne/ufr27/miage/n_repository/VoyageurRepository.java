@@ -71,13 +71,15 @@ public class VoyageurRepository {
 		voyageurDAO.mettreVoyageursDansItineraire(itineraire, voyageursToAdd);
 	}
 
-	public boolean voyageurHaveItineraire(Voyageur v, Itineraire i) {
+	public boolean isVoyageurCorrespondance(Voyageur v, Itineraire itActuel, Itineraire itCorrespondance) {
+		int count = 0, idxItActuel = 0, idxItCorresp = 0;
 		for (Trajet t : v.getVoyageActuel().getTrajets()) {
-			if (t.getItineraire().equals(i)) {
-				return true;
+			if (t.getItineraire().equals(itActuel)) {
+				idxItActuel = ++count;
+			} else if (t.getItineraire().equals(itCorrespondance)) {
+				idxItCorresp = ++count;
 			}
 		}
-		return false;
+		return (idxItCorresp > idxItActuel);
 	}
-
 }

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -61,7 +63,7 @@ public class TestIncidentRepository {
 
 	@BeforeAll
 	void initVarInDB() {
-		Train train1 = new TrainAvecResa(1, "Marque");
+		Train train1 = new TrainAvecResa("Marque");
 		Itineraire itineraire1 = new Itineraire();
 		itineraire1.setTrain(train1);
 		itineraire1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
@@ -75,7 +77,10 @@ public class TestIncidentRepository {
 	@Test
 	@Order(1)
 	void testCreerIncident() {
-		Train t = trainRepository.getTrainById(1);
+		// Train t = trainRepository.getTrainByBusinessId(1);
+		List<Train> trains = trainRepository.getAllTrains();
+		System.out.println(trains.get(0).getBusinessId());
+		Train t = trains.get(0);
 		assertNotNull(t);
 		Incident i = new Incident();
 		i.setTypeIncident(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode());
@@ -90,7 +95,7 @@ public class TestIncidentRepository {
 	@Test
 	@Order(2)
 	void testGetIncidentByIdTrain() {
-		Train t = trainRepository.getTrainById(1);
+		Train t = trainRepository.getTrainByBusinessId(1);
 		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(),
 				incidentRepository.getIncidentByIdTrain(t.getId()).getTypeIncident());
 	}
@@ -98,7 +103,7 @@ public class TestIncidentRepository {
 	@Test
 	@Order(3)
 	void testUpdateEtatIncident() {
-		Train t = trainRepository.getTrainById(1);
+		Train t = trainRepository.getTrainByBusinessId(1);
 		incidentRepository.majEtatIncident(incidentRepository.getIncidentByIdTrain(t.getId()), CodeEtatIncident.RESOLU);
 		assertEquals(CodeEtatIncident.RESOLU.getCode(), incidentRepository.getIncidentByIdTrain(t.getId()).getEtat());
 	}

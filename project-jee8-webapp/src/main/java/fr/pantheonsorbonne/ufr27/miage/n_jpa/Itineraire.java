@@ -26,21 +26,20 @@ import lombok.ToString;
 		@NamedQuery(name = "Itineraire.getItineraireByBusinessId", query = "SELECT i FROM Itineraire i WHERE i.businessId = :id"),
 		@NamedQuery(name = "Itineraire.getItineraireByTrainEtEtat", query = "SELECT i FROM Itineraire i WHERE i.train.id = :idTrain and i.etat = :etat"),
 		@NamedQuery(name = "Itineraire.getAllItinerairesByEtat", query = "SELECT i FROM Itineraire i WHERE i.etat = :etat"),
-		@NamedQuery(name = "Itineraire.getAllItineraires", query = "SELECT i FROM Itineraire i"),
+		@NamedQuery(name = "Itineraire.getAllItineraires", query = "SELECT i FROM Itineraire i")
 
 })
 public class Itineraire {
 
-	public static int businessIdNumber;
+	public static int businessIdItineraireCount = 1;
 
 	public Itineraire() {
-		this.businessId = "IT" + businessIdNumber;
-		businessIdNumber++;
 		this.arretsDesservis = new LinkedList<Arret>();
 	}
 
 	public Itineraire(Train train) {
 		this();
+		this.businessId = "IT" + businessIdItineraireCount++;
 		this.train = train;
 	}
 
@@ -87,11 +86,11 @@ public class Itineraire {
 	public void setVoyageurs(List<Voyageur> voyageurs) {
 		this.voyageurs = voyageurs;
 	}
-	
+
 	public void addVoyageur(Voyageur voyageur) {
 		this.voyageurs.add(voyageur);
 	}
-	
+
 	public void removeVoyageur(Voyageur voyageur) {
 		this.voyageurs.remove(voyageur);
 	}

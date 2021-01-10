@@ -37,11 +37,10 @@ public class TestTrainDAO {
 
 		em.getTransaction().begin();
 
-		Train train1 = new TrainAvecResa(1, "TGV");
-		Train train2 = new TrainSansResa(2, "TER");
-		Train train3 = new TrainAvecResa(3, "OUIGO");
-		Train train4 = new TrainAvecResa(4, "OUIGO");
-
+		Train train1 = new TrainAvecResa("TGV");
+		Train train2 = new TrainSansResa("TER");
+		Train train3 = new TrainAvecResa("OUIGO");
+		Train train4 = new TrainAvecResa("OUIGO");
 
 		Train[] trains = { train1, train2, train3, train4};
 		
