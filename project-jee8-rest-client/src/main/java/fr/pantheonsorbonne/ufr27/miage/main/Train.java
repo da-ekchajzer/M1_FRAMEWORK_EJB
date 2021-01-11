@@ -108,7 +108,7 @@ public class Train implements Runnable {
 				etatTrain = 0;
 				System.out.println("[ " + idTrain + " ] - ...fin de l'itineraire.");
 				System.out.println("[ " + idTrain + " ] >> arrivee reelle au terminus : "
-						+ arrets.get(curentIdArret).getheureArrivee().toLocalTime() + "( " + now.toLocalTime() + " )");
+						+ arrets.get(curentIdArret).getheureArrivee().toLocalTime() + " ( " + now.toLocalTime() + " )");
 			} else {
 				genererRandomIncident();
 			}

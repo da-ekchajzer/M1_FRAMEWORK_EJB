@@ -62,7 +62,7 @@ public class ServiceIncidentImp implements ServiceIncident {
 				LocalDateTime oldEnd = incident.getHeureTheoriqueDeFin();
 				incidentRepository.majHeureDeFinIncident(incident, oldEnd.plus(ajoutDuree, chronoUnitDuree));
 				LocalTime dureeProlongation = LocalTime.MIN.plus(ajoutDuree, chronoUnitDuree);
-				serviceMajDecideur.decideRetard(new Retard(itineraire, dureeProlongation), false);
+				serviceMajDecideur.decideRetard(new Retard(itineraire, dureeProlongation), true);
 			}
 			res = true;
 		} else if (etatIncident == CodeEtatIncident.RESOLU.getCode()) {
