@@ -118,7 +118,7 @@ public class Incident {
 				return LocalTime.of(0, 30, 0, 0);
 
 			default:
-				return LocalTime.of(0, 0, 0, 0);
+				return LocalTime.of(1, 0, 0, 0);
 			}
 
 		}

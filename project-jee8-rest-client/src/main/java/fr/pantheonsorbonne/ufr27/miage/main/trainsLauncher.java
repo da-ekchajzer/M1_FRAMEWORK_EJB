@@ -5,7 +5,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 public class trainsLauncher {
 
 	public static void main(String[] args) throws DatatypeConfigurationException, InterruptedException {
-		int nbtrain = 10;
+		int nbtrain = 2;
 
 		Thread.sleep(5000);
 

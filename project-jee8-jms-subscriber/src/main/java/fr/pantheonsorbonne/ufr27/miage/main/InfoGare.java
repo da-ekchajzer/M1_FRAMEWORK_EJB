@@ -44,8 +44,9 @@ public class InfoGare implements Runnable {
 	}
 
 	private void affichage() {
+		//TODO : Faire un meilleur affichage
 		for(String s : itineraires.keySet()) {
-			System.out.println(s + " : " + itineraires.get(s).getHeureArriveeEnGare());
+			System.out.println(s + " : " + itineraires.get(s).getHeureArriveeEnGare().toLocalTime());
 		}
 	}
 

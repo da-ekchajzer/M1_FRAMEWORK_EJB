@@ -61,15 +61,6 @@ public class Train implements Runnable {
 				e.printStackTrace();
 			}
 		}
-
-//		actionTrain();
-//		try {
-//			Thread.sleep(10000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		incident = new IncidentTrain(4);
-//		GatewayInfocentre.sendIncident(incident.getXMLIncident(), idTrain);
 	}
 
 	private void actionTrain() {

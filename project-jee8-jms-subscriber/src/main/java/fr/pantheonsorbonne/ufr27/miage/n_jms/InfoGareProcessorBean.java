@@ -63,7 +63,7 @@ public class InfoGareProcessorBean {
 	}
 
 	public void onInfoPubMessage(TextMessage message) throws JAXBException, JMSException {
-		System.out.println(infoGare.getGare()+ " - " + " ReceivingInfoPub");
+		System.out.println(infoGare.getGare()+ " - " + " ReceivingInfoPub" + " - " + message.getStringProperty("idItineraire"));
 		JAXBContext context = JAXBContext.newInstance(GareConcerneeJAXB.class);
 		StringReader reader = new StringReader(message.getText());
 
