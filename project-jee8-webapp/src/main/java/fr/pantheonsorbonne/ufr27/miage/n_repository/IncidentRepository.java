@@ -51,13 +51,9 @@ public class IncidentRepository {
 
 		// Ajout de l'INCIDENT_ID dans l'itinéraire associé au train
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		associerIncidentItineraire(itineraire, incident);
-		return res;
-	}
-
-	private void associerIncidentItineraire(Itineraire itineraire, Incident incident) {
 		itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_INCIDENT);
 		incidentDAO.associerIncidentItineraire(itineraire, incident);
+		return res;
 	}
 
 	public void majEtatIncident(Incident incident, CodeEtatIncident newEtat) {

@@ -79,7 +79,7 @@ public class ItineraireRepository {
 		String businessId = "IT" + businessIdItineraire;
 		return itineraireDAO.getItineraireByBusinessId(businessId);
 	}
-	
+
 	public Itineraire getItineraireByBusinessId(String businessIdItineraire) {
 		return itineraireDAO.getItineraireByBusinessId(businessIdItineraire);
 	}
@@ -161,6 +161,10 @@ public class ItineraireRepository {
 	public List<Arret> getAllNextArrets(Itineraire itineraire) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
 		Arret arretActuel = itineraire.getArretActuel();
+		if (arretActuel == null) {
+			System.err.println("*** arretActuel ne doit  pas être null pour pouvoir récupérer les arretsSuivants ***");
+			return arretsSuivants;
+		}
 
 		if (itineraire.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
 			arretsSuivants.addAll(itineraire.getArretsDesservis());
@@ -168,7 +172,7 @@ public class ItineraireRepository {
 				|| itineraire.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
 			arretsSuivants.add(arretActuel);
 			// Si on est au dernier arrêt, y en a pas après donc on renvoie une liste vide
-			if (arretActuel != null && arretActuel.getHeureDepartDeGare() != null) {
+			if (arretActuel.getHeureDepartDeGare() != null) {
 				for (Arret a : itineraire.getArretsDesservis()) {
 					if (a.getHeureArriveeEnGare() != null
 							&& a.getHeureArriveeEnGare().isAfter(arretActuel.getHeureDepartDeGare())) {

@@ -112,7 +112,6 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 							}
 						}
 					}
-
 				}
 			}
 		}
