@@ -1,6 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.test.dao;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
@@ -37,6 +38,7 @@ import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO.TrainSansResaNotExpectedE
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainSansResa;
@@ -214,11 +216,12 @@ public class TestVoyageurDAO {
 
 	@Test
 	@Order(3)
-	void testMajVoyageursDansTrainAvecResa() {
-		Itineraire itineraire1 = itineraireDAO.getItineraireByBusinessId("IT1");
+	void testMajVoyageursDansTrainAvecResa() throws MulitpleResultsNotExpectedException {
+		Train train = trainDAO.getTrainByBusinessId("T1");
+		Itineraire itineraire1 = itineraireDAO.getItineraireByTrainEtEtat(train.getId(),
+				CodeEtatItinieraire.EN_ATTENTE);
 		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraire1);
 		Set<Trajet> trajetsItineraire = new TreeSet<>(trajets);
-		Train train = trainDAO.getTrainByBusinessId("T1");
 		TrainAvecResa trainAvecResa = null;
 		if (train instanceof TrainAvecResa) {
 			trainAvecResa = (TrainAvecResa) train;
