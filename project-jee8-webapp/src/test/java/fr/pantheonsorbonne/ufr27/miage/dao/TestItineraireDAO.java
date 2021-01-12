@@ -64,8 +64,10 @@ public class TestItineraireDAO {
 	void testGetItineraireByTrainEtEtat() throws MulitpleResultsNotExpectedException {
 		Train train = new TrainAvecResa("TGV");
 		Itineraire itineraire = new Itineraire(train);
+		Train train2 = new TrainAvecResa("TER");
 		em.getTransaction().begin();
 		em.persist(train);
+		em.persist(train2);
 		em.persist(itineraire);
 		em.getTransaction().commit();
 		itineraireDAO.getItineraireByTrainEtEtat(train.getId(), CodeEtatItinieraire.EN_ATTENTE);
@@ -79,6 +81,8 @@ public class TestItineraireDAO {
 			itineraireDAO.getItineraireByTrainEtEtat(train.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		});
 		assertEquals("Expected only one 'Itineraire'", exception.getMessage());
+		assertEquals(null, itineraireDAO.getItineraireByTrainEtEtat(train2.getId(), CodeEtatItinieraire.EN_ATTENTE));
+		
 	}
 
 	@Test
@@ -110,13 +114,19 @@ public class TestItineraireDAO {
 	void testMajEtatItineraire() {
 		Train train5 = new TrainAvecResa("OUIGO");
 		Itineraire itineraire = new Itineraire(train5);
+		Itineraire itineraire2 = new Itineraire();
 		em.getTransaction().begin();
 		em.persist(train5);
 		em.persist(itineraire);
+		em.persist(itineraire2);
 		em.getTransaction().commit();
 		assertEquals(itineraire.getEtat(), CodeEtatItinieraire.EN_ATTENTE.getCode());
 		itineraireDAO.majEtatItineraire(itineraire, CodeEtatItinieraire.FIN);
 		assertEquals(CodeEtatItinieraire.FIN.getCode(), itineraire.getEtat());
+		itineraire2.setEtat(CodeEtatItinieraire.EN_INCIDENT.getCode());
+		itineraireDAO.majEtatItineraire(itineraire2, CodeEtatItinieraire.EN_COURS);
+		assertEquals(null, itineraire2.getIncident());
+		
 	}
 
 	@Test
@@ -208,15 +218,6 @@ public class TestItineraireDAO {
 		assertEquals(5, i1.getArretsDesservis().size());
 	}
 
-	/*
-	 * @Test void testSupprimerArretDansUnItineraire() { Arret arret = new Arret();
-	 * Itineraire itineraire = new Itineraire(); em.getTransaction().begin();
-	 * em.persist(arret); em.persist(itineraire); em.getTransaction().commit();
-	 * itineraire.addArret(arret);
-	 * assertEquals(itineraire.getArretsDesservis().get(0), arret);
-	 * itineraireDAO.supprimerArretDansUnItineraire(itineraire, arret);
-	 * assertEquals(itineraire.getArretsDesservis().size(), 0); }
-	 */
 
 	@Test
 	void testRetarderTrain() {
@@ -242,8 +243,13 @@ public class TestItineraireDAO {
 		itineraireDAO.retarderTrain(retard, arret2, itineraire);
 		assertEquals(d1, arret1.getHeureDepartDeGare());
 		assertEquals(a2.plus(5, ChronoUnit.SECONDS), arret2.getHeureArriveeEnGare());
-		assertEquals(d2.plus(5, ChronoUnit.SECONDS), arret2.getHeureDepartDeGare());
+		assertEquals(d2.plus(5, ChronoUnit.SECONDS), arret2.getHeureDepartDeGare());  
 		assertEquals(a3.plus(5, ChronoUnit.SECONDS), arret3.getHeureArriveeEnGare());
+		LocalTime retard2 = LocalTime.of(0, 0, 10);
+		itineraireDAO.retarderTrain(retard2, null, itineraire);
+		assertEquals(d2.plus(15, ChronoUnit.SECONDS), arret2.getHeureDepartDeGare());
+		assertEquals(a3.plus(15, ChronoUnit.SECONDS), arret3.getHeureArriveeEnGare());
+		
 	}
 
 	@Test
@@ -264,5 +270,14 @@ public class TestItineraireDAO {
 		List<Itineraire> listItinerairesEnCours = itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS);
 		assertEquals(1, listItinerairesEnCours.size());
 	}
+	
+//	@Test 
+//	void testAllItineraires() {
+//		List<Itineraire> itineraires = itineraireDAO.getAllItineraires();
+//		for (Itineraire itineraire : itineraires) {
+//			System.out.println(itineraire.getBusinessId());
+//		}
+//		System.out.println("La taille de ma liste est " + itineraires.size());
+//	}
 
 }

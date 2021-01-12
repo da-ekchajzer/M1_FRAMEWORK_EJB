@@ -39,7 +39,7 @@ public class ItineraireDAO {
 
 		List<Itineraire> itineraires = getAllItinerairesByTrainEtEtat(idTrain, etat);
 		if (itineraires.isEmpty()) {
-			return null;
+			return null; 
 		} else if (itineraires.size() > 1) {
 			throw new MulitpleResultsNotExpectedException("Expected only one 'Itineraire'");
 		}
@@ -198,7 +198,7 @@ public class ItineraireDAO {
 		}
 		em.getTransaction().commit();
 	}
-
+ 
 	public List<Itineraire> getAllItinerairesByEtat(CodeEtatItinieraire codeEtatItinieraire) {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getAllItinerairesByEtat", Itineraire.class)
 				.setParameter("etat", codeEtatItinieraire.getCode()).getResultList();
