@@ -1,13 +1,11 @@
 package fr.pantheonsorbonne.ufr27.miage.conf;
 
-import java.io.Closeable;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.glassfish.hk2.api.Factory;
 import org.glassfish.jersey.server.CloseableService;
 
 public class EMFactory implements Supplier<EntityManager> {
@@ -25,6 +23,8 @@ public class EMFactory implements Supplier<EntityManager> {
 		return em;
 	}
 
-	
+	public CloseableService getCloseService() {
+		return closeService;
+	}
 
 }

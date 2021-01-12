@@ -16,16 +16,16 @@
 		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Payment</class>
 		<class>fr.pantheonsorbonne.ufr27.miage.jpa.BillingInfo</class>
 		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Card</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Gare</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Itineraire</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Incident</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Arret</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Train</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainAvecResa</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.TrainSansResa</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Trajet</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyage</class>
-		<class>fr.pantheonsorbonne.ufr27.miage.n_jpa.Voyageur</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Gare</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Incident</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Arret</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Train</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.TrainSansResa</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Trajet</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Voyage</class>
+		<class>fr.pantheonsorbonne.ufr27.miage.jpa.Voyageur</class>
 
 
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>

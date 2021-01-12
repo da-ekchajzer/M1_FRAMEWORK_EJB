@@ -7,6 +7,7 @@ import org.apache.activemq.artemis.core.security.Role;
 import org.apache.activemq.artemis.spi.core.security.ActiveMQSecurityManager;
 
 final class DummyActiveMQSecurityManager implements ActiveMQSecurityManager {
+
 	@Override
 	public boolean validateUser(String user, String password) {
 		return true;
@@ -16,4 +17,5 @@ final class DummyActiveMQSecurityManager implements ActiveMQSecurityManager {
 	public boolean validateUserAndRole(String user, String password, Set<Role> roles, CheckType checkType) {
 		return true;
 	}
+
 }
