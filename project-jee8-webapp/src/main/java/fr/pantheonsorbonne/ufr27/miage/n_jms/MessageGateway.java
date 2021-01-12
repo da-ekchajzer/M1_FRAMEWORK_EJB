@@ -16,6 +16,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -47,16 +48,18 @@ public class MessageGateway {
 	private MessageProducer producerInfoPub;
 	private MessageProducer producerAckReply;
 
+	private Topic defaultTopic;
+
 	private Connection connection;
 
 	private Session session;
-	
+
 	@Inject
 	ItineraireRepository itineraireRepository;
 
 	@Inject
 	ArretRepository arretRepository;
-	
+
 	@PostConstruct
 	private void init() {
 
@@ -64,9 +67,11 @@ public class MessageGateway {
 			connection = connectionFactory.createConnection("projet", "inf2");
 			connection.start();
 			session = connection.createSession();
-			consumerAck = session.createConsumer(queueAck);
-			producerInfoPub = session.createProducer(queueInfoPub);
+			
+			defaultTopic = session.createTopic("publishItineraire");
 
+			consumerAck = session.createConsumer(queueAck);
+			producerInfoPub = session.createProducer(defaultTopic);
 			producerAckReply = session.createProducer(null);
 
 		} catch (JMSException e) {
@@ -86,12 +91,14 @@ public class MessageGateway {
 		Itineraire i = itineraireRepository.getItineraireByBusinessId(idItineraire);
 		Arret a = arretRepository.getArretParItineraireEtNomGare(i, nomGare);
 		itineraireInfoJAXB.setEtatItineraire(i.getEtat());
-		
-		if(a.getHeureArriveeEnGare() != null) {
-			itineraireInfoJAXB.setHeureArrivee(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureArriveeEnGare()));
+
+		if (a.getHeureArriveeEnGare() != null) {
+			itineraireInfoJAXB
+					.setHeureArrivee(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureArriveeEnGare()));
 		}
-		if(a.getHeureDepartDeGare() != null) {
-			itineraireInfoJAXB.setHeureDepart(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureDepartDeGare()));
+		if (a.getHeureDepartDeGare() != null) {
+			itineraireInfoJAXB
+					.setHeureDepart(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureDepartDeGare()));
 		}
 
 		StringWriter writer = new StringWriter();
@@ -127,7 +134,7 @@ public class MessageGateway {
 		}
 	}
 
-	public void publishItineraire(Itineraire itineraire, String callout) throws JAXBException, JMSException {
+	private void publishItineraire(Itineraire itineraire, String callout) throws JAXBException, JMSException {
 		JAXBContext jaxbContext = JAXBContext.newInstance(GareConcerneeJAXB.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
@@ -143,8 +150,9 @@ public class MessageGateway {
 		jaxbMarshaller.marshal(gareConcerneeJAXB, writer);
 
 		TextMessage publishMessage = session.createTextMessage(writer.toString());
-		publishMessage.setStringProperty("callout", callout);
 		publishMessage.setStringProperty("idItineraire", itineraire.getBusinessId());
+		publishMessage.setStringProperty("callout", callout);
+
 		producerInfoPub.send(publishMessage);
 	}
 

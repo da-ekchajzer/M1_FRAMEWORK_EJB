@@ -15,6 +15,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
@@ -43,6 +44,8 @@ public class InfoGareProcessorBean {
 	private MessageProducer producerAck;
 	private MessageConsumer consumerInfoPub;
 
+	private Topic defaultTopic;
+	
 	private InfoGare infoGare;
 
 	@PostConstruct
@@ -53,7 +56,10 @@ public class InfoGareProcessorBean {
 			connection = connectionFactory.createConnection("projet", "inf2");
 			connection.start();
 			session = connection.createSession();
-			consumerInfoPub = session.createConsumer(queueInfoPub);
+			
+			defaultTopic = session.createTopic("publishItineraire");
+			
+			consumerInfoPub = session.createConsumer(defaultTopic);
 			producerAck = session.createProducer(queueAck);
 
 		} catch (JMSException e) {
@@ -63,7 +69,7 @@ public class InfoGareProcessorBean {
 	}
 
 	public void onInfoPubMessage(TextMessage message) throws JAXBException, JMSException {
-		System.out.println(infoGare.getGare()+ " - " + " ReceivingInfoPub" + " - " + message.getStringProperty("idItineraire"));
+		//System.out.println(infoGare.getGare()+ " - " + " ReceivingInfoPub" + " - " + message.getStringProperty("idItineraire"));
 		JAXBContext context = JAXBContext.newInstance(GareConcerneeJAXB.class);
 		StringReader reader = new StringReader(message.getText());
 
@@ -107,7 +113,7 @@ public class InfoGareProcessorBean {
 	}
 
 	private void ReceiveInfoItineraire(Queue tmpQueue) throws JMSException, JAXBException {
-		System.out.println(infoGare.getGare()+ " - " + " ReceiveInfoItineraire");
+		//System.out.println(infoGare.getGare()+ " - " + " ReceiveInfoItineraire");
 		MessageConsumer consumer = session.createConsumer(tmpQueue);
 		Message reply = consumer.receive();
 

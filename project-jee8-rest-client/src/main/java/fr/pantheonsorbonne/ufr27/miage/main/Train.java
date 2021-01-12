@@ -70,7 +70,7 @@ public class Train implements Runnable {
 
 		case 0:
 
-			if (updateItineraire(GatewayInfocentre.getItineraire(idTrain))) {
+			if (updateItineraire(GatewayInfocentre.getItineraire(idTrain, etatTrain))) {
 				curentIdArret = 0;
 				etatTrain = 1;
 				System.out.println("[ " + idTrain + " ] - Debut de l'itineraire...");
@@ -90,10 +90,10 @@ public class Train implements Runnable {
 			if (now.isAfter(arrets.get(curentIdArret + 1).getheureArrivee())) {
 				GatewayInfocentre.sendCurrenArret(arrets.get(++curentIdArret).getXMLArret(), idTrain);
 				System.out.println("[ " + idTrain + " ] >> arret actuel : " + arrets.get(curentIdArret).getNomGare());
-				updateItineraire(GatewayInfocentre.getItineraire(idTrain));
+				updateItineraire(GatewayInfocentre.getItineraire(idTrain, etatTrain));
 				printRetardTotal();
 			} else {
-				updateItineraire(GatewayInfocentre.getItineraire(idTrain));
+				updateItineraire(GatewayInfocentre.getItineraire(idTrain, etatTrain));
 			}
 			if (arrets.get(curentIdArret).getHeureDepart() == null) {
 				etatTrain = 0;
@@ -112,7 +112,7 @@ public class Train implements Runnable {
 			}
 			GatewayInfocentre.updateIncident(incident.getXMLIncident().getEtatIncident(), idTrain);
 			if (etatTrain == 1) {
-				updateItineraire(GatewayInfocentre.getItineraire(idTrain));
+				updateItineraire(GatewayInfocentre.getItineraire(idTrain, etatTrain));
 				System.out.println("[ " + idTrain + " ] ** ...fin de l'incident.");
 			} else {
 				System.out.println("[ " + idTrain + " ] ** ...");

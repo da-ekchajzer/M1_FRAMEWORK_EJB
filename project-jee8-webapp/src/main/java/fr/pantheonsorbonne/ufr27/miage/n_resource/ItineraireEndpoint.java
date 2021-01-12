@@ -26,25 +26,27 @@ public class ItineraireEndpoint {
 
 	@Inject
 	MessageGateway messageGateway;
-	
+
 	@Inject
 	ItineraireRepository itineraireRepository;
-	
+
 	@Inject
 	TrainRepository trainRepository;
-	
+
 	@Inject
 	ItineraireResponderBean responder;
-	
+
 	@Produces(value = { MediaType.APPLICATION_XML })
-	@Path("{trainId}")
+	@Path("{trainId}/{etatTrain}")
 	@GET
-	public Response getItineraire(@PathParam("trainId") int trainId) {
+	public Response getItineraire(@PathParam("trainId") int trainId, @PathParam("etatTrain") int etatTrain) {
 		System.out.println("== Infocentre - getItineraire ==\nidTrain : T" + trainId);
 		int idTrain = trainRepository.getTrainByBusinessId(trainId).getId();
 		ItineraireJAXB itineraireJAXB = service.getItineraire(idTrain);
 		if (itineraireJAXB != null) {
-			messageGateway.publishCreation(itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain));
+			if (etatTrain == 0) {
+				messageGateway.publishCreation(itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain));
+			}
 			return Response.ok(itineraireJAXB).build();
 		}
 		return Response.noContent().build();

@@ -63,10 +63,8 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 			arretRepository.retarderHeureDepartDeGare(a, tempsRetard.toSecondOfDay());
 		}
 
-		/*
-		 * try { messageGateway.publishItineraire(itineraire, "majItineraire"); } catch
-		 * (JAXBException | JMSException e) { e.printStackTrace(); }
-		 */
+		messageGateway.publishMaj(itineraire);
+
 	}
 
 	@Override
@@ -76,6 +74,8 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 			arretRepository.avancerHeureArriveeEnGare(a, tempsAvance.toSecondOfDay());
 			arretRepository.avancerHeureHeureDepartDeGare(a, tempsAvance.toSecondOfDay());
 		}
+
+		messageGateway.publishMaj(itineraire);
 	}
 
 }

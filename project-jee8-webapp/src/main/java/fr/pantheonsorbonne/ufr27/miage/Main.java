@@ -61,7 +61,6 @@ import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceIncidentImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceItineraireImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajDecideurImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajExecuteurImp;
-import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceMajInfoGareImp;
 import fr.pantheonsorbonne.ufr27.miage.n_service.impl.ServiceUtilisateurImp;
 import fr.pantheonsorbonne.ufr27.miage.service.GymService;
 import fr.pantheonsorbonne.ufr27.miage.service.InvoicingService;
@@ -118,7 +117,6 @@ public class Main {
 						bind(ServiceItineraireImp.class).to(ServiceItineraire.class);
 						bind(ServiceMajDecideurImp.class).to(ServiceMajDecideur.class);
 						bind(ServiceMajExecuteurImp.class).to(ServiceMajExecuteur.class);
-						bind(ServiceMajInfoGareImp.class).to(ServiceMajInfoGare.class);
 						bind(ServiceUtilisateurImp.class).to(ServiceUtilisateur.class);
 
 						bind(ArretDAO.class).to(ArretDAO.class);

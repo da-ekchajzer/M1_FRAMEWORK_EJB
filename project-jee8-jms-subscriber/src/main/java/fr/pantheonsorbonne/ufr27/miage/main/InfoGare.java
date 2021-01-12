@@ -1,5 +1,8 @@
 package fr.pantheonsorbonne.ufr27.miage.main;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +39,7 @@ public class InfoGare implements Runnable {
 		while (true) {
 			try {
 				processor.consume();
+				//update();
 				affichage();
 			} catch (JMSException | JAXBException e) {
 				e.printStackTrace();
@@ -43,11 +47,29 @@ public class InfoGare implements Runnable {
 		}
 	}
 
-	private void affichage() {
-		//TODO : Faire un meilleur affichage
+	private void update() {
 		for(String s : itineraires.keySet()) {
-			System.out.println(s + " : " + itineraires.get(s).getHeureArriveeEnGare().toLocalTime());
+			if(itineraires.get(s).getHeureDepartDeGare() == null) {
+				if(itineraires.get(s).getHeureArriveeEnGare().isAfter(LocalDateTime.now().plus(30, ChronoUnit.SECONDS))) {
+					itineraires.remove(s);
+				}
+			}else if(itineraires.get(s).getHeureArriveeEnGare() == null) {
+				if(itineraires.get(s).getHeureDepartDeGare().isAfter(LocalDateTime.now().plus(30, ChronoUnit.SECONDS))) {
+					itineraires.remove(s);
+				}
+			}else if (itineraires.get(s).getHeureDepartDeGare().isAfter(LocalDateTime.now().plus(30, ChronoUnit.SECONDS))) {
+				itineraires.remove(s);
+			}
 		}
+	}
+
+	private void affichage() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("=== " + this.gare + " ===");
+		for(String s : itineraires.keySet()) {
+			sb.append("\n" + s + " : " + itineraires.get(s).getHeureArriveeEnGare().toLocalTime());
+		}
+		System.out.println(sb.toString());
 	}
 
 	public String getGare() {
