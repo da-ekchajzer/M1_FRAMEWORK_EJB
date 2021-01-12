@@ -2,7 +2,6 @@ package fr.pantheonsorbonne.ufr27.miage.jms.conf;
 
 import java.util.Hashtable;
 
-import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
@@ -14,12 +13,6 @@ import javax.naming.NamingException;
 
 import org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory;
 
-/**
- * THis class produces bean to be injected in JMS Classes
- * 
- * @author nherbaut
- *
- */
 @ApplicationScoped
 public class JMSProducer {
 
@@ -30,8 +23,8 @@ public class JMSProducer {
 		Hashtable<String, String> jndiBindings = new Hashtable<>();
 		jndiBindings.put(Context.INITIAL_CONTEXT_FACTORY, ActiveMQInitialContextFactory.class.getName());
 		jndiBindings.put("connectionFactory.ConnectionFactory", "tcp://localhost:61616");
-		jndiBindings.put("app/jms/PaymentAckQueue", "PaymentAckQueue");
-		jndiBindings.put("app/jms/PaymentQueue", "PaymentQueue");
+		jndiBindings.put("app/jms/ItineraireAckQueue", "ItineraireAckQueue");
+		jndiBindings.put("app/jms/ItinerairePubQueue", "ItinerairePubQueue");
 
 		Context c = null;
 		try {
@@ -47,17 +40,17 @@ public class JMSProducer {
 	}
 
 	@Produces
-	@Named("diplomaRequests")
-	public Queue getJMSQueueRequest() throws NamingException {
-		return (Queue) JNDI_CONTEXT.lookup("DiplomaRequest");
-	}
-	
-	@Produces
-	@Named("diplomaFiles")
-	public Queue getJMSQueueFile() throws NamingException {
-		return (Queue) JNDI_CONTEXT.lookup("diplomaFiles");
+	@Named("ItineraireAckQueue")
+	public Queue getItineraireAckQueue() throws NamingException {
+		return (Queue) JNDI_CONTEXT.lookup("ItineraireAckQueue");
 	}
 
+	@Produces
+	@Named("ItinerairePubQueue")
+	public Queue getInfoItineraireQueue() throws NamingException {
+		return (Queue) JNDI_CONTEXT.lookup("ItinerairePubQueue");
+	}
+	
 	@Produces
 	public ConnectionFactory getJMSConnectionFactory() throws NamingException {
 		return (ConnectionFactory) JNDI_CONTEXT.lookup("ConnectionFactory");
