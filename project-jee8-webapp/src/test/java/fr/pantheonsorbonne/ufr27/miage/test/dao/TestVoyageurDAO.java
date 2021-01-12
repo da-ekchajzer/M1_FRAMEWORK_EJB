@@ -19,6 +19,7 @@ import javax.persistence.EntityManager;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
@@ -60,7 +62,7 @@ public class TestVoyageurDAO {
 	private WeldInitiator weld = WeldInitiator
 			.from(VoyageurDAO.class, ItineraireRepository.class, TrajetRepository.class, ItineraireDAO.class,
 					VoyageRepository.class, TrajetDAO.class, TrainDAO.class, VoyageDAO.class, ArretRepository.class,
-					ArretDAO.class, TrajetDAO.class, TestPersistenceProducer.class)
+					ArretDAO.class, TrajetDAO.class, GareDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
@@ -75,6 +77,10 @@ public class TestVoyageurDAO {
 	TrajetDAO trajetDAO;
 	@Inject
 	ItineraireDAO itineraireDAO;
+	@Inject
+	GareDAO gareDAO;
+	@Inject
+	ArretDAO arretDAO;
 
 	@BeforeAll
 	public void setup() {
@@ -233,6 +239,38 @@ public class TestVoyageurDAO {
 			e.printStackTrace();
 		}
 		assertTrue(trainAvecResa.getVoyageurs().size() > prevSize);
+	}
+	
+	@Test
+	void testNbTrains() {
+		assertEquals(9, trainDAO.getAllTrains().size());
+	}
+	
+	@AfterAll
+	void nettoyageDonnees() {
+		em.getTransaction().begin();
+		for(Voyageur voyageur : voyageurDAO.getAllVoyageurs()) {
+			em.remove(voyageur);
+		}
+		for(Voyage voyage : voyageDAO.getAllVoyages()) {
+			em.remove(voyage);
+		}
+		for(Trajet trajet : trajetDAO.getAllTrajets()) {
+			em.remove(trajet);
+		}
+		for(Itineraire i : itineraireDAO.getAllItineraires()) {
+			em.remove(i);
+		}
+		for(Train train : trainDAO.getAllTrains()) {
+			em.remove(train);
+		}
+		for(Arret a : arretDAO.getAllArrets()) {
+			em.remove(a);
+		}
+		for(Gare g : gareDAO.getAllGares()) {
+			em.remove(g);
+		}
+		em.getTransaction().commit();
 	}
 
 }

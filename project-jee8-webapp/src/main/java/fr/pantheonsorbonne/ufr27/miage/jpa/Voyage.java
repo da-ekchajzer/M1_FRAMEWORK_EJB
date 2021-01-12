@@ -14,14 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 @Entity
-@Getter
-@Setter
-@ToString
 @NamedQueries({
 		@NamedQuery(name = "Voyage.getVoyagesByGareDeDepart", query = "SELECT v FROM Voyage v, Gare g WHERE v.gareDeDepart.id = g.id AND g.nom = :nom"),
 		@NamedQuery(name = "Voyage.getVoyagesByGareArrivee", query = "SELECT v FROM Voyage v, Gare g WHERE v.gareArrivee.id = g.id AND g.nom = :nom"),

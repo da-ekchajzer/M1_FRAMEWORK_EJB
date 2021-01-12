@@ -15,13 +15,16 @@ import javax.persistence.EntityManager;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
@@ -37,7 +40,8 @@ public class TestTrajetDAO {
 
 	@WeldSetup
 	private WeldInitiator weld = WeldInitiator
-			.from(TrajetDAO.class, GareDAO.class, ItineraireDAO.class, TestPersistenceProducer.class)
+			.from(TrajetDAO.class, GareDAO.class, ItineraireDAO.class, ArretDAO.class, 
+					TrainDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
@@ -47,7 +51,11 @@ public class TestTrajetDAO {
 	@Inject
 	GareDAO gareDAO;
 	@Inject
+	TrainDAO trainDAO;
+	@Inject
 	ItineraireDAO itineraireDAO;
+	@Inject
+	ArretDAO arretDAO;
 
 	@BeforeAll
 	public void setup() {
@@ -168,6 +176,27 @@ public class TestTrajetDAO {
 		trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
 		assertEquals(2, trajets.size());
 
+	}
+	
+	@AfterAll
+	void nettoyageDonnees() {
+		em.getTransaction().begin();
+		for(Trajet t : trajetDAO.getAllTrajets()) {
+			em.remove(t);
+		}
+		for(Itineraire i : itineraireDAO.getAllItineraires()) {
+			em.remove(i);
+		}
+		for(Train t : trainDAO.getAllTrains()) {
+			em.remove(t);
+		}
+		for(Arret a : arretDAO.getAllArrets()) {
+			em.remove(a);
+		}
+		for(Gare g : gareDAO.getAllGares()) {
+			em.remove(g);
+		}
+		em.getTransaction().commit();
 	}
 
 }

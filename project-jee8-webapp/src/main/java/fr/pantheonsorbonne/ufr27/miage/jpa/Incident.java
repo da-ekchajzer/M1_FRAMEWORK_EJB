@@ -9,14 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 @Entity
-@Getter
-@Setter
-@ToString
 @NamedQueries({ @NamedQuery(name = "Incident.getAllIncidents", query = "SELECT i FROM Incident i"),
 		@NamedQuery(name = "Incident.getNbIncidents", query = "SELECT COUNT(i) FROM Incident i"),
 		@NamedQuery(name = "Incident.getIncidentById", query = "SELECT i FROM Incident i WHERE i.id = :id") })

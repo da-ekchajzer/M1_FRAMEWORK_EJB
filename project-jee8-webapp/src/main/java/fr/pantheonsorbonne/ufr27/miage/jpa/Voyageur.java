@@ -13,16 +13,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 @Entity
-@Getter
-@Setter
-@ToString
 @NamedQueries({
 		@NamedQuery(name = "Voyageur.getVoyageursByVoyageActuel", query = "SELECT v FROM Voyageur v WHERE v.voyageActuel.id = :id"),
+		@NamedQuery(name = "Voyageur.getAllVoyageurs", query = "SELECT v FROM Voyageur v")
 
 })
 public class Voyageur {

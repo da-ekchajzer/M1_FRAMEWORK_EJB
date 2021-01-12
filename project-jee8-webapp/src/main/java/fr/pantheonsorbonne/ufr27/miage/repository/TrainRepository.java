@@ -30,7 +30,7 @@ public class TrainRepository {
 	}
 
 	public List<Train> getAllTrains() {
-		return trainDAO.getAllItineraires();
+		return trainDAO.getAllTrains();
 	}
 
 }

@@ -16,13 +16,17 @@ import javax.persistence.EntityManager;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO.MulitpleResultsNotExpectedException;
+import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa;
@@ -34,13 +38,18 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestItineraireDAO {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(ItineraireDAO.class, TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator.from(ItineraireDAO.class, ArretDAO.class, TrainDAO.class,
+			TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
 	@Inject
 	ItineraireDAO itineraireDAO;
+	@Inject 
+	ArretDAO arretDAO;
+	@Inject
+	TrainDAO trainDAO;
 
 	@Test
 	void testGetItineraireById() {
@@ -278,5 +287,20 @@ public class TestItineraireDAO {
 //		}
 //		System.out.println("La taille de ma liste est " + itineraires.size());
 //	}
+	
+	@AfterAll
+	void nettoyageDonnees() {
+		em.getTransaction().begin();
+		for(Itineraire i : itineraireDAO.getAllItineraires()) {
+			em.remove(i);
+		}
+		for(Train t : trainDAO.getAllTrains()) {
+			em.remove(t);
+		}
+		for(Arret a : arretDAO.getAllArrets()) {
+			em.remove(a);
+		}
+		em.getTransaction().commit();
+	}
 
 }

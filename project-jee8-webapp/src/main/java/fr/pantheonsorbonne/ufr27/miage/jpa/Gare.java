@@ -7,16 +7,10 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 @Entity
-@Getter
-@Setter
-@ToString
 @NamedQueries({
-	@NamedQuery(name = "Gare.getGaresByNom", query = "SELECT g FROM Gare g WHERE g.nom = :nom")
+	@NamedQuery(name = "Gare.getGaresByNom", query = "SELECT g FROM Gare g WHERE g.nom = :nom"),
+	@NamedQuery(name = "Gare.getAllGares", query = "SELECT g FROM Gare g")
 
 })
 public class Gare {
