@@ -1,8 +1,10 @@
 package fr.pantheonsorbonne.ufr27.miage.mapper;
 
-import fr.pantheonsorbonne.ufr27.miage.mapper.utils.MapperUtils;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoJAXB;
+import java.util.List;
+
 import fr.pantheonsorbonne.ufr27.miage.pojos.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoJAXB;
+import fr.pantheonsorbonne.ufr27.miage.mapper.utils.MapperUtils;
 
 
 public class ItineraireMapper {
@@ -16,13 +18,15 @@ public class ItineraireMapper {
 		if(itineraireInfoJAXB.getHeureDepart() != null) {
 			i.setHeureDepartDeGare(MapperUtils.xmlGregorianCalendarToLocalDateTime(itineraireInfoJAXB.getHeureDepart()));
 		}
+		
+		i.setGareArrive(itineraireInfoJAXB.getGaresArrive());
+		i.setGareDepart(itineraireInfoJAXB.getGaresDepart());
+		
 		i.setEtatItineraire(itineraireInfoJAXB.getEtatItineraire());
 		i.setIdItineraire(idTrain);
 		
 		return i;
 
 	}
-	
-	
 
 }

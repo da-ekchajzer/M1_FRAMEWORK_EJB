@@ -1,7 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.infogare;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,8 +9,8 @@ import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
-import fr.pantheonsorbonne.ufr27.miage.jms.InfoGareProcessorBean;
 import fr.pantheonsorbonne.ufr27.miage.pojos.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.jms.InfoGareProcessorBean;
 
 public class InfoGare implements Runnable {
 
@@ -38,7 +37,7 @@ public class InfoGare implements Runnable {
 		while (true) {
 			try {
 				processor.consume();
-				// update();
+				update();
 				affichage();
 			} catch (JMSException | JAXBException e) {
 				e.printStackTrace();
@@ -48,19 +47,18 @@ public class InfoGare implements Runnable {
 
 	private void update() {
 		for (String s : itineraires.keySet()) {
-			if (itineraires.get(s).getHeureDepartDeGare() == null) {
-				if (itineraires.get(s).getHeureArriveeEnGare()
-						.isAfter(LocalDateTime.now().plus(30, ChronoUnit.SECONDS))) {
+			if (itineraires.get(s).getHeureArriveeEnGare() == null) {
+				if (itineraires.get(s).getHeureDepartDeGare().isBefore(LocalDateTime.now())) {
 					itineraires.remove(s);
 				}
-			} else if (itineraires.get(s).getHeureArriveeEnGare() == null) {
-				if (itineraires.get(s).getHeureDepartDeGare()
-						.isAfter(LocalDateTime.now().plus(30, ChronoUnit.SECONDS))) {
+			} else if (itineraires.get(s).getHeureDepartDeGare() == null) {
+				if (itineraires.get(s).getHeureArriveeEnGare().isBefore(LocalDateTime.now())) {
 					itineraires.remove(s);
 				}
-			} else if (itineraires.get(s).getHeureDepartDeGare()
-					.isAfter(LocalDateTime.now().plus(30, ChronoUnit.SECONDS))) {
-				itineraires.remove(s);
+			} else {
+				if (itineraires.get(s).getHeureDepartDeGare().isBefore(LocalDateTime.now())) {
+					itineraires.remove(s);
+				}
 			}
 		}
 	}
@@ -68,9 +66,23 @@ public class InfoGare implements Runnable {
 	private void affichage() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("=== " + this.gare + " ===");
+		sb.append("\n- Arrivées -");
+
 		for (String s : itineraires.keySet()) {
-			sb.append("\n" + s + " : " + itineraires.get(s).getHeureArriveeEnGare().toLocalTime());
+			if (itineraires.get(s).getHeureArriveeEnGare() != null) {
+
+				sb.append("\nOrigine : " + itineraires.get(s).getGareDepart() + " - Horaire : "
+						+ itineraires.get(s).getHeureArriveeEnGare().toLocalTime());
+			}
 		}
+		sb.append("\n- Departs -");
+		for (String s : itineraires.keySet()) {
+			if (itineraires.get(s).getHeureDepartDeGare() != null) {
+				sb.append("\nDestination : " + itineraires.get(s).getGareArrive() + " - Horaire : "
+						+ itineraires.get(s).getHeureDepartDeGare().toLocalTime());
+			}
+		}
+		sb.append("\n");
 		System.out.println(sb.toString());
 	}
 

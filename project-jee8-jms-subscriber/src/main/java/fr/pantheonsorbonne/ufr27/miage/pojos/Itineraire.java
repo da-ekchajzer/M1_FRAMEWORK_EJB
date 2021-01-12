@@ -6,9 +6,27 @@ public class Itineraire {
 
 	int etatItineraire;
 	String idItineraire;
+	String gareDepart;
+	String gareArrive;
 	LocalDateTime heureArriveeEnGare;
 	LocalDateTime heureDepartDeGare;
+	
+	public String getGareDepart() {
+		return gareDepart;
+	}
 
+	public void setGareDepart(String gareDepart) {
+		this.gareDepart = gareDepart;
+	}
+	
+	public String getGareArrive() {
+		return gareArrive;
+	}
+
+	public void setGareArrive(String gareArrive) {
+		this.gareArrive = gareArrive;
+	}
+	
 	public int getEtatItineraire() {
 		return etatItineraire;
 	}

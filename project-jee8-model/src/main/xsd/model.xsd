@@ -28,6 +28,8 @@
 			<xsd:element name="heureArrivee" type="xsd:dateTime"></xsd:element>
 			<xsd:element name="heureDepart" type="xsd:dateTime"></xsd:element>
 			<xsd:element name="etat_itineraire" type="xsd:int"></xsd:element>
+			<xsd:element name="garesDepart" type="xsd:string"/>
+			<xsd:element name="garesArrive" type="xsd:string"/>
 		</xsd:sequence>
 	</xsd:complexType>
 

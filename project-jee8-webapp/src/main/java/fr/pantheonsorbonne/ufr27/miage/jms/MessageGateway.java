@@ -21,11 +21,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.GareConcerneeJAXB;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoJAXB;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.mapper.MapperUtils;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.GareConcerneeJAXB;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoJAXB;
 import fr.pantheonsorbonne.ufr27.miage.repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 
@@ -67,7 +67,7 @@ public class MessageGateway {
 			connection = connectionFactory.createConnection("projet", "inf2");
 			connection.start();
 			session = connection.createSession();
-			
+
 			defaultTopic = session.createTopic("publishItineraire");
 
 			consumerAck = session.createConsumer(queueAck);
@@ -100,6 +100,9 @@ public class MessageGateway {
 			itineraireInfoJAXB
 					.setHeureDepart(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureDepartDeGare()));
 		}
+
+		itineraireInfoJAXB.setGaresArrive(i.getArretsDesservis().get(i.getArretsDesservis().size() - 1).getGare().getNom());
+		itineraireInfoJAXB.setGaresDepart(i.getArretsDesservis().get(0).getGare().getNom());
 
 		StringWriter writer = new StringWriter();
 		jaxbMarshaller.marshal(itineraireInfoJAXB, writer);
