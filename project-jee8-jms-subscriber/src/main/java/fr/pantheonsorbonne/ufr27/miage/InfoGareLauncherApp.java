@@ -11,7 +11,7 @@ public class InfoGareLauncherApp {
 		String[] gare = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles" };
 		int infogareId = 0;
 
-		Thread.sleep(5000);
+		Thread.sleep(4000);
 
 		while (infogareId < gare.length) {
 			InfoGare infoGare = new InfoGare(gare[infogareId]);

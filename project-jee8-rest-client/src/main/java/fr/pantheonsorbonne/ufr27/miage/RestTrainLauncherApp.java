@@ -9,7 +9,7 @@ public class RestTrainLauncherApp {
 	public static void main(String[] args) throws DatatypeConfigurationException, InterruptedException {
 		int nbtrain = 2;
 
-		Thread.sleep(5000);
+		Thread.sleep(8000);
 
 		for (int idTrain = 1; idTrain < nbtrain; idTrain++) {
 			Train train = new Train(idTrain);
