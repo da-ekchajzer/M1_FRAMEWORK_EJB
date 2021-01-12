@@ -66,9 +66,20 @@ public class InfoGare implements Runnable {
 	private void affichage() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("=== " + this.gare + " ===");
+		sb.append("\n- Arrivées -");
 		for(String s : itineraires.keySet()) {
-			sb.append("\n" + s + " : " + itineraires.get(s).getHeureArriveeEnGare().toLocalTime());
+			if(itineraires.get(s).getHeureArriveeEnGare() != null) {
+				sb.append("\n" + s + " : " + itineraires.get(s).getHeureArriveeEnGare().toLocalTime());
+			}
 		}
+		sb.append("\n- Departs -");
+		for(String s : itineraires.keySet()) {
+			if(itineraires.get(s).getHeureDepartDeGare() != null) {
+				sb.append("\n" + s + " : " + itineraires.get(s).getHeureDepartDeGare().toLocalTime());
+
+			}
+		}
+		sb.append("\n");
 		System.out.println(sb.toString());
 	}
 

@@ -16,6 +16,9 @@ public class ItineraireMapper {
 		if(itineraireInfoJAXB.getHeureDepart() != null) {
 			i.setHeureDepartDeGare(MapperUtils.xmlGregorianCalendarToLocalDateTime(itineraireInfoJAXB.getHeureDepart()));
 		}
+		
+		i.setGaresDeservis(itineraireInfoJAXB.getGares());
+		
 		i.setEtatItineraire(itineraireInfoJAXB.getEtatItineraire());
 		i.setIdItineraire(idTrain);
 		

@@ -11,6 +11,8 @@
 			<xsd:element name="heureArrivee" type="xsd:dateTime"></xsd:element>
 			<xsd:element name="heureDepart" type="xsd:dateTime"></xsd:element>
 			<xsd:element name="etat_itineraire" type="xsd:int"></xsd:element>
+			<xsd:element name="gares" type="xsd:string"
+				maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 
