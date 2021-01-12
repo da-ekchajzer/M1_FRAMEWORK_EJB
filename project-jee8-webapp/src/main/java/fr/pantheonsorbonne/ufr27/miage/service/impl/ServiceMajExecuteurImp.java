@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.service.impl;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -28,31 +29,13 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 	ArretRepository arretRepository;
 
 	@Override
-	public void ajouterArret(int idTrain, Arret arret) {
+	public void ajouterUnArretEnCoursItineraire(int idTrain, Arret arret) {
 		itineraireRepository.ajouterUnArretEnCoursItineraire(idTrain, arret);
 	}
 
 	@Override
-	public void supprimerArret(int idTrain, Arret arret) {
-		// On avance l'heure d'arrivée à la gare d'arrêt qui suit l'Arret qui sera
-		// supprimé
-		avancerHeureArriveeEnGareArretSuivant(idTrain, arret);
-		// On supprime l'arret de l'itinéraire de notre train
-		itineraireRepository.supprimerArretDansUnItineraire(idTrain, arret);
-
-		// TODO : Appeler JMS ArretPlusDesservi pour le train en question
-	}
-
-	private void avancerHeureArriveeEnGareArretSuivant(int idTrain, Arret arret) {
-		// Récupérer l'arrêt qui suit celui qui va être supprimé de l'itinéraire de
-		// notre train
-		Arret nextArret = itineraireRepository.getNextArret(idTrain, arret);
-		// Si l'arrêt supprimé n'est pas le dernier arrêt de l'itinéraire...
-		if (nextArret != null) {
-			int nbSecondes = 60;
-			// On avance l'heure d'arrivée à la prochaine gare d'arrêt de nbSecondes
-			arretRepository.avancerHeureArriveeEnGare(nextArret, nbSecondes);
-		}
+	public void ajouterUnArretEnBoutItineraire(int idTrain, Arret arret, LocalDateTime heure) {
+		itineraireRepository.ajouterUnArretEnBoutItineraire(idTrain, arret, heure);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -80,6 +81,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		}
 	}
 
+	@Override
 	public Collection<Retard> getRetardsItineraireEnCorespondance(Retard retard) {
 		Itineraire itineraire = retard.getItineraire();
 		LocalTime tempsRetard = retard.getTempsDeRetard();
@@ -118,6 +120,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		return retards;
 	}
 
+	@Override
 	public void factoriseRetard(Queue<Retard> retards) {
 		Map<Itineraire, Retard> mapRetards = new HashMap<Itineraire, Retard>();
 
@@ -135,6 +138,30 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 
 		retards.clear();
 		retards.addAll(mapRetards.values());
+	}
+
+	// Cette méthode va être un enfer...
+	@Override
+	public void affecterUnAutreTrainAuxArretsDeItineraire(Itineraire itineraire) {
+		// Il faut un liste de tous les itinéraire candidats
+		List<Itineraire> itCandidats = itineraireRepository.getAllItineraires();
+		itCandidats.remove(itineraire);
+		// ---
+		// Si un itinéraire suit le même parcours mais en décalé et qu'il passe dans
+		// moins de 2 heures
+		for (Itineraire i : itCandidats) {
+			// Si l'itinéraire i suit le même parcours que l'itinéraire en paramètre
+			if (!i.isSameAs(itineraire)) {
+				// On voit ce qu'on fait
+				// Sinon
+				// On récupère tous les autres itinéraires
+				// Si un itinéraire passe à la même gare que celle de
+				// itineraire.getArretActuel()
+				// On voit ce qu'on fait
+				// Fin si
+			}
+		}
+
 	}
 
 }

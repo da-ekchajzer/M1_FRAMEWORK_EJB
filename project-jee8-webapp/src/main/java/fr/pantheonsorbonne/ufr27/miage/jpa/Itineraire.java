@@ -152,4 +152,16 @@ public class Itineraire {
 		}
 	}
 
+	public boolean isSameAs(Itineraire itineraire) {
+		if (arretsDesservis.size() != itineraire.getArretsDesservis().size()) {
+			return false;
+		}
+		for (int i = 0; i < arretsDesservis.size(); i++) {
+			if (!arretsDesservis.get(i).getGare().equals(itineraire.getArretsDesservis().get(i).getGare())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
