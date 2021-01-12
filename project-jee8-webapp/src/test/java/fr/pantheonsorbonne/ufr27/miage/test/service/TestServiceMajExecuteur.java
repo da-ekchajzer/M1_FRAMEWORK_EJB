@@ -113,16 +113,6 @@ public class TestServiceMajExecuteur {
 	}
 
 	@Test
-	void testSupprimerArret() {
-		Train t = trainRepository.getTrainByBusinessId(1);
-		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		Arret arretToSuppr = arretRepository.getArretParItineraireEtNomGare(it, "Gare2");
-		int nbArrets = it.getArretsDesservis().size();// 3
-		serviceMajExecuteur.supprimerArret(t.getId(), arretToSuppr);
-		assertEquals(nbArrets - 1, it.getArretsDesservis().size());
-	}
-
-	@Test
 	void testRetarderItineraire() {
 		Train t = trainRepository.getTrainByBusinessId(1);
 		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);

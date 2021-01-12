@@ -40,7 +40,7 @@ public class ItineraireDAO {
 
 		List<Itineraire> itineraires = getAllItinerairesByTrainEtEtat(idTrain, etat);
 		if (itineraires.isEmpty()) {
-			return null; 
+			return null;
 		} else if (itineraires.size() > 1) {
 			throw new MulitpleResultsNotExpectedException("Expected only one 'Itineraire'");
 		}
@@ -114,12 +114,14 @@ public class ItineraireDAO {
 
 		if (arret.getHeureArriveeEnGare() == null) {
 			Arret ancienDepartus = itineraire.getArretsDesservis().get(0);
-			ancienDepartus.setHeureArriveeEnGare(heure);
+			ancienDepartus.setHeureArriveeEnGare(
+					ancienDepartus.getHeureDepartDeGare().minusSeconds(heure.toLocalTime().toSecondOfDay()));
 			arretsDeTransition.add(arret);
 			arretsDeTransition.addAll(itineraire.getArretsDesservis());
 		} else if (arret.getHeureDepartDeGare() == null) {
 			Arret ancienTerminus = itineraire.getArretsDesservis().get(itineraire.getArretsDesservis().size() - 1);
-			ancienTerminus.setHeureDepartDeGare(heure);
+			ancienTerminus.setHeureDepartDeGare(
+					ancienTerminus.getHeureArriveeEnGare().plusSeconds(heure.toLocalTime().toSecondOfDay()));
 			arretsDeTransition.addAll(itineraire.getArretsDesservis());
 			arretsDeTransition.add(arret);
 		} else {
@@ -199,7 +201,7 @@ public class ItineraireDAO {
 		}
 		em.getTransaction().commit();
 	}
- 
+
 	public List<Itineraire> getAllItinerairesByEtat(CodeEtatItinieraire codeEtatItinieraire) {
 		return (List<Itineraire>) em.createNamedQuery("Itineraire.getAllItinerairesByEtat", Itineraire.class)
 				.setParameter("etat", codeEtatItinieraire.getCode()).getResultList();
