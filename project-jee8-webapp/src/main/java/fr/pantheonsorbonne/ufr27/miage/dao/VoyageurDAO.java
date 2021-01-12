@@ -107,5 +107,9 @@ public class VoyageurDAO {
 		}
 
 	}
+	
+	public List<Voyageur> getAllVoyageurs() {
+		return (List<Voyageur>) em.createNamedQuery("Voyageur.getAllVoyageurs", Voyageur.class).getResultList();
+	}
 
 }

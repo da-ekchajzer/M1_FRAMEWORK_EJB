@@ -13,14 +13,21 @@ import javax.persistence.EntityManager;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @EnableWeld
+@TestInstance(Lifecycle.PER_CLASS)
 public class TestGareDAO {
 
 	@WeldSetup
@@ -56,6 +63,15 @@ public class TestGareDAO {
 		List<Gare> gares = gareDAO.getGaresByNom("Avignon-Centre");
 		assertEquals(1, gares.size());
 		assertEquals("Avignon-Centre", gares.get(0).getNom());
+	}
+	
+	@AfterAll
+	void nettoyageDonnees() {
+		em.getTransaction().begin();
+		for(Gare g : gareDAO.getAllGares()) {
+			em.remove(g);
+		}
+		em.getTransaction().commit();
 	}
 
 }

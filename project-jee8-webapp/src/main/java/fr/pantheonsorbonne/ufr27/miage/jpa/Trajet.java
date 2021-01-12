@@ -10,18 +10,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 @Entity
-@Getter
-@Setter
-@ToString
 @NamedQueries({
 		@NamedQuery(name = "Trajet.getTrajetsByItineraire", query = "SELECT t FROM Trajet t WHERE t.itineraire.id = :idItineraire"),
 		@NamedQuery(name = "Trajet.getTrajetsByNomGareDeDepart", query = "SELECT t FROM Trajet t WHERE t.gareDepart.nom = :nom"),
-		@NamedQuery(name = "Trajet.getTrajetsByNomGareArrivee", query = "SELECT t FROM Trajet t WHERE t.gareArrivee.nom = :nom")
+		@NamedQuery(name = "Trajet.getTrajetsByNomGareArrivee", query = "SELECT t FROM Trajet t WHERE t.gareArrivee.nom = :nom"),
+		@NamedQuery(name = "Trajet.getAllTrajets", query = "SELECT t FROM Trajet t")
 
 })
 public class Trajet implements Comparable<Trajet> {

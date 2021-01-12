@@ -1,6 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.dao;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
@@ -8,6 +9,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 
 @ManagedBean
 @RequestScoped
@@ -49,5 +51,9 @@ public class ArretDAO {
 		em.getTransaction().begin();
 		a.setHeureDepartDeGare(newHeureDepartDeGare);
 		em.getTransaction().commit();
+	}
+	
+	public List<Arret> getAllArrets() {
+		return (List<Arret>) em.createNamedQuery("Arret.getAllArrets", Arret.class).getResultList();
 	}
 }

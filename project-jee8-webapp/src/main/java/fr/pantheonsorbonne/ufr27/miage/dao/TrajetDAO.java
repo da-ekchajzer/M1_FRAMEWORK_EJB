@@ -41,5 +41,9 @@ public class TrajetDAO {
 		em.getTransaction().commit();
 	}
 	
+	public List<Trajet> getAllTrajets() {
+		return (List<Trajet>) em.createNamedQuery("Trajet.getAllTrajets", Trajet.class).getResultList();
+	}
+	
 	
 }

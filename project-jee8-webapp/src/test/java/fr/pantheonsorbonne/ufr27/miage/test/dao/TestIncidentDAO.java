@@ -11,14 +11,19 @@ import javax.persistence.EntityManager;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.IncidentDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Incident.CodeEtatIncident;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Incident.CodeTypeIncident;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
@@ -29,7 +34,8 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestIncidentDAO {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(IncidentDAO.class, TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator.from(IncidentDAO.class, 
+			ItineraireDAO.class, TestPersistenceProducer.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
@@ -37,6 +43,8 @@ public class TestIncidentDAO {
 
 	@Inject
 	IncidentDAO incidentDAO;
+	@Inject
+	ItineraireDAO itineraireDAO;
 
 	@BeforeAll
 	public void setup() {
@@ -94,5 +102,19 @@ public class TestIncidentDAO {
 		incidentDAO.associerIncidentItineraire(itineraire1, incidentDAO.getIncidentById(1));
 		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), itineraire1.getIncident().getTypeIncident());
 	}
+	
+	
+	@AfterAll
+	void nettoyageDonnees() {
+		em.getTransaction().begin();
+		for(Itineraire i : itineraireDAO.getAllItineraires()) {
+			em.remove(i);
+		}
+		for(Incident i : incidentDAO.getAllIncidents()) {
+			em.remove(i);
+		}
+		em.getTransaction().commit();
+	}
+	
 
 }

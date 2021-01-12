@@ -4,14 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 @Entity
-@Getter
-@Setter
-@ToString
 public class TrainAvecResa extends Train {
 
 	Set<Voyageur> voyageurs;

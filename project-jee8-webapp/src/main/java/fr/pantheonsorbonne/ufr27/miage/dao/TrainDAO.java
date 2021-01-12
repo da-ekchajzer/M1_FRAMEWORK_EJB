@@ -25,7 +25,7 @@ public class TrainDAO {
 				.getSingleResult();
 	}
 
-	public List<Train> getAllItineraires() {
+	public List<Train> getAllTrains() {
 		return (List<Train>) em.createNamedQuery("Train.getAllTrains", Train.class).getResultList();
 	}
 
