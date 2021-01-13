@@ -267,39 +267,34 @@ public class TestVoyageurDAO {
 	@AfterAll
 	void nettoyageDonnees() {
 		em.getTransaction().begin();
-//		for(Object o : objectsToDelete) {
-// 			if (!em.contains(o)) {
-//  			    o = em.merge(o);
-//  			}
-//			if(!(o instanceof Voyageur)) {
-//				em.remove(o);
-//			}
-//			
+		for(Object o : objectsToDelete) {
+ 			em.remove(o);
+		}
+		
+//		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
+//			em.remove(voyageur);
 //		}
-		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
-			em.remove(voyageur);
-		}
-		for(Voyage voyage : this.voyageDAO.getAllVoyages()) {
-			em.remove(voyage);
-		}
-		for(Trajet trajet : this.trajetDAO.getAllTrajets()) {
-			em.remove(trajet);
-		}
-		for(Itineraire itineraire : this.itineraireDAO.getAllItineraires()) {
-			em.remove(itineraire);
-		}
-		for(Train train : this.trainDAO.getAllTrains()) {
-			em.remove(train);
-		}
-		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
-			em.remove(voyageur);
-		}
-		for(Arret arret : this.arretDAO.getAllArrets()) {
-			em.remove(arret);
-		}
-		for(Gare gare : this.gareDAO.getAllGares()) {
-			em.remove(gare);
-		}
+//		for(Voyage voyage : this.voyageDAO.getAllVoyages()) {
+//			em.remove(voyage);
+//		}
+//		for(Trajet trajet : this.trajetDAO.getAllTrajets()) {
+//			em.remove(trajet);
+//		}
+//		for(Itineraire itineraire : this.itineraireDAO.getAllItineraires()) {
+//			em.remove(itineraire);
+//		}
+//		for(Train train : this.trainDAO.getAllTrains()) {
+//			em.remove(train);
+//		}
+//		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
+//			em.remove(voyageur);
+//		}
+//		for(Arret arret : this.arretDAO.getAllArrets()) {
+//			em.remove(arret);
+//		}
+//		for(Gare gare : this.gareDAO.getAllGares()) {
+//			em.remove(gare);
+//		}
 		
 		em.getTransaction().commit();
 		System.out.println(itineraireDAO.getAllItineraires().size() + " itinéraires");
@@ -309,5 +304,5 @@ public class TestVoyageurDAO {
 		System.out.println(voyageDAO.getAllVoyages().size() + " voyages");
 		System.out.println(trajetDAO.getAllTrajets().size() + " trajets");
 	}
-
+	
 }

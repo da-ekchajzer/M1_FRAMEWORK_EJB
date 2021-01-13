@@ -66,7 +66,8 @@ public class TestTrainDAO {
 	
 	@Test
 	public void testGetAllTrains() {
-		assertEquals(4, this.trainDAO.getAllTrains().size());
+		List<Train> trains = this.trainDAO.getAllTrains();
+		assertEquals(4, trains.size());
 		em.getTransaction().begin();
 		for(Object o : objectsToDelete) {
 			em.remove(o);
