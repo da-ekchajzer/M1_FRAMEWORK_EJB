@@ -2,6 +2,7 @@ package fr.pantheonsorbonne.ufr27.miage.test.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,38 +56,54 @@ public class TestVoyageDAO {
 	TrajetDAO trajetDAO;
 	@Inject
 	TrainDAO trainDAO;
+	
+	private static List<Object> objectsToDelete; 
 
 	@BeforeAll
 	public void setup() {
+		objectsToDelete = new ArrayList<Object>();
 
-		em.getTransaction().begin();
+		System.out.println(this.gareDAO.getAllGares().size());
+		System.out.println(this.voyageDAO.getAllVoyages().size());
+		System.out.println(this.trainDAO.getAllTrains().size());
 
 		String[] nomGares = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles",
 				"Dijon-Ville", "Lyon - Pardieu", "Narbonne", "Sete", "Perpignan", "Paris - Montparnasse", "Tours",
 				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes" };
-
 		Map<String, Gare> gares = new HashMap<>();
+		Train train1 = new TrainAvecResa("TGV");
+		Itineraire itineraire1 = new Itineraire(train1);
+		
+		em.getTransaction().begin();
 		for (String nomGare : nomGares) {
 			Gare g = new Gare(nomGare);
 			gares.put(nomGare, g);
 			em.persist(g);
+			objectsToDelete.add(g);
 		}
-
-		Train train1 = new TrainAvecResa("TGV");
 		em.persist(train1);
-
-		Itineraire itineraire1 = new Itineraire(train1);
 		em.persist(itineraire1);
+		em.getTransaction().commit();
+		objectsToDelete.add(train1);
+		objectsToDelete.add(itineraire1);
+
+		
 		Trajet trajet1 = new Trajet(gares.get("Paris - Gare de Lyon"), gares.get("Avignon-Centre"), itineraire1, 0);
 		Trajet trajet2 = new Trajet(gares.get("Avignon-Centre"), gares.get("Aix en Provence"), itineraire1, 1);
-
 		List<Trajet> voyageTrajet1 = new LinkedList<Trajet>();
 		voyageTrajet1.add(trajet1);
 		voyageTrajet1.add(trajet2);
 		Voyage voyage1 = new Voyage(voyageTrajet1);
+		
+		em.getTransaction().begin();
+		em.persist(trajet1);
+		em.persist(trajet2);
 		em.persist(voyage1);
-
 		em.getTransaction().commit();
+		
+		objectsToDelete.add(trajet1);
+		objectsToDelete.add(trajet2);
+		objectsToDelete.add(voyage1);
 	}
 
 	@Test
@@ -112,22 +129,26 @@ public class TestVoyageDAO {
 	@AfterAll
 	void nettoyageDonnees() {
 		em.getTransaction().begin();
-		for(Voyage v : voyageDAO.getAllVoyages()) {
-			em.remove(v);
-		}
-		for(Trajet t : trajetDAO.getAllTrajets()) {
-			em.remove(t);
-		}
-		for(Itineraire i : itineraireDAO.getAllItineraires()) {
-			em.remove(i);
-		}
-		for(Train t : trainDAO.getAllTrains()) {
-			em.remove(t);
-		}
-		for(Gare g : gareDAO.getAllGares()) {
-			em.remove(g);
+//		for(Voyage v : voyageDAO.getAllVoyages()) {
+//			em.remove(v);
+//		}
+//		for(Trajet t : trajetDAO.getAllTrajets()) {
+//			em.remove(t);
+//		}
+//		for(Itineraire i : itineraireDAO.getAllItineraires()) {
+//			em.remove(i);
+//		}
+//		for(Train t : trainDAO.getAllTrains()) {
+//			em.remove(t);
+//		}
+//		for(Gare g : gareDAO.getAllGares()) {
+//			em.remove(g);
+//		}
+		for(Object o : objectsToDelete) {
+			em.remove(o);
 		}
 		em.getTransaction().commit();
+		
 	}
 
 }

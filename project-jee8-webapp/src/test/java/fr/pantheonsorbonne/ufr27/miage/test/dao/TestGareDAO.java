@@ -2,6 +2,7 @@ package fr.pantheonsorbonne.ufr27.miage.test.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,12 @@ public class TestGareDAO {
 	EntityManager em;
 	@Inject
 	GareDAO gareDAO;
+	
+	private static List<Object> objectsToDelete;
 
 	@BeforeEach
 	public void setup() {
+		objectsToDelete = new ArrayList<Object>();
 
 		em.getTransaction().begin();
 
@@ -53,13 +57,13 @@ public class TestGareDAO {
 			Gare g = new Gare(nomGare);
 			gares.put(nomGare, g);
 			em.persist(g);
+			objectsToDelete.add(g);
 		}
 		em.getTransaction().commit();
 	}
 
 	@Test
 	void testGetGaresByNom() {
-
 		List<Gare> gares = gareDAO.getGaresByNom("Avignon-Centre");
 		assertEquals(1, gares.size());
 		assertEquals("Avignon-Centre", gares.get(0).getNom());
@@ -68,8 +72,8 @@ public class TestGareDAO {
 	@AfterAll
 	void nettoyageDonnees() {
 		em.getTransaction().begin();
-		for(Gare g : gareDAO.getAllGares()) {
-			em.remove(g);
+		for(Object o : objectsToDelete) {
+			em.remove(o);
 		}
 		em.getTransaction().commit();
 	}

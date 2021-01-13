@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +58,11 @@ public class TestTrajetDAO {
 	@Inject
 	ArretDAO arretDAO;
 
+	private static List<Object> objectsToDelete; 
+
 	@BeforeAll
 	public void setup() {
+		objectsToDelete = new ArrayList<Object>();
 
 		em.getTransaction().begin();
 
@@ -72,11 +76,13 @@ public class TestTrajetDAO {
 			Gare g = new Gare(nomGare);
 			gares.put(nomGare, g);
 			em.persist(g);
+			objectsToDelete.add(g);
 		}
 
 		// --------------------------------- Train
 		Train train1 = new TrainAvecResa("TGV");
 		em.persist(train1);
+		objectsToDelete.add(train1);
 
 		// --------------------------------- Arrêts
 
@@ -90,8 +96,10 @@ public class TestTrajetDAO {
 
 		Arret[] arrets = { arret1, arret2, arret3, arret4 };
 
-		for (Arret a : arrets)
+		for (Arret a : arrets) {
 			em.persist(a);
+			objectsToDelete.add(a);
+		}
 
 		// --------------------------------- Itinéraires
 
@@ -102,11 +110,7 @@ public class TestTrajetDAO {
 		itineraire1.addArret(arret4);
 
 		em.persist(itineraire1);
-
-		Itineraire[] itineraires = { itineraire1 };
-
-		for (Itineraire i : itineraires)
-			em.persist(i);
+		objectsToDelete.add(itineraire1);
 
 		// --------------------------------- Trajets
 
@@ -116,9 +120,11 @@ public class TestTrajetDAO {
 
 		Trajet[] trajets = { trajet1, trajet2, trajet3 };
 
-		for (Trajet t : trajets)
+		for (Trajet t : trajets) {
 			em.persist(t);
-
+			objectsToDelete.add(t);
+		}
+		
 		em.getTransaction().commit();
 	}
 
@@ -139,6 +145,12 @@ public class TestTrajetDAO {
 		em.getTransaction().commit();
 		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
 		assertEquals(3, trajets.size());
+		
+		objectsToDelete.add(itineraire);
+		objectsToDelete.add(trajet1);
+		objectsToDelete.add(trajet2);
+		objectsToDelete.add(trajet3);
+
 	}
 
 	@Test
@@ -176,25 +188,17 @@ public class TestTrajetDAO {
 		trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
 		assertEquals(2, trajets.size());
 
+		objectsToDelete.add(itineraire);
+		objectsToDelete.add(trajet1);
+		objectsToDelete.add(trajet2);
+		objectsToDelete.add(trajet3);
 	}
 	
 	@AfterAll
 	void nettoyageDonnees() {
 		em.getTransaction().begin();
-		for(Trajet t : trajetDAO.getAllTrajets()) {
-			em.remove(t);
-		}
-		for(Itineraire i : itineraireDAO.getAllItineraires()) {
-			em.remove(i);
-		}
-		for(Train t : trainDAO.getAllTrains()) {
-			em.remove(t);
-		}
-		for(Arret a : arretDAO.getAllArrets()) {
-			em.remove(a);
-		}
-		for(Gare g : gareDAO.getAllGares()) {
-			em.remove(g);
+		for(Object o : objectsToDelete) {
+			em.remove(o);
 		}
 		em.getTransaction().commit();
 	}

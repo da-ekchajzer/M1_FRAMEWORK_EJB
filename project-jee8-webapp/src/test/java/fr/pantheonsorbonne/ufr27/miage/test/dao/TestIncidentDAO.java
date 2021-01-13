@@ -2,6 +2,7 @@ package fr.pantheonsorbonne.ufr27.miage.test.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -19,11 +20,8 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Incident.CodeEtatIncident;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Incident.CodeTypeIncident;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
@@ -45,13 +43,17 @@ public class TestIncidentDAO {
 	IncidentDAO incidentDAO;
 	@Inject
 	ItineraireDAO itineraireDAO;
+	
+	private static List<Object> objectsToDelete; 
 
 	@BeforeAll
 	public void setup() {
+		objectsToDelete = new ArrayList<Object>();
+
 		em.getTransaction().begin();
 
-		Incident incident1 = new Incident();
-		Incident incident2 = new Incident();
+		Incident incident1 = new Incident("INC1");
+		Incident incident2 = new Incident("INC2");
 
 		incident1.setTypeIncident(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode());
 		incident1.setEtat(CodeEtatIncident.EN_COURS.getCode());
@@ -60,6 +62,9 @@ public class TestIncidentDAO {
 		em.persist(incident2);
 
 		em.getTransaction().commit();
+		
+		objectsToDelete.add(incident1);
+		objectsToDelete.add(incident2);
 	}
 
 	@Test
@@ -74,8 +79,8 @@ public class TestIncidentDAO {
 	}
 
 	@Test
-	void testGetIncidentById() {
-		assertEquals(CodeEtatIncident.EN_COURS.getCode(), incidentDAO.getIncidentById(1).getEtat());
+	void testGetIncidentByBusinessId() {
+		assertEquals(CodeEtatIncident.EN_COURS.getCode(), incidentDAO.getIncidentByBusinessId("INC1").getEtat());
 	}
 
 	@Test
@@ -88,8 +93,8 @@ public class TestIncidentDAO {
 
 	@Test
 	void testMajEtatIncidentEnBDD() {
-		incidentDAO.majEtatIncidentEnBD(incidentDAO.getIncidentById(1), CodeEtatIncident.RESOLU);
-		assertEquals(CodeEtatIncident.RESOLU.getCode(), incidentDAO.getIncidentById(1).getEtat());
+		incidentDAO.majEtatIncidentEnBD(incidentDAO.getIncidentByBusinessId("INC1"), CodeEtatIncident.RESOLU);
+		assertEquals(CodeEtatIncident.RESOLU.getCode(), incidentDAO.getIncidentByBusinessId("INC1").getEtat());
 	}
 
 	@Test
@@ -99,19 +104,18 @@ public class TestIncidentDAO {
 		em.persist(itineraire1);
 		em.getTransaction().commit();
 		assertEquals(null, itineraire1.getIncident());
-		incidentDAO.associerIncidentItineraire(itineraire1, incidentDAO.getIncidentById(1));
+		incidentDAO.associerIncidentItineraire(itineraire1, incidentDAO.getIncidentByBusinessId("INC1"));
 		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), itineraire1.getIncident().getTypeIncident());
+	
+		objectsToDelete.add(itineraire1);
 	}
 	
 	
 	@AfterAll
 	void nettoyageDonnees() {
 		em.getTransaction().begin();
-		for(Itineraire i : itineraireDAO.getAllItineraires()) {
-			em.remove(i);
-		}
-		for(Incident i : incidentDAO.getAllIncidents()) {
-			em.remove(i);
+		for(Object o : objectsToDelete) {
+			em.remove(o);
 		}
 		em.getTransaction().commit();
 	}

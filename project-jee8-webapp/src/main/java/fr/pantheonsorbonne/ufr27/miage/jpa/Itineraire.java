@@ -34,11 +34,19 @@ public class Itineraire {
 		this();
 		this.businessId = "IT" + businessIdItineraireCount++;
 		this.train = train;
+		this.arretsDesservis = new LinkedList<Arret>();
 	}
 
 	public Itineraire(Train train, List<Arret> arretsDesservis) {
 		this(train);
 		this.arretsDesservis = arretsDesservis;
+	}
+	
+	// Utile pour les TUs
+	public Itineraire(Train train, String businessId) {
+		this.train = train;
+		this.businessId = businessId;
+		this.arretsDesservis = new LinkedList<Arret>();
 	}
 
 	@Id
