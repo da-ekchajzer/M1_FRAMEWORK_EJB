@@ -12,13 +12,22 @@ import javax.persistence.NamedQuery;
 @Entity
 @NamedQueries({ @NamedQuery(name = "Incident.getAllIncidents", query = "SELECT i FROM Incident i"),
 		@NamedQuery(name = "Incident.getNbIncidents", query = "SELECT COUNT(i) FROM Incident i"),
-		@NamedQuery(name = "Incident.getIncidentById", query = "SELECT i FROM Incident i WHERE i.id = :id") })
+		@NamedQuery(name = "Incident.getIncidentById", query = "SELECT i FROM Incident i WHERE i.id = :id"),
+		@NamedQuery(name = "Incident.getIncidentByBusinessId", query = "SELECT i FROM Incident i WHERE i.businessId = :id") })
 public class Incident {
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
+	
+	public Incident() {}
+	
+	// Utile pour les TUs
+	public Incident(String businessId) {
+		this.businessId = businessId;
+	}
 
+	String businessId;
 	int typeIncident;
 	LocalDateTime heureDebut;
 	LocalDateTime heureTheoriqueDeFin;

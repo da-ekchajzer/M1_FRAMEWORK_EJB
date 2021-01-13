@@ -34,6 +34,11 @@ public class IncidentDAO {
 		return em.createNamedQuery("Incident.getIncidentById", Incident.class).setParameter("id", idIncident)
 				.getSingleResult();
 	}
+	
+	public Incident getIncidentByBusinessId(String businessId) {
+		return em.createNamedQuery("Incident.getIncidentByBusinessId", Incident.class).setParameter("id", businessId)
+				.getSingleResult();
+	}
 
 	public void ajouterIncidentEnBD(Incident incident) {
 		// Persistence de l'incident

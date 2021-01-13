@@ -13,5 +13,10 @@ public class TrainSansResa extends Train {
 		super(marque);
 		this.marque = marque;
 	}
+	
+	public TrainSansResa(String marque, String businessId) {
+		super(marque, businessId);
+		//this.marque = marque;
+	}
 
 }

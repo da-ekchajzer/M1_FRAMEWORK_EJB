@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,9 +82,13 @@ public class TestVoyageurDAO {
 	GareDAO gareDAO;
 	@Inject
 	ArretDAO arretDAO;
+	
+	private static List<Object> objectsToDelete; 
 
 	@BeforeAll
 	public void setup() {
+		objectsToDelete = new ArrayList<Object>();
+
 		em.getTransaction().begin();
 
 		// --------------------------------- Gares
@@ -96,23 +101,25 @@ public class TestVoyageurDAO {
 			Gare g = new Gare(nomGare);
 			gares.put(nomGare, g);
 			em.persist(g);
+			objectsToDelete.add(g);
 		}
 
 		// --------------------------------- Remplissage de la table Train
-		Train train1 = new TrainAvecResa("TGV");
-		Train train2 = new TrainSansResa("TER");
-		Train train3 = new TrainAvecResa("OUIGO");
-		Train train4 = new TrainAvecResa("OUIGO");
-		Train train5 = new TrainSansResa("TER");
-		Train train6 = new TrainAvecResa("TGV");
-		Train train7 = new TrainSansResa("TER");
-		Train train8 = new TrainAvecResa("TGV");
-		Train train9 = new TrainAvecResa("TGV");
+		Train train1 = new TrainAvecResa("TGV", "T1");
+		Train train2 = new TrainSansResa("TER", "T2");
+		Train train3 = new TrainAvecResa("OUIGO", "T3");
+		Train train4 = new TrainAvecResa("OUIGO", "T4");
+		Train train5 = new TrainSansResa("TER", "T5");
+		Train train6 = new TrainAvecResa("TGV", "T6");
+		Train train7 = new TrainSansResa("TER", "T7");
+		Train train8 = new TrainAvecResa("TGV", "T8");
+		Train train9 = new TrainAvecResa("TGV", "T9");
 
 		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
-		for (Train t : trains)
+		for (Train t : trains) {
 			em.persist(t);
-
+			objectsToDelete.add(t);
+		}
 		// --------------------------------- Arrêts
 
 		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null,
@@ -126,12 +133,13 @@ public class TestVoyageurDAO {
 
 		Arret[] arrets = { arret1, arret2, arret3, arret4 };
 
-		for (Arret a : arrets)
+		for (Arret a : arrets) {
 			em.persist(a);
-
+			objectsToDelete.add(a);
+		}
 		// --------------------------------- Remplissage de la table Itinéraire
 
-		Itineraire itineraire1 = new Itineraire(train1);
+		Itineraire itineraire1 = new Itineraire(train1, "IT1");
 		itineraire1.addArret(arret1);
 		itineraire1.setArretActuel(arret1);
 		itineraire1.addArret(arret2);
@@ -139,6 +147,7 @@ public class TestVoyageurDAO {
 		itineraire1.addArret(arret4);
 
 		em.persist(itineraire1);
+		objectsToDelete.add(itineraire1);
 
 		// --------------------------------- Remplissage de la table Trajet
 
@@ -148,8 +157,10 @@ public class TestVoyageurDAO {
 
 		Trajet[] trajets = { trajet1, trajet2, trajet3 };
 
-		for (Trajet t : trajets)
+		for (Trajet t : trajets) {
 			em.persist(t);
+			objectsToDelete.add(t);	
+		}
 
 		// --------------------------------- Remplissage de la table Voyage
 		List<Trajet> voyageTrajet1 = new LinkedList<Trajet>();
@@ -164,6 +175,8 @@ public class TestVoyageurDAO {
 
 		em.persist(voyage1);
 		em.persist(voyage2);
+		objectsToDelete.add(voyage1);
+		objectsToDelete.add(voyage2);
 
 		// --------------------------------- Remplissage de la table Voyageur
 
@@ -188,6 +201,7 @@ public class TestVoyageurDAO {
 				v.setVoyageActuel(voyage2);
 			}
 			em.persist(v);
+			objectsToDelete.add(v);
 		}
 
 		em.getTransaction().commit();
@@ -208,7 +222,10 @@ public class TestVoyageurDAO {
 		em.getTransaction().commit();
 		List<Voyageur> voyageurs = voyageurDAO.getVoyageursByVoyageActuel(voyage1);
 		assertEquals(2, voyageurs.size());
-
+		
+		objectsToDelete.add(voyageur1);
+		objectsToDelete.add(voyageur2);
+		objectsToDelete.add(voyage1);
 	}
 
 	@Test
@@ -246,31 +263,51 @@ public class TestVoyageurDAO {
 		assertEquals(9, trainDAO.getAllTrains().size());
 	}
 	
+	// TODO !!!
 	@AfterAll
 	void nettoyageDonnees() {
 		em.getTransaction().begin();
-		for(Voyageur voyageur : voyageurDAO.getAllVoyageurs()) {
+//		for(Object o : objectsToDelete) {
+// 			if (!em.contains(o)) {
+//  			    o = em.merge(o);
+//  			}
+//			if(!(o instanceof Voyageur)) {
+//				em.remove(o);
+//			}
+//			
+//		}
+		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
 			em.remove(voyageur);
 		}
-		for(Voyage voyage : voyageDAO.getAllVoyages()) {
+		for(Voyage voyage : this.voyageDAO.getAllVoyages()) {
 			em.remove(voyage);
 		}
-		for(Trajet trajet : trajetDAO.getAllTrajets()) {
+		for(Trajet trajet : this.trajetDAO.getAllTrajets()) {
 			em.remove(trajet);
 		}
-		for(Itineraire i : itineraireDAO.getAllItineraires()) {
-			em.remove(i);
+		for(Itineraire itineraire : this.itineraireDAO.getAllItineraires()) {
+			em.remove(itineraire);
 		}
-		for(Train train : trainDAO.getAllTrains()) {
+		for(Train train : this.trainDAO.getAllTrains()) {
 			em.remove(train);
 		}
-		for(Arret a : arretDAO.getAllArrets()) {
-			em.remove(a);
+		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
+			em.remove(voyageur);
 		}
-		for(Gare g : gareDAO.getAllGares()) {
-			em.remove(g);
+		for(Arret arret : this.arretDAO.getAllArrets()) {
+			em.remove(arret);
 		}
+		for(Gare gare : this.gareDAO.getAllGares()) {
+			em.remove(gare);
+		}
+		
 		em.getTransaction().commit();
+		System.out.println(itineraireDAO.getAllItineraires().size() + " itinéraires");
+		System.out.println(arretDAO.getAllArrets().size() + " arrêts");
+		System.out.println(trainDAO.getAllTrains().size() + " trains");
+		System.out.println(voyageurDAO.getAllVoyageurs().size() + " voyageurs");
+		System.out.println(voyageDAO.getAllVoyages().size() + " voyages");
+		System.out.println(trajetDAO.getAllTrajets().size() + " trajets");
 	}
 
 }

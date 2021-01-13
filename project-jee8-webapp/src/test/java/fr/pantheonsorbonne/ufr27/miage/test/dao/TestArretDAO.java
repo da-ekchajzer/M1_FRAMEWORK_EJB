@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -13,6 +15,7 @@ import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -37,9 +40,16 @@ public class TestArretDAO {
 	ArretDAO arretDAO;
 	@Inject
 	GareDAO gareDAO;
+	
+	private static List<Object> objectsToDelete; 
 
+	@BeforeAll
+	void setup() {
+		objectsToDelete = new ArrayList<Object>();
+	}
+	
 	@Test
-	void testAvancerHeureArriveeEnGare() {
+	void testAvancerHeureArriveeEnGare() {		
 		Gare gare = new Gare("Avignon-Centre");
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime hArriveeEnGare = now.plus(30, ChronoUnit.SECONDS);
@@ -51,6 +61,9 @@ public class TestArretDAO {
 		em.getTransaction().commit();
 		arretDAO.avancerHeureArriveeEnGare(arret, 7);
 		assertEquals(arret.getHeureArriveeEnGare(), hArriveeEnGare.minusSeconds(7));
+		
+		objectsToDelete.add(gare);
+		objectsToDelete.add(arret);
 	}
 
 	@Test
@@ -66,6 +79,9 @@ public class TestArretDAO {
 		em.getTransaction().commit();
 		arretDAO.avancerHeureDepartDeGare(arret, 10);
 		assertEquals(arret.getHeureDepartDeGare(), hDepartDeGare.minusSeconds(10));
+		
+		objectsToDelete.add(gare);
+		objectsToDelete.add(arret);
 	}
 
 	@Test
@@ -81,6 +97,9 @@ public class TestArretDAO {
 		em.getTransaction().commit();
 		arretDAO.retarderHeureArriveeEnGare(arret, 7);
 		assertEquals(arret.getHeureArriveeEnGare(), hArriveeEnGare.plusSeconds(7));
+		
+		objectsToDelete.add(gare);
+		objectsToDelete.add(arret);
 	}
 
 	@Test
@@ -96,18 +115,20 @@ public class TestArretDAO {
 		em.getTransaction().commit();
 		arretDAO.retardHeureDepartDeGare(arret, 10);
 		assertEquals(arret.getHeureDepartDeGare(), hDepartDeGare.plusSeconds(10));
+		
+		objectsToDelete.add(gare);
+		objectsToDelete.add(arret);
 	}
 	
 	@AfterAll
 	void nettoyageDonnees() {
 		em.getTransaction().begin();
-		for(Arret a : arretDAO.getAllArrets()) {
-			em.remove(a);
-		}
-		for(Gare g : gareDAO.getAllGares()) {
-			em.remove(g);
+		for(Object o : objectsToDelete) {
+			em.remove(o);
 		}
 		em.getTransaction().commit();
+//		System.out.println(gareDAO.getAllGares().size() + " gares");
+//		System.out.println(arretDAO.getAllArrets().size() + " arrêts");
 	}
 
 }
