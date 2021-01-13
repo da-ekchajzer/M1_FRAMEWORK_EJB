@@ -88,7 +88,6 @@ public class TestVoyageurDAO {
 	@BeforeAll
 	public void setup() {
 		objectsToDelete = new ArrayList<Object>();
-
 		em.getTransaction().begin();
 
 		// --------------------------------- Gares
@@ -210,22 +209,9 @@ public class TestVoyageurDAO {
 	@Test
 	@Order(1)
 	void testGetVoyageursByVoyageActuel() {
-		Voyageur voyageur1 = new Voyageur();
-		Voyageur voyageur2 = new Voyageur();
-		Voyage voyage1 = new Voyage();
-		em.getTransaction().begin();
-		em.persist(voyageur1);
-		em.persist(voyageur2);
-		em.persist(voyage1);
-		voyageur1.setVoyageActuel(voyage1);
-		voyageur2.setVoyageActuel(voyage1);
-		em.getTransaction().commit();
+		Voyage voyage1 = voyageDAO.getAllVoyages().get(0);
 		List<Voyageur> voyageurs = voyageurDAO.getVoyageursByVoyageActuel(voyage1);
-		assertEquals(2, voyageurs.size());
-		
-		objectsToDelete.add(voyageur1);
-		objectsToDelete.add(voyageur2);
-		objectsToDelete.add(voyage1);
+		assertEquals(5, voyageurs.size());
 	}
 
 	@Test
@@ -266,36 +252,68 @@ public class TestVoyageurDAO {
 	// TODO !!!
 	@AfterAll
 	void nettoyageDonnees() {
+		System.out.println(itineraireDAO.getAllItineraires().size() + " itinéraires");
+		System.out.println(arretDAO.getAllArrets().size() + " arrêts");
+		System.out.println(trainDAO.getAllTrains().size() + " trains");
+		System.out.println(voyageurDAO.getAllVoyageurs().size() + " voyageurs");
+		System.out.println(voyageDAO.getAllVoyages().size() + " voyages");
+		System.out.println(trajetDAO.getAllTrajets().size() + " trajets");
+
 		em.getTransaction().begin();
-		for(Object o : objectsToDelete) {
- 			em.remove(o);
+		
+		/**
+		 * 1ère méthode : on parcourt une liste static qui contient l'ensemble des entités
+		 * qui ont été créées et persistées dans CETTE classe de test
+		 * (on la parcourt à l'envers pour respecter l'ordre de suppression en BD :
+		 * on doit supprimer un Arrêt avant de supprimer une Gare)
+		 * => Ne fonctionne pas
+		 */
+//		for(int i = objectsToDelete.size()-1 ; i >= 0 ; i--) {
+// 			if(!em.contains(objectsToDelete.get(i))) {
+// 				em.merge(objectsToDelete.get(i));
+// 			}
+//			em.remove(objectsToDelete.get(i));
+//		}
+		
+		/**
+		 * 2ème méthode : 
+		 * l'EntityManager ne contient que les objets créés dans cette classe (c'est ok ça a été testé)
+		 * car chaque classe supprime les objets qu'elle a utilisé à sa fin donc si on utilise les
+		 * méthodes "getAll" des DAOs, on peut récupérer toutes les entités créées puis les supprimer.
+		 * Problème :
+		 * L'ordre suivant de suppression pourrait être le bon sauf que pour supprimer un Voyageur,
+		 * il faut avoir supprimer le/les Itineraire(s) associé(s). Si on essaye de supprimer les Itineraires
+		 * en premier, on aura le même problème entre les objets Itineraire et Trajet (pour supprimer un Itineraire
+		 * il faut supprimer le/les trajet(s) associé(s)) et ainsi de suite..
+		 * Il y a une "dépendance cyclique" entre nos objets qui empêche toutes suppressions.
+		 * 
+		 * On a pas ce problème dans les autres classes de test car il apparaît dès lors qu'on persiste des Voyageurs
+		 * (l'objet Voyageur étant l'entité "la plus grande") ce qu'on ne fait jamais dans les autres classes DAOs.
+		 * 
+		 * Selon moi il faut modifier le schéma de notre BD pour supprimer cette dépendance cyclique entre
+		 * les entités.
+		 */
+		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
+			em.remove(voyageur);
 		}
-		
-//		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
-//			em.remove(voyageur);
-//		}
-//		for(Voyage voyage : this.voyageDAO.getAllVoyages()) {
-//			em.remove(voyage);
-//		}
-//		for(Trajet trajet : this.trajetDAO.getAllTrajets()) {
-//			em.remove(trajet);
-//		}
-//		for(Itineraire itineraire : this.itineraireDAO.getAllItineraires()) {
-//			em.remove(itineraire);
-//		}
-//		for(Train train : this.trainDAO.getAllTrains()) {
-//			em.remove(train);
-//		}
-//		for(Voyageur voyageur : this.voyageurDAO.getAllVoyageurs()) {
-//			em.remove(voyageur);
-//		}
-//		for(Arret arret : this.arretDAO.getAllArrets()) {
-//			em.remove(arret);
-//		}
-//		for(Gare gare : this.gareDAO.getAllGares()) {
-//			em.remove(gare);
-//		}
-		
+		for(Voyage voyage : this.voyageDAO.getAllVoyages()) {
+			em.remove(voyage);
+		}
+		for(Trajet trajet : this.trajetDAO.getAllTrajets()) {
+			em.remove(trajet);
+		}
+		for(Itineraire itineraire : this.itineraireDAO.getAllItineraires()) {
+			em.remove(itineraire);
+		}
+		for(Arret arret : this.arretDAO.getAllArrets()) {
+			em.remove(arret);
+		}
+		for(Train train : this.trainDAO.getAllTrains()) {
+			em.remove(train);
+		}
+		for(Gare gare : this.gareDAO.getAllGares()) {
+			em.remove(gare);
+		}
 		em.getTransaction().commit();
 		System.out.println(itineraireDAO.getAllItineraires().size() + " itinéraires");
 		System.out.println(arretDAO.getAllArrets().size() + " arrêts");
