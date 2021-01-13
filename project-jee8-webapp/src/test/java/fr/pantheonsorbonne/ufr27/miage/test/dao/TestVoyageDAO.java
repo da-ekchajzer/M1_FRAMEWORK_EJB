@@ -111,7 +111,6 @@ public class TestVoyageDAO {
 		List<Voyage> voyages = voyageDAO
 				.getVoyagesByNomGareDepart(gareDAO.getGaresByNom("Paris - Gare de Lyon").get(0));
 		assertEquals(1, voyages.size());
-
 	}
 
 	@Test
