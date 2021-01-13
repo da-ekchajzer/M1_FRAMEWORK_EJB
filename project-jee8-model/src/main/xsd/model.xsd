@@ -30,6 +30,7 @@
 			<xsd:element name="etat_itineraire" type="xsd:int"></xsd:element>
 			<xsd:element name="garesDepart" type="xsd:string"/>
 			<xsd:element name="garesArrive" type="xsd:string"/>
+			<xsd:element name="gareDesservis" type="xsd:string" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
 

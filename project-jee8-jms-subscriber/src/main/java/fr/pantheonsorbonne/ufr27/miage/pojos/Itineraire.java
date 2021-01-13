@@ -1,6 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.pojos;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Itineraire {
 
@@ -8,9 +9,18 @@ public class Itineraire {
 	String idItineraire;
 	String gareDepart;
 	String gareArrive;
+	List<String> gareDesservis;
 	LocalDateTime heureArriveeEnGare;
 	LocalDateTime heureDepartDeGare;
 	
+	public List<String> getGareDesservis() {
+		return gareDesservis;
+	}
+
+	public void setGareDesservis(List<String> gareDesservis) {
+		this.gareDesservis = gareDesservis;
+	}
+
 	public String getGareDepart() {
 		return gareDepart;
 	}

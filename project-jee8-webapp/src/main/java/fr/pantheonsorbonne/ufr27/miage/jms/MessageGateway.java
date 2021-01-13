@@ -101,9 +101,15 @@ public class MessageGateway {
 					.setHeureDepart(MapperUtils.localDateTimeToXmlGregorianCalendar(a.getHeureDepartDeGare()));
 		}
 
-		itineraireInfoJAXB.setGaresArrive(i.getArretsDesservis().get(i.getArretsDesservis().size() - 1).getGare().getNom());
+		itineraireInfoJAXB
+				.setGaresArrive(i.getArretsDesservis().get(i.getArretsDesservis().size() - 1).getGare().getNom());
 		itineraireInfoJAXB.setGaresDepart(i.getArretsDesservis().get(0).getGare().getNom());
 
+		for (Arret arretDesservis : i.getArretsDesservis()) {
+			if (arretDesservis.isAfter(a)) {
+				itineraireInfoJAXB.getGareDesservises().add(arretDesservis.getGare().getNom());
+			}
+		}
 		StringWriter writer = new StringWriter();
 		jaxbMarshaller.marshal(itineraireInfoJAXB, writer);
 
@@ -144,7 +150,7 @@ public class MessageGateway {
 		GareConcerneeJAXB gareConcerneeJAXB = new GareConcerneeJAXB();
 
 		for (Arret a : itineraire.getArretsDesservis()) {
-			if (a.isAfter(itineraire.getArretActuel())) {
+			if (a.isAfter(itineraire.getArretActuel()) || a.equals(itineraire.getArretActuel())) {
 				gareConcerneeJAXB.getGares().add(a.getGare().getNom());
 			}
 		}

@@ -48,7 +48,7 @@ public class InfoGare implements Runnable {
 	private void update() {
 		for (String s : itineraires.keySet()) {
 			if (itineraires.get(s).getHeureArriveeEnGare() == null) {
-				if (itineraires.get(s).getHeureDepartDeGare().isBefore(LocalDateTime.now())) {
+				if (itineraires.get(s).getHeureDepartDeGare().plusSeconds(45).isBefore(LocalDateTime.now())) {
 					itineraires.remove(s);
 				}
 			} else if (itineraires.get(s).getHeureDepartDeGare() == null) {
@@ -80,6 +80,10 @@ public class InfoGare implements Runnable {
 			if (itineraires.get(s).getHeureDepartDeGare() != null) {
 				sb.append("\nDestination : " + itineraires.get(s).getGareArrive() + " - Horaire : "
 						+ itineraires.get(s).getHeureDepartDeGare().toLocalTime());
+			for(String gare : itineraires.get(s).getGareDesservis()) {
+				sb.append("\n	" + gare);
+			}
+			
 			}
 		}
 		sb.append("\n");
