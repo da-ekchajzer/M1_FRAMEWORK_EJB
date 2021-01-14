@@ -154,9 +154,7 @@ public class TestServiceIncident {
 		incidentJAXB.setTypeIncident(1);
 		incidentJAXB.setEtatIncident(CodeEtatIncident.EN_COURS.getCode());
 
-		assertEquals(0, this.incidentRepository.getNbIncidents());
-		serviceIncident.creerIncident(t.getId(), incidentJAXB);
-		assertEquals(1, this.incidentRepository.getNbIncidents());
+		assertTrue(serviceIncident.creerIncident(t.getId(), incidentJAXB));
 
 		Incident incidentCree = this.incidentRepository.getIncidentByIdTrain(t.getId());
 		assertEquals(incidentCree.getHeureDebut().plusMinutes(5), incidentCree.getHeureTheoriqueDeFin());

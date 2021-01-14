@@ -46,7 +46,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		Arret arret = getArretByItineraireAndNomGare(itineraire, a.getGare());
 		itineraireRepository.majArretActuel(itineraire, arret);
 		serviceUtilisateur.majUtilisateursTrain(idTrain);
-		if (itineraireRepository.getNextArretByItineraireEtArretActuel(itineraire, arret) == null) {
+		if (itineraireRepository.getNextArretByItineraireEtUnArret(itineraire, arret) == null) {
 			itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.FIN);
 		}
 		return true;

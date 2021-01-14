@@ -92,7 +92,11 @@ public class TestIncidentRepository {
 		i.setTypeIncident(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode());
 		i.setEtat(CodeEtatIncident.EN_COURS.getCode());
 		assertNotNull(i);
-		assertTrue(incidentRepository.creerIncident(t.getId(), i));
+		
+		assertEquals(0, incidentRepository.getAllIncidents().size());
+		i = incidentRepository.creerIncident(t.getId(), i);
+		assertEquals(1, incidentRepository.getAllIncidents().size());
+
 		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_INCIDENT);
 		assertEquals(it.getIncident(), i);
 		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), it.getIncident().getTypeIncident());

@@ -2,9 +2,8 @@ package fr.pantheonsorbonne.ufr27.miage.test.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -55,16 +54,13 @@ public class TestGareDAO {
 		String[] nomGares = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles",
 				"Dijon-Ville", "Lyon - Pardieu", "Narbonne", "Sete", "Perpignan", "Paris - Montparnasse", "Tours",
 				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes" };
-
-		Map<String, Gare> gares = new HashMap<>();
 		for (String nomGare : nomGares) {
-			Gare g = new Gare(nomGare);
-			gares.put(nomGare, g);
-			em.persist(g);
+			em.persist(new Gare(nomGare));
 		}
+		
 		em.getTransaction().commit();
 	}
-
+	
 	@Test
 	void testGetGaresByNom() {
 		List<Gare> gares = gareDAO.getGaresByNom("Avignon-Centre");

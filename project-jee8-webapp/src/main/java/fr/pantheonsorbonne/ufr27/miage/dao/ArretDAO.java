@@ -17,13 +17,22 @@ public class ArretDAO {
 	@Inject
 	EntityManager em;
 
+	/**
+	 * Supprimer un arrêt en BD
+	 * @param arret
+	 */
 	public void supprimerArret(Arret arret) {
-		// On supprime l'arrêt
 		em.getTransaction().begin();
 		em.remove(arret);
 		em.getTransaction().commit();
 	}
 
+	/**
+	 * Avancer l'heure d'arrivée en gare de tempsAvance seconde(s)
+	 * pour l'arrêt passé en paramètre
+	 * @param a
+	 * @param tempsAvance
+	 */
 	public void avancerHeureArriveeEnGare(Arret a, int tempsAvance) {
 		LocalDateTime newHeureArriveeEnGare = a.getHeureArriveeEnGare().minusSeconds(tempsAvance);
 		em.getTransaction().begin();
@@ -31,6 +40,12 @@ public class ArretDAO {
 		em.getTransaction().commit();
 	}
 
+	/**
+	 * Avancer l'heure de départ de gare de tempsAvance seconde(s)
+	 * pour l'arrêt passé en paramètre
+	 * @param a
+	 * @param tempsAvance
+	 */
 	public void avancerHeureDepartDeGare(Arret a, int tempsAvance) {
 		LocalDateTime newHeureDepartDeGare = a.getHeureDepartDeGare().minusSeconds(tempsAvance);
 		em.getTransaction().begin();
@@ -38,6 +53,12 @@ public class ArretDAO {
 		em.getTransaction().commit();
 	}
 
+	/**
+	 * Reculer l'heure d'arrivée en gare de tempsAvance seconde(s)
+	 * pour l'arrêt passé en paramètre
+	 * @param a
+	 * @param tempsAvance
+	 */
 	public void retarderHeureArriveeEnGare(Arret a, int tempsRetard) {
 		LocalDateTime newHeureArriveeEnGare = a.getHeureArriveeEnGare().plusSeconds(tempsRetard);
 		em.getTransaction().begin();
@@ -45,6 +66,12 @@ public class ArretDAO {
 		em.getTransaction().commit();
 	}
 
+	/**
+	 * Reculer l'heure de départ de gare de tempsAvance seconde(s)
+	 * pour l'arrêt passé en paramètre
+	 * @param a
+	 * @param tempsAvance
+	 */
 	public void retardHeureDepartDeGare(Arret a, int tempsRetard) {
 		LocalDateTime newHeureDepartDeGare = a.getHeureDepartDeGare().plusSeconds(tempsRetard);
 		em.getTransaction().begin();

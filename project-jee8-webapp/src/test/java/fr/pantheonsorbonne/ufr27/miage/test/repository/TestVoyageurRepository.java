@@ -1,5 +1,9 @@
 package fr.pantheonsorbonne.ufr27.miage.test.repository;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -10,6 +14,7 @@ import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.validation.constraints.AssertTrue;
 
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
@@ -31,6 +36,7 @@ import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainSansResa;
@@ -105,42 +111,60 @@ public class TestVoyageurRepository {
 		Arret arret3 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plus(3, ChronoUnit.MINUTES),
 				LocalDateTime.now().plus(3, ChronoUnit.MINUTES).plus(1, ChronoUnit.MINUTES));
 		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plus(5, ChronoUnit.MINUTES),
+				LocalDateTime.now().plus(7, ChronoUnit.MINUTES));
+		Arret arret5 = new Arret(gares.get("Lyon - Pardieu"), LocalDateTime.now().plus(10, ChronoUnit.MINUTES),
 				null);
+		
+		Arret[] arrets = { arret1, arret2, arret3, arret4, arret5 };
 
-		Arret[] arrets = { arret1, arret2, arret3, arret4 };
-
-		for (Arret a : arrets)
+		for (Arret a : arrets) {
 			em.persist(a);
+		}
 
 		// --------------------------------- Remplissage de la table Itinéraire
 
 		Itineraire itineraire1 = new Itineraire(train1);
+		itineraire1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
 		itineraire1.addArret(arret1);
 		itineraire1.addArret(arret2);
-		itineraire1.addArret(arret3);
 		itineraire1.addArret(arret4);
-
 		em.persist(itineraire1);
+		
+		Itineraire itineraire2 = new Itineraire(train2);
+		itineraire2.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
+		itineraire2.addArret(arret4);
+		itineraire2.addArret(arret5);
+		em.persist(itineraire2);
 
 		// --------------------------------- Remplissage de la table Trajet
 
 		Trajet trajet1 = new Trajet(gares.get("Paris - Gare de Lyon"), gares.get("Avignon-Centre"), itineraire1, 0);
 		Trajet trajet2 = new Trajet(gares.get("Avignon-Centre"), gares.get("Aix en Provence"), itineraire1, 1);
 		Trajet trajet3 = new Trajet(gares.get("Aix en Provence"), gares.get("Marseille - St Charles"), itineraire1, 2);
+		Trajet trajet4 = new Trajet(gares.get("Marseille - St Charles"), gares.get("Lyon - Pardieu"), itineraire2, 3);
 
-		Trajet[] trajets = { trajet1, trajet2, trajet3 };
+		Trajet[] trajets = { trajet1, trajet2, trajet3, trajet4 };
 
-		for (Trajet t : trajets)
+		for (Trajet t : trajets) {
 			em.persist(t);
+		}
 
 		// --------------------------------- Remplissage de la table Voyage
 		List<Trajet> voyageTrajet1 = new LinkedList<Trajet>();
 		voyageTrajet1.add(trajet1);
 		voyageTrajet1.add(trajet2);
 		voyageTrajet1.add(trajet3);
+		voyageTrajet1.add(trajet4);
 		Voyage voyage1 = new Voyage(voyageTrajet1);
-
 		em.persist(voyage1);
+		
+		List<Trajet> voyageTrajet2 = new LinkedList<Trajet>();
+		voyageTrajet2.add(trajet1);
+		voyageTrajet2.add(trajet2);
+		voyageTrajet2.add(trajet3);
+		Voyage voyage2 = new Voyage(voyageTrajet2);
+		em.persist(voyage2);
+
 
 		// --------------------------------- Remplissage de la table Voyageur
 
@@ -156,22 +180,31 @@ public class TestVoyageurRepository {
 
 		for (int i = 0; i < prenomsVoyageurs.length; i++) {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
-			if (i < 5)
+			if (i < 5) {
+				if(i == 0) {
+					v.setVoyageActuel(voyage1);
+				}
 				voyage1.addVoyageur(v);
+			} else if(i == 15) {
+				v.setVoyageActuel(voyage2);
+				voyage2.addVoyageur(v);
+			}
 			em.persist(v);
 		}
-
 		em.getTransaction().commit();
 	}
-
+	
 	@Test
-	void testMajVoyageursDansTrainAvecResa() {
-		// TODO
-	}
-
-	@Test
-	void testMettreVoyageursDansItineraire() {
-		// TODO
+	void testIsVoyageurCorrespondance() {
+		Voyageur voyageurEnCorrespondance = voyageurRepository.getAllVoyageurs().get(0);
+		Voyageur voyageurSansVoyage = voyageurRepository.getAllVoyageurs().get(15);
+		Voyage voyage = voyageurEnCorrespondance.getVoyageActuel();
+		assertNotNull(voyage);
+		Itineraire it1 = voyage.getTrajets().get(0).getItineraire();
+		Itineraire it2 = voyage.getTrajets().get(3).getItineraire();
+		assertTrue(!it1.equals(it2));
+		assertTrue(voyageurRepository.isVoyageurCorrespondance(voyageurEnCorrespondance, it1, it2));
+		assertFalse(voyageurRepository.isVoyageurCorrespondance(voyageurSansVoyage, it1, it2));
 	}
 
 	@AfterAll

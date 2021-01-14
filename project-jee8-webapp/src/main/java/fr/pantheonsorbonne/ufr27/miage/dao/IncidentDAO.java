@@ -20,46 +20,73 @@ public class IncidentDAO {
 	@Inject
 	EntityManager em;
 
+	/**
+	 * Récupérer l'ensemble des incidents présents en BD
+	 * @return
+	 */
 	public List<Incident> getAllIncidents() {
 		TypedQuery<Incident> query = em.createNamedQuery("Incident.getAllIncidents", Incident.class);
 		return query.getResultList();
 	}
 
-	public int getNbIncidents() {
-		TypedQuery<Long> query = em.createNamedQuery("Incident.getNbIncidents", Long.class);
-		return query.getSingleResult().intValue();
-	}
-
+	/**
+	 * Récupérer en BD l'incident ayant pour id idIncident
+	 * @param idIncident
+	 * @return
+	 */
 	public Incident getIncidentById(int idIncident) {
 		return em.createNamedQuery("Incident.getIncidentById", Incident.class).setParameter("id", idIncident)
 				.getSingleResult();
 	}
 	
+	/**
+	 * Récupérer en BD l'incident ayant pour businessId celui passé en paramètre
+	 * @param businessId
+	 * @return
+	 */
 	public Incident getIncidentByBusinessId(String businessId) {
 		return em.createNamedQuery("Incident.getIncidentByBusinessId", Incident.class).setParameter("id", businessId)
 				.getSingleResult();
 	}
 
+	/**
+	 * Persister l'incident passé en paramètre en BD
+	 * @param incident
+	 */
 	public void ajouterIncidentEnBD(Incident incident) {
-		// Persistence de l'incident
 		em.getTransaction().begin();
 		em.persist(incident);
 		em.getTransaction().commit();
 	}
 
+	/**
+	 * Mettre à jour l'état de l'incident à l'état newEtat (= EN_COURS ou RESOLU)
+	 * @param incident
+	 * @param newEtat
+	 */
 	public void majEtatIncidentEnBD(Incident incident, CodeEtatIncident newEtat) {
-		// MàJ de l'état de l'incident associé au train
 		em.getTransaction().begin();
 		incident.setEtat(newEtat.getCode());
 		em.getTransaction().commit();
 	}
 
+	/**
+	 * Avancer ou reculer l'heure de fin de l'incident en lui donnant la valeur
+	 * newHeureDeFin passée en paramètre
+	 * @param incident
+	 * @param newHeureDeFin
+	 */
 	public void majHeureDeFinEnBD(Incident incident, LocalDateTime newHeureDeFin) {
 		em.getTransaction().begin();
 		incident.setHeureTheoriqueDeFin(newHeureDeFin);
 		em.getTransaction().commit();
 	}
 
+	/**
+	 * Associer en BD un incident et un itinéraire
+	 * @param itineraire
+	 * @param incident
+	 */
 	public void associerIncidentItineraire(Itineraire itineraire, Incident incident) {
 		em.getTransaction().begin();
 		itineraire.setIncident(incident);
