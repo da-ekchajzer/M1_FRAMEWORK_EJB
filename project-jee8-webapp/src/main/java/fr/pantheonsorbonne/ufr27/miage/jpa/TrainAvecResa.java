@@ -18,12 +18,6 @@ public class TrainAvecResa extends Train {
 		super(marque);
 		this.voyageurs = new HashSet<Voyageur>();
 	}
-	
-	// Utile pour les TUs
-	public TrainAvecResa(String marque, String businessId) {
-		super(marque, businessId);
-		this.voyageurs = new HashSet<Voyageur>();
-	}
 
 	public Set<Voyageur> getVoyageurs() {
 		return voyageurs;
@@ -40,4 +34,5 @@ public class TrainAvecResa extends Train {
 	public void removeVoyageur(Voyageur voyageur) {
 		this.voyageurs.remove(voyageur);
 	}
+	
 }

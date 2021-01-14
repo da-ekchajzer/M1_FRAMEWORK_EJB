@@ -30,7 +30,7 @@ public class ItineraireDAO {
 	}
 
 	public Itineraire getItineraireByBusinessId(String businessIdItineraire) {
-		em.clear();
+		// em.clear();
 		return em.createNamedQuery("Itineraire.getItineraireByBusinessId", Itineraire.class)
 				.setParameter("id", businessIdItineraire).getSingleResult();
 	}

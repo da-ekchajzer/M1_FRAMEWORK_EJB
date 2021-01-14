@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -22,10 +23,13 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrajetDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Incident;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
@@ -38,6 +42,7 @@ import fr.pantheonsorbonne.ufr27.miage.repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
+import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -46,11 +51,10 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestIncidentRepository {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator
-			.from(IncidentRepository.class, IncidentDAO.class, ItineraireRepository.class, ItineraireDAO.class,
-					TrainRepository.class, TrainDAO.class, TrajetRepository.class, TrajetDAO.class,
-					ArretRepository.class, ArretDAO.class, TestPersistenceProducer.class)
-			.activate(RequestScoped.class).build();
+	private WeldInitiator weld = WeldInitiator.from(TrainRepository.class, ItineraireRepository.class,
+			ArretRepository.class, TrajetRepository.class, IncidentRepository.class, VoyageurDAO.class, VoyageDAO.class,
+			TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class,
+			TestPersistenceProducer.class, TestDatabase.class).activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
@@ -60,6 +64,8 @@ public class TestIncidentRepository {
 	ItineraireRepository itineraireRepository;
 	@Inject
 	IncidentRepository incidentRepository;
+	@Inject
+	TestDatabase testDatabase;
 
 	@BeforeAll
 	void initVarInDB() {
@@ -106,6 +112,11 @@ public class TestIncidentRepository {
 		Train t = trainRepository.getTrainByBusinessId(1);
 		incidentRepository.majEtatIncident(incidentRepository.getIncidentByIdTrain(t.getId()), CodeEtatIncident.RESOLU);
 		assertEquals(CodeEtatIncident.RESOLU.getCode(), incidentRepository.getIncidentByIdTrain(t.getId()).getEtat());
+	}
+
+	@AfterAll
+	void nettoyageDonnees() {
+		testDatabase.clear();
 	}
 
 }

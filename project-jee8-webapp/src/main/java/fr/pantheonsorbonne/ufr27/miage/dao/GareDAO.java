@@ -7,7 +7,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 
 @ManagedBean
@@ -21,9 +20,9 @@ public class GareDAO {
 	public List<Gare> getGaresByNom(String nom) {
 		return (List<Gare>) em.createNamedQuery("Gare.getGaresByNom").setParameter("nom", nom).getResultList();
 	}
-	
+
 	public List<Gare> getAllGares() {
 		return (List<Gare>) em.createNamedQuery("Gare.getAllGares", Gare.class).getResultList();
 	}
-	
+
 }

@@ -31,8 +31,7 @@ public class BrokerUtils {
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private static void stopBroker() {
+	public static void stopBroker() {
 		try {
 			embedded.stop();
 		} catch (Exception e) {
