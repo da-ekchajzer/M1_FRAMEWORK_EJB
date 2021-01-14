@@ -28,6 +28,8 @@ import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrajetDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
+import fr.pantheonsorbonne.ufr27.miage.jms.MessageGateway;
+import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
@@ -44,8 +46,10 @@ import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.VoyageRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.VoyageurRepository;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceItineraire;
+import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajInfoGare;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceUtilisateur;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceItineraireImp;
+import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajInfoGareImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceUtilisateurImp;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
@@ -56,10 +60,11 @@ public class TestServiceItineraire {
 
 	@WeldSetup
 	private WeldInitiator weld = WeldInitiator.from(ServiceItineraire.class, ServiceItineraireImp.class,
-			ServiceUtilisateur.class, ServiceUtilisateurImp.class, TrainRepository.class, ItineraireRepository.class,
-			ArretRepository.class, TrajetRepository.class, TrajetDAO.class, VoyageurRepository.class,
-			VoyageRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class,
-			IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, TestPersistenceProducer.class,
+			ServiceUtilisateur.class, ServiceUtilisateurImp.class, ServiceMajInfoGare.class,
+			ServiceMajInfoGareImp.class, TrainRepository.class, ItineraireRepository.class, ArretRepository.class,
+			TrajetRepository.class, TrajetDAO.class, VoyageurRepository.class, VoyageRepository.class,
+			VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class, ArretDAO.class,
+			TrainDAO.class, GareDAO.class, MessageGateway.class, JMSProducer.class, TestPersistenceProducer.class,
 			TestDatabase.class).activate(RequestScoped.class).build();
 
 	@Inject

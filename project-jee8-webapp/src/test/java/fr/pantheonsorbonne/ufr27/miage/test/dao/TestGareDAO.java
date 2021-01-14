@@ -2,7 +2,6 @@ package fr.pantheonsorbonne.ufr27.miage.test.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -57,10 +56,10 @@ public class TestGareDAO {
 		for (String nomGare : nomGares) {
 			em.persist(new Gare(nomGare));
 		}
-		
+
 		em.getTransaction().commit();
 	}
-	
+
 	@Test
 	void testGetGaresByNom() {
 		List<Gare> gares = gareDAO.getGaresByNom("Avignon-Centre");

@@ -8,7 +8,9 @@ public class InfoGareLauncherApp {
 
 	public static void main(String[] args) throws InterruptedException, JMSException {
 
-		String[] gare = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles" };
+		String[] gare = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles",
+				"Dijon-Ville", "Lyon - Pardieu", "Narbonne", "Sete", "Perpignan", "Paris - Montparnasse", "Tours",
+				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes" };
 		int infogareId = 0;
 
 		Thread.sleep(4000);

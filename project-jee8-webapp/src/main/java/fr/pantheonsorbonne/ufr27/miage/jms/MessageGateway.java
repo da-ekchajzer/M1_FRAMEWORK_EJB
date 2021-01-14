@@ -102,12 +102,12 @@ public class MessageGateway {
 		}
 
 		itineraireInfoJAXB
-				.setGaresArrive(i.getArretsDesservis().get(i.getArretsDesservis().size() - 1).getGare().getNom());
-		itineraireInfoJAXB.setGaresDepart(i.getArretsDesservis().get(0).getGare().getNom());
+				.setGareArrivee(i.getArretsDesservis().get(i.getArretsDesservis().size() - 1).getGare().getNom());
+		itineraireInfoJAXB.setGareDepart(i.getArretsDesservis().get(0).getGare().getNom());
 
 		for (Arret arretDesservis : i.getArretsDesservis()) {
 			if (arretDesservis.isAfter(a)) {
-				itineraireInfoJAXB.getGareDesservises().add(arretDesservis.getGare().getNom());
+				itineraireInfoJAXB.getGaresDesservies().add(arretDesservis.getGare().getNom());
 			}
 		}
 		StringWriter writer = new StringWriter();

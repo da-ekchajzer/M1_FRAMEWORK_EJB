@@ -1,7 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.test.repository;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -92,7 +91,7 @@ public class TestIncidentRepository {
 		i.setTypeIncident(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode());
 		i.setEtat(CodeEtatIncident.EN_COURS.getCode());
 		assertNotNull(i);
-		
+
 		assertEquals(0, incidentRepository.getAllIncidents().size());
 		i = incidentRepository.creerIncident(t.getId(), i);
 		assertEquals(1, incidentRepository.getAllIncidents().size());

@@ -14,8 +14,6 @@ import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.validation.constraints.AssertTrue;
-
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
@@ -112,9 +110,8 @@ public class TestVoyageurRepository {
 				LocalDateTime.now().plus(3, ChronoUnit.MINUTES).plus(1, ChronoUnit.MINUTES));
 		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plus(5, ChronoUnit.MINUTES),
 				LocalDateTime.now().plus(7, ChronoUnit.MINUTES));
-		Arret arret5 = new Arret(gares.get("Lyon - Pardieu"), LocalDateTime.now().plus(10, ChronoUnit.MINUTES),
-				null);
-		
+		Arret arret5 = new Arret(gares.get("Lyon - Pardieu"), LocalDateTime.now().plus(10, ChronoUnit.MINUTES), null);
+
 		Arret[] arrets = { arret1, arret2, arret3, arret4, arret5 };
 
 		for (Arret a : arrets) {
@@ -129,7 +126,7 @@ public class TestVoyageurRepository {
 		itineraire1.addArret(arret2);
 		itineraire1.addArret(arret4);
 		em.persist(itineraire1);
-		
+
 		Itineraire itineraire2 = new Itineraire(train2);
 		itineraire2.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
 		itineraire2.addArret(arret4);
@@ -157,14 +154,13 @@ public class TestVoyageurRepository {
 		voyageTrajet1.add(trajet4);
 		Voyage voyage1 = new Voyage(voyageTrajet1);
 		em.persist(voyage1);
-		
+
 		List<Trajet> voyageTrajet2 = new LinkedList<Trajet>();
 		voyageTrajet2.add(trajet1);
 		voyageTrajet2.add(trajet2);
 		voyageTrajet2.add(trajet3);
 		Voyage voyage2 = new Voyage(voyageTrajet2);
 		em.persist(voyage2);
-
 
 		// --------------------------------- Remplissage de la table Voyageur
 
@@ -181,11 +177,11 @@ public class TestVoyageurRepository {
 		for (int i = 0; i < prenomsVoyageurs.length; i++) {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
 			if (i < 5) {
-				if(i == 0) {
+				if (i == 0) {
 					v.setVoyageActuel(voyage1);
 				}
 				voyage1.addVoyageur(v);
-			} else if(i == 15) {
+			} else if (i == 15) {
 				v.setVoyageActuel(voyage2);
 				voyage2.addVoyageur(v);
 			}
@@ -193,7 +189,7 @@ public class TestVoyageurRepository {
 		}
 		em.getTransaction().commit();
 	}
-	
+
 	@Test
 	void testIsVoyageurCorrespondance() {
 		Voyageur voyageurEnCorrespondance = voyageurRepository.getAllVoyageurs().get(0);

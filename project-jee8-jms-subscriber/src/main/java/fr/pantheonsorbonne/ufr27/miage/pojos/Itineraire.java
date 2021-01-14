@@ -8,17 +8,17 @@ public class Itineraire {
 	int etatItineraire;
 	String idItineraire;
 	String gareDepart;
-	String gareArrive;
-	List<String> gareDesservis;
+	String gareArrivee;
+	List<String> garesDesservies;
 	LocalDateTime heureArriveeEnGare;
 	LocalDateTime heureDepartDeGare;
 	
-	public List<String> getGareDesservis() {
-		return gareDesservis;
+	public List<String> getGaresDesservies() {
+		return garesDesservies;
 	}
 
-	public void setGareDesservis(List<String> gareDesservis) {
-		this.gareDesservis = gareDesservis;
+	public void setGaresDesservies(List<String> gareDesservis) {
+		this.garesDesservies = gareDesservis;
 	}
 
 	public String getGareDepart() {
@@ -29,12 +29,12 @@ public class Itineraire {
 		this.gareDepart = gareDepart;
 	}
 	
-	public String getGareArrive() {
-		return gareArrive;
+	public String getGareArrivee() {
+		return gareArrivee;
 	}
 
-	public void setGareArrive(String gareArrive) {
-		this.gareArrive = gareArrive;
+	public void setGareArrivee(String gareArrive) {
+		this.gareArrivee = gareArrive;
 	}
 	
 	public int getEtatItineraire() {
