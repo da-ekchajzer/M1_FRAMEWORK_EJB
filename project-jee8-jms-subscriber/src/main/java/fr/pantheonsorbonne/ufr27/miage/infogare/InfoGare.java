@@ -15,12 +15,14 @@ import fr.pantheonsorbonne.ufr27.miage.jms.InfoGareProcessorBean;
 public class InfoGare implements Runnable {
 
 	String gare;
+	String affichageNomGare;
 	InfoGareProcessorBean processor;
 	Map<String, Itineraire> itineraires;
 
 	public InfoGare(String gare) {
 		this.gare = gare;
 		this.itineraires = new HashMap<String, Itineraire>();
+		setUpAffichageNomGare();
 
 		SeContainerInitializer initializer = SeContainerInitializer.newInstance();
 
@@ -46,17 +48,18 @@ public class InfoGare implements Runnable {
 	}
 
 	private void update() {
+		LocalDateTime now = LocalDateTime.now();
 		for (String s : itineraires.keySet()) {
 			if (itineraires.get(s).getHeureArriveeEnGare() == null) {
-				if (itineraires.get(s).getHeureDepartDeGare().plusSeconds(45).isBefore(LocalDateTime.now())) {
+				if (now.isAfter(itineraires.get(s).getHeureDepartDeGare().plusSeconds(45))) {
 					itineraires.remove(s);
 				}
 			} else if (itineraires.get(s).getHeureDepartDeGare() == null) {
-				if (itineraires.get(s).getHeureArriveeEnGare().isBefore(LocalDateTime.now())) {
+				if (now.isAfter(itineraires.get(s).getHeureArriveeEnGare())) {
 					itineraires.remove(s);
 				}
 			} else {
-				if (itineraires.get(s).getHeureDepartDeGare().isBefore(LocalDateTime.now())) {
+				if (now.isAfter(itineraires.get(s).getHeureDepartDeGare())) {
 					itineraires.remove(s);
 				}
 			}
@@ -64,30 +67,39 @@ public class InfoGare implements Runnable {
 	}
 
 	private void affichage() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("=== " + this.gare + " ===");
-		sb.append("\n- Arrivées -");
-
-		for (String s : itineraires.keySet()) {
-			if (itineraires.get(s).getHeureArriveeEnGare() != null) {
-
-				sb.append("\nOrigine : " + itineraires.get(s).getGareDepart() + " - Horaire : "
-						+ itineraires.get(s).getHeureArriveeEnGare().toLocalTime());
+		if (!itineraires.keySet().isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(affichageNomGare);
+			String tabArrivees = "\n---> Arrivées <----\n";
+			sb.append(tabArrivees);
+			int total = sb.length();
+			for (String s : itineraires.keySet()) {
+				if (itineraires.get(s).getHeureArriveeEnGare() != null) {
+					sb.append("\t" + itineraires.get(s).getIdItineraire() + " ( "
+							+ itineraires.get(s).getHeureArriveeEnGare().toLocalTime() + " )\t\tOrigine :\t\t# "
+							+ itineraires.get(s).getGareDepart() + "\n");
+				}
 			}
+			if (total == sb.length()) {
+				sb.delete(sb.length() - tabArrivees.length(), sb.length());
+			}
+			String tabDeparts = "\n----> Departs <----\n";
+			sb.append(tabDeparts);
+			for (String s : itineraires.keySet()) {
+				if (itineraires.get(s).getHeureDepartDeGare() != null) {
+					sb.append("\t" + itineraires.get(s).getIdItineraire() + " ( "
+							+ itineraires.get(s).getHeureDepartDeGare().toLocalTime() + " )\t\tDestination :");
+					for (String gare : itineraires.get(s).getGaresDesservies()) {
+						sb.append("\n\t\t\t\t\t\t\t\t| " + gare);
+					}
+					sb.append("\n\t\t\t\t\t\t\t\tv\n");
+				}
+			}
+			if (total == sb.length()) {
+				sb.delete(sb.length() - tabDeparts.length(), sb.length());
+			}
+			System.out.println(sb.toString());
 		}
-		sb.append("\n- Departs -");
-		for (String s : itineraires.keySet()) {
-			if (itineraires.get(s).getHeureDepartDeGare() != null) {
-				sb.append("\nDestination : " + itineraires.get(s).getGareArrive() + " - Horaire : "
-						+ itineraires.get(s).getHeureDepartDeGare().toLocalTime());
-			for(String gare : itineraires.get(s).getGareDesservis()) {
-				sb.append("\n	" + gare);
-			}
-			
-			}
-		}
-		sb.append("\n");
-		System.out.println(sb.toString());
 	}
 
 	public String getGare() {
@@ -104,5 +116,16 @@ public class InfoGare implements Runnable {
 
 	public void updateStop(Itineraire i) {
 		itineraires.replace(i.getIdItineraire(), i);
+	}
+
+	public void setUpAffichageNomGare() {
+		StringBuilder sb = new StringBuilder();
+		int ajusteur = 0, debut = 0, fin = 0;
+		String base = "==========================================================================================";
+		ajusteur = base.length() - this.gare.length() - 2;
+		debut = ajusteur / 2;
+		fin = ajusteur / 2 + ajusteur % 2;
+		sb.append(base.substring(0, debut) + " " + this.gare + " " + base.subSequence(0, fin));
+		this.affichageNomGare = sb.toString();
 	}
 }

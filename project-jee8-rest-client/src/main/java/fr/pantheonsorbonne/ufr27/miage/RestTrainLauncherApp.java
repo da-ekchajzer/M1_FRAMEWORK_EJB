@@ -7,7 +7,7 @@ import fr.pantheonsorbonne.ufr27.miage.train.Train;
 public class RestTrainLauncherApp {
 
 	public static void main(String[] args) throws DatatypeConfigurationException, InterruptedException {
-		int nbtrain = 2;
+		int nbtrain = 10;
 
 		Thread.sleep(8000);
 

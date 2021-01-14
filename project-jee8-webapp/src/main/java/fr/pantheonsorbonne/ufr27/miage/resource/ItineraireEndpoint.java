@@ -11,7 +11,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import fr.pantheonsorbonne.ufr27.miage.jms.ItineraireResponderBean;
-import fr.pantheonsorbonne.ufr27.miage.jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
@@ -52,7 +51,7 @@ public class ItineraireEndpoint {
 	public Response majArret(@PathParam("trainId") int trainId, ArretJAXB arretActuel) {
 		System.out.println("== Infocentre - majArret ==\nidTrain : T" + trainId);
 		int idTrain = trainRepository.getTrainByBusinessId(trainId).getId();
-		if (serviceItineraire .majItineraire(idTrain, arretActuel)) {
+		if (serviceItineraire.majItineraire(idTrain, arretActuel)) {
 			return Response.ok().build();
 		}
 		return Response.serverError().build();

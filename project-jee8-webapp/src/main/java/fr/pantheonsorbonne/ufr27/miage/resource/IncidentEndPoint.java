@@ -3,7 +3,6 @@ package fr.pantheonsorbonne.ufr27.miage.resource;
 import java.time.temporal.ChronoUnit;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
