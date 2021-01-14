@@ -12,6 +12,7 @@ import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ArretJAXB;
 import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceItineraire;
+import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajInfoGare;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceUtilisateur;
 
 @ManagedBean
@@ -21,6 +22,9 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	@Inject
 	ServiceUtilisateur serviceUtilisateur;
 
+	@Inject
+	ServiceMajInfoGare serviceMajInfoGareImp;
+	
 	@Inject
 	ItineraireRepository itineraireRepository;
 
@@ -32,6 +36,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 				itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_COURS);
 				itineraireRepository.majArretActuel(itineraire, itineraire.getArretsDesservis().get(0));
 				serviceUtilisateur.initUtilisateursItineraire(idTrain);
+				serviceMajInfoGareImp.publishItineraire(itineraire);
 			}
 			return ItineraireMapper.mapItineraireToItineraireJAXB(itineraire);
 		}

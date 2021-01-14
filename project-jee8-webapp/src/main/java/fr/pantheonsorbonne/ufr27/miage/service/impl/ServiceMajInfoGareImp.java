@@ -30,5 +30,11 @@ public class ServiceMajInfoGareImp implements ServiceMajInfoGare {
 	public void majHoraireItineraire(Itineraire itineraire) {
 		messageGateway.publishMaj(itineraire);
 	}
+	
+	@Override
+	public void publishItineraire(Itineraire itineraire) {
+		messageGateway.publishCreation(itineraire);;
+	}
+
 
 }

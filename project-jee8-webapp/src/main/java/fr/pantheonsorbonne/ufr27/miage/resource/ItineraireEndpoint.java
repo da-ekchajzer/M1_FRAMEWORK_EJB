@@ -25,9 +25,6 @@ public class ItineraireEndpoint {
 	ServiceItineraire serviceItineraire;
 
 	@Inject
-	MessageGateway messageGateway;
-
-	@Inject
 	ItineraireRepository itineraireRepository;
 
 	@Inject
@@ -44,9 +41,6 @@ public class ItineraireEndpoint {
 		int idTrain = trainRepository.getTrainByBusinessId(trainId).getId();
 		ItineraireJAXB itineraireJAXB = serviceItineraire.getItineraire(idTrain);
 		if (itineraireJAXB != null) {
-			if (etatTrain == 0) {
-				messageGateway.publishCreation(itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain));
-			}
 			return Response.ok(itineraireJAXB).build();
 		}
 		return Response.noContent().build();

@@ -106,6 +106,8 @@ public class Main {
 						bind(TrajetRepository.class).to(TrajetRepository.class);
 						bind(VoyageRepository.class).to(VoyageRepository.class);
 						bind(VoyageurRepository.class).to(VoyageurRepository.class);
+						bind(VoyageurRepository.class).to(VoyageurRepository.class);
+
 
 						bindFactory(ItineraireAckQueueSupplier.class).to(Queue.class).named("ItineraireAckQueue")
 								.in(Singleton.class);
