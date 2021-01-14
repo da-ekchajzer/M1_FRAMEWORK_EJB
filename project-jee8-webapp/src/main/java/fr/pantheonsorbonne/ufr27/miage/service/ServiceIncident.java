@@ -6,6 +6,13 @@ import fr.pantheonsorbonne.ufr27.miage.model.jaxb.IncidentJAXB;
 
 public interface ServiceIncident {
 
+	/**
+	 * Créer un incident JPA et le persister en BD à partir
+	 * de l'incident JAXB reçu par l'API REST suite à un envoi par le train d'id idTrain 
+	 * @param idTrain
+	 * @param inc
+	 * @return
+	 */
 	public boolean creerIncident(int idTrain, IncidentJAXB inc);
 
 	/**
