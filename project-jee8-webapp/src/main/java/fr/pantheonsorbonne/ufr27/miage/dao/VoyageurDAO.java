@@ -25,11 +25,12 @@ public class VoyageurDAO {
 	@Inject
 	EntityManager em;
 
-	public List<Voyageur> getVoyageursByVoyageActuel(Voyage v) {
-		return (List<Voyageur>) em.createNamedQuery("Voyageur.getVoyageursByVoyageActuel", Voyageur.class)
-				.setParameter("id", v.getId()).getResultList();
-	}
-
+	/**
+	 * Ajouter/Supprimer les voyageurs du train AVEC RESA passé en paramètre
+	 * et de l'itinéraire passé en paramètre en fonction des étapes de leur voyage 
+	 * (gares de départ/d'arrivée/de correspondance)
+	 * @param train
+	 */
 	public void majVoyageursDansTrainAvecResa(Train train, Itineraire itineraire, Set<Trajet> trajetsItineraire)
 			throws TrainSansResaNotExpectedException {
 		if (train instanceof TrainAvecResa) {
@@ -79,16 +80,26 @@ public class VoyageurDAO {
 		}
 	}
 
+	/**
+	 * Ajouter les voyageurs contenus dans la liste passée en 2ème paramètre à l'itinéraire en 1er paramètre
+	 * @param itineraire
+	 * @param voyageursToAdd
+	 */
 	public void mettreVoyageursDansItineraire(Itineraire itineraire, List<Voyageur> voyageursToAdd) {
 		em.getTransaction().begin();
-		// On ajoute les voyageurs dans l'itinéraire
 		itineraire.setVoyageurs(voyageursToAdd);
 		em.getTransaction().commit();
 	}
 
+	// TODO : utile ??
+	/**
+	 * Mettre à jour le voyage actuel des voyageurs en 2ème paramètre en leur passant
+	 * comme nouveau voyage le 1er paramètre
+	 * @param newVoyageActuel
+	 * @param voyageursToUpdate
+	 */
 	public void majVoyageActuelDesVoyageurs(Voyage newVoyageActuel, List<Voyageur> voyageursToUpdate) {
 		em.getTransaction().begin();
-		// On met à jour le voyage actuel des voyageurs
 		for (Voyageur v : voyageursToUpdate) {
 			v.setVoyageActuel(newVoyageActuel);
 		}
@@ -108,6 +119,10 @@ public class VoyageurDAO {
 
 	}
 	
+	/**
+	 * Récupérer l'ensemble des voyages existants en BD
+	 * @return
+	 */
 	public List<Voyageur> getAllVoyageurs() {
 		return (List<Voyageur>) em.createNamedQuery("Voyageur.getAllVoyageurs", Voyageur.class).getResultList();
 	}

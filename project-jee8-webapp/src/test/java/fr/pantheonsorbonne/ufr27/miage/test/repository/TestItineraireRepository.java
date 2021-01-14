@@ -197,18 +197,18 @@ public class TestItineraireRepository {
 
 	@Test
 	@Order(4)
-	void testGetNextArretByIdTrainEtArret() {
+	void testGetNextArretByItineraireEtUnArret() {
 		Train t = this.trainRepository.getTrainByBusinessId(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
 		// Renvoie le nextArret si on est pas à la fin de l'itinéraire
-		i2.setArretActuel(this.itineraireRepository.getNextArret(t.getId(), i2.getArretActuel()));
+		i2.setArretActuel(this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()));
 		assertEquals("Gare2", i2.getArretActuel().getGare().getNom());
 		assertEquals("Gare3",
-				this.itineraireRepository.getNextArret(t.getId(), i2.getArretActuel()).getGare().getNom());
+				this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()).getGare().getNom());
 		// Renvoie null si on est au dernier arrêt (rien après)
-		i2.setArretActuel(this.itineraireRepository.getNextArret(t.getId(), i2.getArretActuel()));
+		i2.setArretActuel(this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()));
 		assertEquals("Gare3", i2.getArretActuel().getGare().getNom());
-		assertEquals(null, this.itineraireRepository.getNextArret(t.getId(), i2.getArretActuel()));
+		assertEquals(null, this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()));
 	}
 
 	@Test
@@ -229,13 +229,6 @@ public class TestItineraireRepository {
 
 	@Test
 	@Order(7)
-	void testGetAllItinerairesByGare() {
-		Gare g = this.gareRepository.getGaresByNom("Gare2").get(0);
-		assertEquals(3, this.itineraireRepository.getAllItinerairesByGare(g).size());
-	}
-
-	@Test
-	@Order(8)
 	void testSupprimerArretDansUnItineraire() {
 		Train t = this.trainRepository.getTrainByBusinessId(1);
 		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);

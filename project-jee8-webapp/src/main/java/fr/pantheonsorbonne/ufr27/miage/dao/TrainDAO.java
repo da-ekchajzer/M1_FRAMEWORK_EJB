@@ -16,15 +16,29 @@ public class TrainDAO {
 	@Inject
 	EntityManager em;
 
+	/**
+	 * Récupérer en BD le train d'id idTrain
+	 * @param idTrain
+	 * @return
+	 */
 	public Train getTrainById(int idTrain) {
 		return em.createNamedQuery("Train.getTrainById", Train.class).setParameter("id", idTrain).getSingleResult();
 	}
 
+	/**
+	 * Récupérer en BD le train ayant comme businessId celui passé en paramètre
+	 * @param businessIdTrain
+	 * @return
+	 */
 	public Train getTrainByBusinessId(String businessIdTrain) {
 		return em.createNamedQuery("Train.getTrainByBusinessId", Train.class).setParameter("id", businessIdTrain)
 				.getSingleResult();
 	}
 
+	/**
+	 * Récupérer l'ensemble des trains présents en BD
+	 * @return
+	 */
 	public List<Train> getAllTrains() {
 		return (List<Train>) em.createNamedQuery("Train.getAllTrains", Train.class).getResultList();
 	}

@@ -73,11 +73,6 @@ public class TestIncidentDAO {
 	}
 
 	@Test
-	void testGetNbIncident() {
-		assertEquals(2, incidentDAO.getNbIncidents());
-	}
-
-	@Test
 	void testGetIncidentByBusinessId() {
 		assertEquals(CodeEtatIncident.EN_COURS.getCode(), incidentDAO.getIncidentByBusinessId("I1").getEtat());
 	}
@@ -85,9 +80,9 @@ public class TestIncidentDAO {
 	@Test
 	void testAjouterIncidentEnBDD() {
 		Incident incident3 = new Incident();
-		int nbIncidents = incidentDAO.getNbIncidents();
+		int nbIncidents = incidentDAO.getAllIncidents().size();
 		incidentDAO.ajouterIncidentEnBD(incident3);
-		assertEquals(nbIncidents + 1, incidentDAO.getNbIncidents());
+		assertEquals(nbIncidents + 1, incidentDAO.getAllIncidents().size());
 	}
 
 	@Test

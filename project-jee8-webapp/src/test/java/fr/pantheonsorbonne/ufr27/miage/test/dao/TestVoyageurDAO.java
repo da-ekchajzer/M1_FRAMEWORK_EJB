@@ -195,14 +195,6 @@ public class TestVoyageurDAO {
 
 	@Test
 	@Order(1)
-	void testGetVoyageursByVoyageActuel() {
-		Voyage voyage1 = voyageDAO.getAllVoyages().get(0);
-		List<Voyageur> voyageurs = voyageurDAO.getVoyageursByVoyageActuel(voyage1);
-		assertEquals(5, voyageurs.size());
-	}
-
-	@Test
-	@Order(2)
 	void testMettreVoyageursDansItineraire() {
 		Itineraire itineraire1 = itineraireDAO.getItineraireByBusinessId("IT1");
 		Voyage voyage1 = voyageDAO.getAllVoyages().get(0);
@@ -211,7 +203,7 @@ public class TestVoyageurDAO {
 	}
 
 	@Test
-	@Order(3)
+	@Order(2)
 	void testMajVoyageursDansTrainAvecResa() throws MulitpleResultsNotExpectedException {
 		Train train = trainDAO.getTrainByBusinessId("T1");
 		Itineraire itineraire1 = itineraireDAO.getItineraireByTrainEtEtat(train.getId(),

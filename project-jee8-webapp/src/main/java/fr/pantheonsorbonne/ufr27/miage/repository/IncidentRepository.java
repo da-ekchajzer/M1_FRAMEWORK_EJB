@@ -23,47 +23,66 @@ public class IncidentRepository {
 	@Inject
 	ItineraireRepository itineraireRepository;
 
+	/**
+	 * Récupérer l'ensemble des incidents présents en BD
+	 * @return
+	 */
 	public List<Incident> getAllIncidents() {
 		return incidentDAO.getAllIncidents();
 	}
 
-	public int getNbIncidents() {
-		return incidentDAO.getNbIncidents();
-	}
-
+	/**
+	 * Récupérer l'incident ayant pour id idIncident
+	 * @param idIncident
+	 * @return
+	 */
 	public Incident getIncidentById(int idIncident) {
 		return incidentDAO.getIncidentById(idIncident);
 	}
 
-	public boolean creerIncident(int idTrain, Incident incident) {
-		boolean res = true;
-		// On récupère le nb d'Incidents en BD avant l'insertion
-		int nbIncidentsAvantAjout = this.getNbIncidents();
+	/**
+	 * Créer un incident
+	 * => l'ajouter en BD
+	 * => l'associer à l'itinéraire associé au train d'id idTrain puis
+	 * passer cet itinéraire de l'état EN_COURS à l'état EN_INCIDENT
+	 * @param idTrain
+	 * @param incident
+	 * @return
+	 */
+	public Incident creerIncident(int idTrain, Incident incident) {
 		incidentDAO.ajouterIncidentEnBD(incident);
-		// On récupère le nb d'Incidents en BD après l'insertion
-		int nbIncidentsApresAjout = this.getNbIncidents();
-
-		// On vérifie que l'insertion a été effectuée
-		if (nbIncidentsApresAjout != nbIncidentsAvantAjout + 1) {
-			// LOG.error
-			res = false;
-		}
-
 		// Ajout de l'INCIDENT_ID dans l'itinéraire associé au train
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 		itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_INCIDENT);
 		incidentDAO.associerIncidentItineraire(itineraire, incident);
-		return res;
+		return incident;
 	}
 
+	/**
+	 * Mettre à jour l'état de l'incident (EN_COURS/RESOLU)
+	 * @param incident
+	 * @param newEtat
+	 */
 	public void majEtatIncident(Incident incident, CodeEtatIncident newEtat) {
 		incidentDAO.majEtatIncidentEnBD(incident, newEtat);
 	}
 
+	/**
+	 * Modifier l'heure de fin de l'incident en lui passant
+	 * comme nouvelle valeur celle passée en paramètre
+	 * @param incident
+	 * @param newHeureDeFin
+	 */
 	public void majHeureDeFinIncident(Incident incident, LocalDateTime newHeureDeFin) {
 		incidentDAO.majHeureDeFinEnBD(incident, newHeureDeFin);
 	}
 
+	/**
+	 * Récupérer l'incident associé à l'itinéraire (à l'état EN_INCIDENT, donc)
+	 * qui lui-même est associé au train d'id idTrain
+	 * @param idTrain
+	 * @return
+	 */
 	public Incident getIncidentByIdTrain(int idTrain) {
 		// Récupération de l'itinéraire EN INCIDENT (=2) de TRAIN_ID idTrain
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain,

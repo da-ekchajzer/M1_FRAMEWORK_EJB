@@ -29,6 +29,12 @@ public class ItineraireRepository {
 	@Inject
 	TrajetRepository trajetRepository;
 
+	/**
+	 * Récupérer l'itinéraire actuel du train d'id idTrain ou, s'il n'y en a pas,
+	 * son prochain itinéraire à parcourir (actuellement en attente)
+	 * @param idTrain
+	 * @return
+	 */
 	public Itineraire recupItineraireEnCoursOuLeProchain(int idTrain) {
 
 		System.out.println("== recupItineraireEnCoursOuLeProchain ==");
@@ -71,19 +77,31 @@ public class ItineraireRepository {
 		return itineraire;
 	}
 
+	/**
+	 * Récupérer l'itinéraire ayant comme id celui passé en paramètre
+	 * @param idItineraire
+	 * @return
+	 */
 	public Itineraire getItineraireById(int idItineraire) {
 		return itineraireDAO.getItineraireById(idItineraire);
 	}
 
-	public Itineraire getItineraireByBusinessId(int businessIdItineraire) {
-		String businessId = "IT" + businessIdItineraire;
-		return itineraireDAO.getItineraireByBusinessId(businessId);
-	}
-
+	/**
+	 * Récupérer l'itinéraire ayant comme businessId celui passé en paramètre
+	 * @param businessIdItineraire
+	 * @return
+	 */
 	public Itineraire getItineraireByBusinessId(String businessIdItineraire) {
 		return itineraireDAO.getItineraireByBusinessId(businessIdItineraire);
 	}
 
+	/**
+	 * Récupérer l'itinéraire associé au train d'id idTrain et
+	 * ayant comme état celui passé en second paramètre
+	 * @param idTrain
+	 * @param etat
+	 * @return
+	 */
 	public Itineraire getItineraireByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
 		try {
 			return itineraireDAO.getItineraireByTrainEtEtat(idTrain, etat);
@@ -93,18 +111,46 @@ public class ItineraireRepository {
 		}
 	}
 
+	/**
+	 * Récupérer l'ensemble des itinéraires associés au train d'id idTrain et 
+	 * ayant comme état celui passé en paramètre
+	 * @param idTrain
+	 * @param etat
+	 * @return
+	 */
 	public List<Itineraire> getAllItinerairesByTrainEtEtat(int idTrain, CodeEtatItinieraire etat) {
 		return itineraireDAO.getAllItinerairesByTrainEtEtat(idTrain, etat);
 	}
 
+	/**
+	 * Changer l'état de l'itinéraire passé en paramètre
+	 * 	- Le faire démarrer (EN_ATTENTE => EN_COURS),
+	 * 	- Le mettre en incident (EN_COURS => EN_INCIDENT),
+	 * 	- Le marquer comme terminé (EN_COURS => FIN),
+	 * 	- etc...
+	 * @param itineraire
+	 * @param newEtat
+	 */
 	public void majEtatItineraire(Itineraire itineraire, CodeEtatItinieraire newEtat) {
 		itineraireDAO.majEtatItineraire(itineraire, newEtat);
 	}
 
+	/**
+	 * Mettre à jour l'arrêt actuel de l'itinéraire passé en paramètre
+	 * => le faire passer à l'arrêt suivant
+	 * @param itineraire
+	 * @param arret
+	 */
 	public void majArretActuel(Itineraire itineraire, Arret arret) {
 		itineraireDAO.majArretActuel(itineraire, arret);
 	}
 
+	/**
+	 * Supprimer un arrêt de l'itinéraire EN COURS associé au train d'id idTrain
+	 * @param idTrain
+	 * @param arret
+	 * @return
+	 */
 	public Itineraire supprimerArretDansUnItineraire(int idTrain, Arret arret) {
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 		itineraire.getArretsDesservis().remove(arret);
@@ -113,7 +159,13 @@ public class ItineraireRepository {
 	}
 
 	/*
-	 * TODO : ajouter ce cas de figure dans le BDDFillerServiceImpl
+	 * TODO : ajouter ce cas de figure dans le BDDFillerServiceImpl ?
+	 */
+	/**
+	 * Ajouter un arrêt au 'milieu' de l'itinéraire EN COURS associé au train d'id idTrain
+	 * @param idTrain
+	 * @param arret
+	 * @return
 	 */
 	public Itineraire ajouterUnArretEnCoursItineraire(int idTrain, Arret arret) {
 		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
@@ -122,7 +174,8 @@ public class ItineraireRepository {
 	}
 
 	/**
-	 * 
+	 * Ajouter un arrêt comme départ ou terminus de l'itinéraire EN COURS 
+	 * associé au train d'id idTrain
 	 * @param idTrain
 	 * @param arret
 	 * @param heure   heureDeDepart de l'ancienne gare d'arrivée ou heureArrivee de
@@ -134,22 +187,14 @@ public class ItineraireRepository {
 		return itineraire;
 	}
 
-	public Arret getNextArret(int idTrain, Arret arret) {
-		Itineraire itineraire = this.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-
-		// On est au dernier arrêt, y en a pas après
-		if (arret == null || arret.getHeureDepartDeGare() == null)
-			return null;
-
-		for (Arret a : itineraire.getArretsDesservis()) {
-			if (a.getHeureArriveeEnGare() != null && a.getHeureArriveeEnGare().isAfter(arret.getHeureDepartDeGare())) {
-				return a;
-			}
-		}
-		return null;
-	}
-
-	public Arret getNextArretByItineraireEtArretActuel(Itineraire itineraire, Arret arret) {
+	/**
+	 * Au sein de l'itinéraire passé en paramètre, 
+	 * récupérer l'arrêt suivant l'arrêt passé en paramère
+	 * @param itineraire
+	 * @param arret
+	 * @return
+	 */
+	public Arret getNextArretByItineraireEtUnArret(Itineraire itineraire, Arret arret) {
 		for (Arret a : itineraire.getArretsDesservis()) {
 			if (a.isAfter(arret)) {
 				return a;
@@ -158,6 +203,11 @@ public class ItineraireRepository {
 		return null;
 	}
 
+	/**
+	 * Récupérer tous les arrêts après l'arrêt actuel de l'itinéraire passé en paramètre
+	 * @param itineraire
+	 * @return
+	 */
 	public List<Arret> getAllNextArrets(Itineraire itineraire) {
 		List<Arret> arretsSuivants = new ArrayList<Arret>();
 		Arret arretActuel = itineraire.getArretActuel();
@@ -184,6 +234,12 @@ public class ItineraireRepository {
 		return arretsSuivants;
 	}
 
+	/**
+	 * Récupérer l'ensemble des itinéraires EN COURS OU EN INCIDENT qui passeront,
+	 * à un moment ou à un autre, par la gare passée en paramètre
+	 * @param gare
+	 * @return
+	 */
 	public List<Itineraire> getItinerairesEnCoursOuEnIncidentByGare(Gare gare) {
 		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
 
@@ -202,10 +258,20 @@ public class ItineraireRepository {
 		return itinerairesConcernes;
 	}
 
+	/**
+	 * Récupérer l'ensemble des itinéraires en BD
+	 * @return
+	 */
 	public List<Itineraire> getAllItineraires() {
 		return itineraireDAO.getAllItineraires();
 	}
 
+	/**
+	 * Récupérer les itinéraires en cours, en incident ou en attente avec un départ prévu dans moins de 
+	 * 'duration' (passé en paramètre) heure(s)/minute(s)/etc..
+	 * @param duration
+	 * @return
+	 */
 	public List<Itineraire> getAllItinerairesAtLeastIn(LocalTime duration) {
 		List<Itineraire> itineraires = new ArrayList<Itineraire>();
 		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
@@ -221,17 +287,6 @@ public class ItineraireRepository {
 		return itineraires;
 	}
 
-	public List<Itineraire> getAllItinerairesByGare(Gare g) {
-		List<Itineraire> itinerairesConcernes = new ArrayList<Itineraire>();
-		List<Itineraire> allItineraires = itineraireDAO.getAllItineraires();
-		for (Itineraire i : allItineraires) {
-			for (Arret a : i.getArretsDesservis()) {
-				if (a.getGare().equals(g)) {
-					itinerairesConcernes.add(i);
-				}
-			}
-		}
-		return itinerairesConcernes;
-	}
+	
 
 }

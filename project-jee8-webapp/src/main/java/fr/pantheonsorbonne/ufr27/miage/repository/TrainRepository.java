@@ -16,19 +16,30 @@ public class TrainRepository {
 	@Inject
 	TrainDAO trainDAO;
 
+	/**
+	 * Récupérer le train d'id idTrain
+	 * @param idTrain
+	 * @return
+	 */
 	public Train getTrainById(int idTrain) {
 		return trainDAO.getTrainById(idTrain);
 	}
 
+	/**
+	 * Récupérer le train ayant comme businessId (au format ENTIER) 
+	 * celui passé en paramètre
+	 * @param businessIdTrain
+	 * @return
+	 */
 	public Train getTrainByBusinessId(int businessIdTrain) {
 		String businessId = "T" + businessIdTrain;
 		return trainDAO.getTrainByBusinessId(businessId);
 	}
 
-	public Train getTrainByBusinessId(String businessIdTrain) {
-		return trainDAO.getTrainByBusinessId(businessIdTrain);
-	}
-
+	/**
+	 * Récupérer tous les trains existants
+	 * @return
+	 */
 	public List<Train> getAllTrains() {
 		return trainDAO.getAllTrains();
 	}

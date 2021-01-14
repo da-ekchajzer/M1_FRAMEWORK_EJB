@@ -143,42 +143,6 @@ public class TestTrajetDAO {
 		assertEquals(3, trajets.size());
 	}
 
-	@Test
-	void testGetTrajetsNomGareDeDepart() {
-		List<Trajet> trajets = trajetDAO
-				.getTrajetsByNomGareDeDepart(gareDAO.getGaresByNom("Paris - Gare de Lyon").get(0));
-		assertEquals(1, trajets.size());
-	}
-
-	@Test
-	void testTrajetNomGareArrivee() {
-		List<Trajet> trajets = trajetDAO
-				.getTrajetsByNomGareArrivee(gareDAO.getGaresByNom("Marseille - St Charles").get(0));
-		assertEquals(1, trajets.size());
-	}
-
-	@Test
-	void testDeleteTrajet() {
-		em.getTransaction().begin();
-		Itineraire itineraire = new Itineraire();
-		em.persist(itineraire);
-		Trajet trajet1 = new Trajet();
-		Trajet trajet2 = new Trajet();
-		Trajet trajet3 = new Trajet();
-		trajet1.setItineraire(itineraire);
-		trajet2.setItineraire(itineraire);
-		trajet3.setItineraire(itineraire);
-		em.persist(trajet1);
-		em.persist(trajet2);
-		em.persist(trajet3);
-		em.getTransaction().commit();
-		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
-		assertEquals(3, trajets.size());
-		trajetDAO.deleteTrajet(trajet3);
-		trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
-		assertEquals(2, trajets.size());
-	}
-
 	@AfterAll
 	void nettoyageDonnees() {
 		testDatabase.clear();
