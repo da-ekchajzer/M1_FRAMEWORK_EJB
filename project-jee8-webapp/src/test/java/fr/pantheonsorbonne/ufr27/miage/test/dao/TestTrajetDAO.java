@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,15 +23,19 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrajetDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Trajet;
+import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -41,8 +44,8 @@ public class TestTrajetDAO {
 
 	@WeldSetup
 	private WeldInitiator weld = WeldInitiator
-			.from(TrajetDAO.class, GareDAO.class, ItineraireDAO.class, ArretDAO.class, 
-					TrainDAO.class, TestPersistenceProducer.class)
+			.from(VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class,
+					ArretDAO.class, TrainDAO.class, GareDAO.class, TestPersistenceProducer.class, TestDatabase.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
@@ -57,13 +60,11 @@ public class TestTrajetDAO {
 	ItineraireDAO itineraireDAO;
 	@Inject
 	ArretDAO arretDAO;
-
-	private static List<Object> objectsToDelete; 
+	@Inject
+	TestDatabase testDatabase;
 
 	@BeforeAll
 	public void setup() {
-		objectsToDelete = new ArrayList<Object>();
-
 		em.getTransaction().begin();
 
 		// --------------------------------- Gares
@@ -76,13 +77,11 @@ public class TestTrajetDAO {
 			Gare g = new Gare(nomGare);
 			gares.put(nomGare, g);
 			em.persist(g);
-			objectsToDelete.add(g);
 		}
 
 		// --------------------------------- Train
 		Train train1 = new TrainAvecResa("TGV");
 		em.persist(train1);
-		objectsToDelete.add(train1);
 
 		// --------------------------------- Arrêts
 
@@ -98,7 +97,6 @@ public class TestTrajetDAO {
 
 		for (Arret a : arrets) {
 			em.persist(a);
-			objectsToDelete.add(a);
 		}
 
 		// --------------------------------- Itinéraires
@@ -110,7 +108,6 @@ public class TestTrajetDAO {
 		itineraire1.addArret(arret4);
 
 		em.persist(itineraire1);
-		objectsToDelete.add(itineraire1);
 
 		// --------------------------------- Trajets
 
@@ -122,9 +119,8 @@ public class TestTrajetDAO {
 
 		for (Trajet t : trajets) {
 			em.persist(t);
-			objectsToDelete.add(t);
 		}
-		
+
 		em.getTransaction().commit();
 	}
 
@@ -145,12 +141,6 @@ public class TestTrajetDAO {
 		em.getTransaction().commit();
 		List<Trajet> trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
 		assertEquals(3, trajets.size());
-		
-		objectsToDelete.add(itineraire);
-		objectsToDelete.add(trajet1);
-		objectsToDelete.add(trajet2);
-		objectsToDelete.add(trajet3);
-
 	}
 
 	@Test
@@ -187,20 +177,11 @@ public class TestTrajetDAO {
 		trajetDAO.deleteTrajet(trajet3);
 		trajets = trajetDAO.getTrajetsByItineraire(itineraireDAO.getItineraireById(itineraire.getId()));
 		assertEquals(2, trajets.size());
-
-		objectsToDelete.add(itineraire);
-		objectsToDelete.add(trajet1);
-		objectsToDelete.add(trajet2);
-		objectsToDelete.add(trajet3);
 	}
-	
+
 	@AfterAll
 	void nettoyageDonnees() {
-		em.getTransaction().begin();
-		for(Object o : objectsToDelete) {
-			em.remove(o);
-		}
-		em.getTransaction().commit();
+		testDatabase.clear();
 	}
 
 }

@@ -21,14 +21,20 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO.MulitpleResultsNotExpectedException;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.TrajetDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
+import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -36,18 +42,21 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestItineraireDAO {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(ItineraireDAO.class, ArretDAO.class, TrainDAO.class,
-			TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator
+			.from(VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class,
+					ArretDAO.class, TrainDAO.class, GareDAO.class, TestPersistenceProducer.class, TestDatabase.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
 	@Inject
 	ItineraireDAO itineraireDAO;
-	@Inject 
+	@Inject
 	ArretDAO arretDAO;
 	@Inject
 	TrainDAO trainDAO;
+	@Inject
+	TestDatabase testDatabase;
 
 	@Test
 	void testGetItineraireById() {
@@ -56,22 +65,7 @@ public class TestItineraireDAO {
 		em.persist(itineraire);
 		em.getTransaction().commit();
 		assertEquals(itineraire, itineraireDAO.getItineraireById(itineraire.getId()));
-		
-		em.getTransaction().begin();
-		em.remove(itineraire);
-		em.getTransaction().commit();
 	}
-
-	
-//	@Test
-//	void testGetItineraireByBusinessId() {
-//		Itineraire itineraire = new Itineraire();
-//		em.getTransaction().begin();
-//		em.persist(itineraire);
-//		em.getTransaction().commit();
-//		assertTrue(itineraireDAO.getItineraireByBusinessId("IT1") != null);
-//	}
-	
 
 	@Test
 	void testGetItineraireByTrainEtEtat() throws MulitpleResultsNotExpectedException {
@@ -95,13 +89,6 @@ public class TestItineraireDAO {
 		});
 		assertEquals("Expected only one 'Itineraire'", exception.getMessage());
 		assertEquals(null, itineraireDAO.getItineraireByTrainEtEtat(train2.getId(), CodeEtatItinieraire.EN_ATTENTE));
-
-		em.getTransaction().begin();
-		em.remove(train);
-		em.remove(train2);
-		em.remove(itineraire);
-		em.remove(itineraire2);
-		em.getTransaction().commit();
 	}
 
 	@Test
@@ -120,22 +107,13 @@ public class TestItineraireDAO {
 		em.persist(itineraire2);
 		em.persist(itineraire3);
 		em.getTransaction().commit();
-				
+
 		List<Itineraire> itineraires = itineraireDAO.getAllItinerairesByTrainEtEtat(train2.getId(),
 				CodeEtatItinieraire.EN_ATTENTE);
 		assertEquals(1, itineraires.size());
 		List<Itineraire> itineraires2 = itineraireDAO.getAllItinerairesByTrainEtEtat(train4.getId(),
 				CodeEtatItinieraire.EN_ATTENTE);
 		assertEquals(0, itineraires2.size());
-		
-		em.getTransaction().begin();
-		em.remove(train2);
-		em.remove(train3);
-		em.remove(train4);
-		em.remove(itineraire1);
-		em.remove(itineraire2);
-		em.remove(itineraire3);
-		em.getTransaction().commit();
 	}
 
 	@Test
@@ -154,12 +132,6 @@ public class TestItineraireDAO {
 		itineraire2.setEtat(CodeEtatItinieraire.EN_INCIDENT.getCode());
 		itineraireDAO.majEtatItineraire(itineraire2, CodeEtatItinieraire.EN_COURS);
 		assertEquals(null, itineraire2.getIncident());
-
-		em.getTransaction().begin();
-		em.remove(train5);
-		em.remove(itineraire);
-		em.remove(itineraire2);
-		em.getTransaction().commit();
 	}
 
 	@Test
@@ -173,11 +145,6 @@ public class TestItineraireDAO {
 		assertEquals(itineraire.getArretActuel(), null);
 		itineraireDAO.majArretActuel(itineraire, arret);
 		assertEquals(itineraire.getArretActuel(), arret);
-		
-		em.getTransaction().begin();
-		em.remove(arret);
-		em.remove(itineraire);
-		em.getTransaction().commit();
 	}
 
 	@Test
@@ -210,15 +177,6 @@ public class TestItineraireDAO {
 		assertEquals(4, i1.getArretsDesservis().size());
 		itineraireDAO.ajouterUnArretEnCoursItineraire(i1, arret2ToAdd);
 		assertEquals(4, i1.getArretsDesservis().size());
-		
-		em.getTransaction().begin();
-		em.remove(a1);
-		em.remove(a2);
-		em.remove(a3);
-		em.remove(arret1ToAdd);
-		em.remove(arret2ToAdd);
-		em.remove(i1);
-		em.getTransaction().commit();
 	}
 
 	@Test
@@ -263,16 +221,6 @@ public class TestItineraireDAO {
 		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret3ToAdd,
 				arret3ToAdd.getHeureDepartDeGare().minusSeconds(30));
 		assertEquals(5, i1.getArretsDesservis().size());
-		
-		em.getTransaction().begin();
-		em.remove(a1);
-		em.remove(a2);
-		em.remove(a3);
-		em.remove(arret1ToAdd);
-		em.remove(arret2ToAdd);
-		em.remove(arret3ToAdd);
-		em.remove(i1);
-		em.getTransaction().commit();
 	}
 
 	@Test
@@ -305,14 +253,6 @@ public class TestItineraireDAO {
 		itineraireDAO.retarderTrain(retard2, null, itineraire);
 		assertEquals(d2.plus(15, ChronoUnit.SECONDS), arret2.getHeureDepartDeGare());
 		assertEquals(a3.plus(15, ChronoUnit.SECONDS), arret3.getHeureArriveeEnGare());
-		
-		em.getTransaction().begin();
-		em.remove(arret1);
-		em.remove(arret2);
-		em.remove(arret3);
-		em.remove(itineraire);
-		em.getTransaction().commit();
-
 	}
 
 	@Test
@@ -332,28 +272,11 @@ public class TestItineraireDAO {
 		assertEquals(2, listItinerairesAttente.size());
 		List<Itineraire> listItinerairesEnCours = itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS);
 		assertEquals(1, listItinerairesEnCours.size());
-		
-		em.getTransaction().begin();
-		em.remove(itineraire1);
-		em.remove(itineraire2);
-		em.remove(itineraire3);
-		em.getTransaction().commit();
 	}
 
-//	@Test 
-//	void testAllItineraires() {
-//		List<Itineraire> itineraires = itineraireDAO.getAllItineraires();
-//		for (Itineraire itineraire : itineraires) {
-//			System.out.println(itineraire.getBusinessId());
-//		}
-//		System.out.println("La taille de ma liste est " + itineraires.size());
-//	}
-	
 	@AfterAll
 	void nettoyageDonnees() {
-//		System.out.println(itineraireDAO.getAllItineraires().size() + " itinéraires");
-//		System.out.println(arretDAO.getAllArrets().size() + " arrêts");
-//		System.out.println(trainDAO.getAllTrains().size() + " trains");
+		testDatabase.clear();
 	}
 
 }

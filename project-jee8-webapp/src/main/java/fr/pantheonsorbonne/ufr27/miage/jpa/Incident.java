@@ -13,25 +13,40 @@ import javax.persistence.NamedQuery;
 @NamedQueries({ @NamedQuery(name = "Incident.getAllIncidents", query = "SELECT i FROM Incident i"),
 		@NamedQuery(name = "Incident.getNbIncidents", query = "SELECT COUNT(i) FROM Incident i"),
 		@NamedQuery(name = "Incident.getIncidentById", query = "SELECT i FROM Incident i WHERE i.id = :id"),
-		@NamedQuery(name = "Incident.getIncidentByBusinessId", query = "SELECT i FROM Incident i WHERE i.businessId = :id") })
+		@NamedQuery(name = "Incident.getIncidentByBusinessId", query = "SELECT i FROM Incident i WHERE i.businessId = :id")
+
+})
 public class Incident {
-	
+
+	public static int businessIdIncidentCount = 1;
+
+	public Incident() {
+	}
+
+	public Incident(int typeIncident) {
+		this.businessId = "I" + businessIdIncidentCount++;
+		this.typeIncident = typeIncident;
+		this.etat = CodeEtatIncident.EN_COURS.getCode();
+	}
+
+	// Utile pour les TUs
+	public Incident(int typeIncident, String businessId) {
+		this.businessId = businessId;
+		this.typeIncident = typeIncident;
+		this.etat = CodeEtatIncident.EN_COURS.getCode();
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
-	
-	public Incident() {}
-	
-	// Utile pour les TUs
-	public Incident(String businessId) {
-		this.businessId = businessId;
-	}
 
 	String businessId;
+
 	int typeIncident;
+	int etat;
+
 	LocalDateTime heureDebut;
 	LocalDateTime heureTheoriqueDeFin;
-	int etat;
 
 	public int getId() {
 		return id;

@@ -2,7 +2,6 @@ package fr.pantheonsorbonne.ufr27.miage.test.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +19,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.dao.IncidentDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.TrajetDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
+import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @EnableWeld
@@ -32,20 +36,20 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestGareDAO {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(GareDAO.class, TestPersistenceProducer.class)
+	private WeldInitiator weld = WeldInitiator
+			.from(VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class,
+					ArretDAO.class, TrainDAO.class, GareDAO.class, TestPersistenceProducer.class, TestDatabase.class)
 			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
 	@Inject
 	GareDAO gareDAO;
-	
-	private static List<Object> objectsToDelete;
+	@Inject
+	TestDatabase testDatabase;
 
 	@BeforeEach
 	public void setup() {
-		objectsToDelete = new ArrayList<Object>();
-
 		em.getTransaction().begin();
 
 		String[] nomGares = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles",
@@ -57,7 +61,6 @@ public class TestGareDAO {
 			Gare g = new Gare(nomGare);
 			gares.put(nomGare, g);
 			em.persist(g);
-			objectsToDelete.add(g);
 		}
 		em.getTransaction().commit();
 	}
@@ -68,14 +71,10 @@ public class TestGareDAO {
 		assertEquals(1, gares.size());
 		assertEquals("Avignon-Centre", gares.get(0).getNom());
 	}
-	
+
 	@AfterAll
 	void nettoyageDonnees() {
-		em.getTransaction().begin();
-		for(Object o : objectsToDelete) {
-			em.remove(o);
-		}
-		em.getTransaction().commit();
+		testDatabase.clear();
 	}
 
 }

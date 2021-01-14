@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.jpa;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class Itineraire {
 	public static int businessIdItineraireCount = 1;
 
 	public Itineraire() {
+		this.voyageurs = new ArrayList<Voyageur>();
 		this.arretsDesservis = new LinkedList<Arret>();
 	}
 
@@ -34,19 +36,18 @@ public class Itineraire {
 		this();
 		this.businessId = "IT" + businessIdItineraireCount++;
 		this.train = train;
-		this.arretsDesservis = new LinkedList<Arret>();
 	}
 
 	public Itineraire(Train train, List<Arret> arretsDesservis) {
 		this(train);
 		this.arretsDesservis = arretsDesservis;
 	}
-	
+
 	// Utile pour les TUs
 	public Itineraire(Train train, String businessId) {
-		this.train = train;
+		this();
 		this.businessId = businessId;
-		this.arretsDesservis = new LinkedList<Arret>();
+		this.train = train;
 	}
 
 	@Id

@@ -18,18 +18,17 @@ public abstract class Train {
 	public static int businessIdTrainCount = 1;
 
 	public Train() {
-		this.marque = "not mentioned";
 	}
 
 	public Train(String marque) {
 		this.businessId = "T" + businessIdTrainCount++;
 		this.marque = marque;
 	}
-	
+
 	// Utile pour les TUs
 	public Train(String marque, String businessId) {
-		this.marque = marque;
 		this.businessId = businessId;
+		this.marque = marque;
 	}
 
 	@Id

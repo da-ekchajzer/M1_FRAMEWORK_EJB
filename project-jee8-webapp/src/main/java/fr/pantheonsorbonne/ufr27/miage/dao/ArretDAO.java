@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 
 @ManagedBean
 @RequestScoped
@@ -52,7 +51,7 @@ public class ArretDAO {
 		a.setHeureDepartDeGare(newHeureDepartDeGare);
 		em.getTransaction().commit();
 	}
-	
+
 	public List<Arret> getAllArrets() {
 		return (List<Arret>) em.createNamedQuery("Arret.getAllArrets", Arret.class).getResultList();
 	}
