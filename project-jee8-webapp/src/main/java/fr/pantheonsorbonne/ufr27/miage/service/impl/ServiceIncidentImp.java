@@ -86,6 +86,12 @@ public class ServiceIncidentImp implements ServiceIncident {
 		return res;
 	}
 
+	/**
+	 * Récupérer l'estimation du temps de retard associée au type de retard
+	 * définie dans l'énumération CodeTypeIncident
+	 * @param codeTypeIncident
+	 * @return
+	 */
 	private LocalTime estimationTempsRetard(int codeTypeIncident) {
 		return CodeTypeIncident.getTempEstimation(codeTypeIncident);
 	}

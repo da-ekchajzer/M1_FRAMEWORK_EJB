@@ -17,16 +17,16 @@ public class ServiceUtilisateurImp implements ServiceUtilisateur {
 	TrainRepository trainRepository;
 
 	@Override
-	public void initUtilisateursItineraire(int idTrain) {
-		voyageurRepository.mettreVoyageursDansItineraire(idTrain);
-	}
-
-	@Override
 	public void majUtilisateursTrain(int idTrain) {
 		Train train = trainRepository.getTrainById(idTrain);
 		if (train instanceof TrainAvecResa) {
 			voyageurRepository.majVoyageursDansTrainAvecResa(train);
 		}
+	}
+	
+	@Override
+	public void initUtilisateursItineraire(int idTrain) {
+		voyageurRepository.mettreVoyageursDansItineraire(idTrain);
 	}
 	
 }
