@@ -22,6 +22,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
@@ -39,6 +41,7 @@ import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
+import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Incident;
@@ -59,9 +62,12 @@ import fr.pantheonsorbonne.ufr27.miage.repository.VoyageurRepository;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajExecuteur;
+import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajInfoGare;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceIncidentImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajDecideurImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajExecuteurImp;
+import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajInfoGareImp;
+import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -72,14 +78,13 @@ public class TestServiceIncident {
 	private final static LocalDateTime HEURE_ACTUELLE = LocalDateTime.now();
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator
-			.from(ServiceIncident.class, ServiceIncidentImp.class, TrainRepository.class, TrainDAO.class,
-					IncidentRepository.class, IncidentDAO.class, ItineraireRepository.class, ItineraireDAO.class,
-					TrajetRepository.class, TrajetDAO.class, ArretRepository.class, ArretDAO.class,
-					ServiceMajDecideur.class, ServiceMajDecideurImp.class, ServiceMajExecuteur.class,
-					ServiceMajExecuteurImp.class, VoyageurRepository.class, VoyageurDAO.class, VoyageRepository.class,
-					VoyageDAO.class, MessageGateway.class, JMSProducer.class, TestPersistenceProducer.class)
-			.activate(RequestScoped.class).build();
+	private WeldInitiator weld = WeldInitiator.from(ServiceIncident.class, ServiceIncidentImp.class,
+			ServiceMajDecideur.class, ServiceMajDecideurImp.class, ServiceMajExecuteur.class,
+			ServiceMajExecuteurImp.class, ServiceMajInfoGare.class, ServiceMajInfoGareImp.class, TrainRepository.class,
+			IncidentRepository.class, ItineraireRepository.class, ArretRepository.class, TrajetRepository.class,
+			VoyageurRepository.class, VoyageRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class,
+			ItineraireDAO.class, IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, MessageGateway.class,
+			JMSProducer.class, TestPersistenceProducer.class, TestDatabase.class).activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
@@ -91,6 +96,8 @@ public class TestServiceIncident {
 	IncidentRepository incidentRepository;
 	@Inject
 	ItineraireRepository itineraireRepository;
+	@Inject
+	TestDatabase testDatabase;
 
 	@BeforeAll
 	void initVarInDB() {
@@ -130,6 +137,8 @@ public class TestServiceIncident {
 		em.persist(i1);
 		em.persist(i2);
 		em.getTransaction().commit();
+
+		BrokerUtils.startBroker();
 	}
 
 	@Test
@@ -146,7 +155,7 @@ public class TestServiceIncident {
 		incidentJAXB.setEtatIncident(CodeEtatIncident.EN_COURS.getCode());
 
 		assertEquals(0, this.incidentRepository.getNbIncidents());
-		this.serviceIncident.creerIncident(t.getId(), incidentJAXB);
+		serviceIncident.creerIncident(t.getId(), incidentJAXB);
 		assertEquals(1, this.incidentRepository.getNbIncidents());
 
 		Incident incidentCree = this.incidentRepository.getIncidentByIdTrain(t.getId());
@@ -201,6 +210,12 @@ public class TestServiceIncident {
 		// BeforeAll)
 
 		// ==> Voir comment tester la dernière partie de la méthode
+	}
+
+	@AfterAll
+	void nettoyageDonnees() {
+		testDatabase.clear();
+		BrokerUtils.stopBroker();
 	}
 
 }

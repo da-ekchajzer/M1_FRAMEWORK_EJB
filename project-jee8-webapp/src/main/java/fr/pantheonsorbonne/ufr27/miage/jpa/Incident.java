@@ -29,13 +29,6 @@ public class Incident {
 		this.etat = CodeEtatIncident.EN_COURS.getCode();
 	}
 
-	// Utile pour les TUs
-	public Incident(int typeIncident, String businessId) {
-		this.businessId = businessId;
-		this.typeIncident = typeIncident;
-		this.etat = CodeEtatIncident.EN_COURS.getCode();
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;

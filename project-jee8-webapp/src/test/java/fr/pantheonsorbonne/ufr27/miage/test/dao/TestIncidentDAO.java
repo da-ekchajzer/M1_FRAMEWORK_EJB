@@ -57,8 +57,8 @@ public class TestIncidentDAO {
 	public void setup() {
 		em.getTransaction().begin();
 
-		Incident incident1 = new Incident(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), "I1");
-		Incident incident2 = new Incident(CodeTypeIncident.PERSONNE_SUR_VOIE.getCode(), "I2");
+		Incident incident1 = new Incident(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode());
+		Incident incident2 = new Incident(CodeTypeIncident.PERSONNE_SUR_VOIE.getCode());
 
 		em.persist(incident1);
 		em.persist(incident2);

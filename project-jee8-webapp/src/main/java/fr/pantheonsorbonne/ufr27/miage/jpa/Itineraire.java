@@ -43,13 +43,6 @@ public class Itineraire {
 		this.arretsDesservis = arretsDesservis;
 	}
 
-	// Utile pour les TUs
-	public Itineraire(Train train, String businessId) {
-		this();
-		this.businessId = businessId;
-		this.train = train;
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;

@@ -98,15 +98,15 @@ public class TestVoyageurDAO {
 		}
 
 		// --------------------------------- Remplissage de la table Train
-		Train train1 = new TrainAvecResa("TGV", "T1");
-		Train train2 = new TrainSansResa("TER", "T2");
-		Train train3 = new TrainAvecResa("OUIGO", "T3");
-		Train train4 = new TrainAvecResa("OUIGO", "T4");
-		Train train5 = new TrainSansResa("TER", "T5");
-		Train train6 = new TrainAvecResa("TGV", "T6");
-		Train train7 = new TrainSansResa("TER", "T7");
-		Train train8 = new TrainAvecResa("TGV", "T8");
-		Train train9 = new TrainAvecResa("TGV", "T9");
+		Train train1 = new TrainAvecResa("TGV");
+		Train train2 = new TrainSansResa("TER");
+		Train train3 = new TrainAvecResa("OUIGO");
+		Train train4 = new TrainAvecResa("OUIGO");
+		Train train5 = new TrainSansResa("TER");
+		Train train6 = new TrainAvecResa("TGV");
+		Train train7 = new TrainSansResa("TER");
+		Train train8 = new TrainAvecResa("TGV");
+		Train train9 = new TrainAvecResa("TGV");
 
 		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
 		for (Train t : trains) {
@@ -130,7 +130,7 @@ public class TestVoyageurDAO {
 		}
 		// --------------------------------- Remplissage de la table Itinéraire
 
-		Itineraire itineraire1 = new Itineraire(train1, "IT1");
+		Itineraire itineraire1 = new Itineraire(train1);
 		itineraire1.addArret(arret1);
 		itineraire1.setArretActuel(arret1);
 		itineraire1.addArret(arret2);

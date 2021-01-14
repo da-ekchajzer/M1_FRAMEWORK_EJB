@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ArretDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.GareDAO;
+import fr.pantheonsorbonne.ufr27.miage.dao.IncidentDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.ItineraireDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrainDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.TrajetDAO;
@@ -33,10 +36,12 @@ import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
+import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.repository.ArretRepository;
+import fr.pantheonsorbonne.ufr27.miage.repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
@@ -44,12 +49,15 @@ import fr.pantheonsorbonne.ufr27.miage.repository.VoyageRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.VoyageurRepository;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajExecuteur;
+import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajInfoGare;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceUtilisateur;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.BDDFillerServiceImpl;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajDecideurImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajExecuteurImp;
+import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajInfoGareImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceUtilisateurImp;
 import fr.pantheonsorbonne.ufr27.miage.service.utils.Retard;
+import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -58,14 +66,13 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestServiceMajDecideur {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator
-			.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class, ServiceMajExecuteur.class,
-					ServiceMajExecuteurImp.class, ServiceUtilisateur.class, ServiceUtilisateurImp.class,
-					TrainRepository.class, TrainDAO.class, ItineraireRepository.class, ItineraireDAO.class,
-					TrajetRepository.class, TrajetDAO.class, ArretRepository.class, ArretDAO.class,
-					VoyageurRepository.class, VoyageurDAO.class, VoyageRepository.class, VoyageDAO.class,
-					MessageGateway.class, JMSProducer.class, TestPersistenceProducer.class)
-			.activate(RequestScoped.class).build();
+	private WeldInitiator weld = WeldInitiator.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class,
+			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, ServiceMajInfoGare.class, ServiceUtilisateur.class,
+			ServiceUtilisateurImp.class, ServiceMajInfoGareImp.class, TrainRepository.class, IncidentRepository.class,
+			ItineraireRepository.class, ArretRepository.class, TrajetRepository.class, VoyageurRepository.class,
+			VoyageRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class,
+			IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, MessageGateway.class, JMSProducer.class,
+			TestPersistenceProducer.class, TestDatabase.class).activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
@@ -78,13 +85,17 @@ public class TestServiceMajDecideur {
 	@Inject
 	TrainRepository trainRepository;
 	@Inject
+	ItineraireRepository itineraireRepository;
+	@Inject
 	ArretRepository arretRepository;
 	@Inject
-	ItineraireRepository itineraireRepository;
+	TestDatabase testDatabase;
 
 	@BeforeAll
 	void initVarInDB() {
 		new BDDFillerServiceImpl(em).fill();
+
+		BrokerUtils.startBroker();
 	}
 
 	@Test
@@ -142,10 +153,10 @@ public class TestServiceMajDecideur {
 	@Test
 	@Order(3)
 	void testFactoriseRetard() {
-		Itineraire it1 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainByBusinessId(1).getId(),
-				CodeEtatItinieraire.EN_ATTENTE);
-		Itineraire it2 = itineraireRepository.getItineraireByTrainEtEtat(this.trainRepository.getTrainByBusinessId(2).getId(),
-				CodeEtatItinieraire.EN_ATTENTE);
+		Itineraire it1 = itineraireRepository.getItineraireByTrainEtEtat(
+				this.trainRepository.getTrainByBusinessId(1).getId(), CodeEtatItinieraire.EN_ATTENTE);
+		Itineraire it2 = itineraireRepository.getItineraireByTrainEtEtat(
+				this.trainRepository.getTrainByBusinessId(2).getId(), CodeEtatItinieraire.EN_ATTENTE);
 		Retard r1 = new Retard(it1, LocalTime.of(0, 10));
 		Retard r2 = new Retard(it1, LocalTime.of(0, 20));
 		Retard r3 = new Retard(it2, LocalTime.of(0, 15));
@@ -161,4 +172,11 @@ public class TestServiceMajDecideur {
 		assertTrue(retards.contains(r2));
 		assertTrue(retards.contains(r3));
 	}
+
+	@AfterAll
+	void nettoyageDonnees() {
+		testDatabase.clear();
+		BrokerUtils.stopBroker();
+	}
+
 }

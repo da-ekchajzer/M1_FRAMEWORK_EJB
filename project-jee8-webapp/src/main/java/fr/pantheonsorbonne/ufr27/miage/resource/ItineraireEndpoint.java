@@ -22,7 +22,7 @@ import fr.pantheonsorbonne.ufr27.miage.service.ServiceItineraire;
 public class ItineraireEndpoint {
 
 	@Inject
-	ServiceItineraire service;
+	ServiceItineraire serviceItineraire;
 
 	@Inject
 	MessageGateway messageGateway;
@@ -42,7 +42,7 @@ public class ItineraireEndpoint {
 	public Response getItineraire(@PathParam("trainId") int trainId, @PathParam("etatTrain") int etatTrain) {
 		System.out.println("== Infocentre - getItineraire ==\nidTrain : T" + trainId);
 		int idTrain = trainRepository.getTrainByBusinessId(trainId).getId();
-		ItineraireJAXB itineraireJAXB = service.getItineraire(idTrain);
+		ItineraireJAXB itineraireJAXB = serviceItineraire.getItineraire(idTrain);
 		if (itineraireJAXB != null) {
 			if (etatTrain == 0) {
 				messageGateway.publishCreation(itineraireRepository.recupItineraireEnCoursOuLeProchain(idTrain));
@@ -58,7 +58,7 @@ public class ItineraireEndpoint {
 	public Response majArret(@PathParam("trainId") int trainId, ArretJAXB arretActuel) {
 		System.out.println("== Infocentre - majArret ==\nidTrain : T" + trainId);
 		int idTrain = trainRepository.getTrainByBusinessId(trainId).getId();
-		if (service.majItineraire(idTrain, arretActuel)) {
+		if (serviceItineraire .majItineraire(idTrain, arretActuel)) {
 			return Response.ok().build();
 		}
 		return Response.serverError().build();

@@ -48,17 +48,21 @@ public class TestDatabase {
 
 	public void clear() {
 		em.getTransaction().begin();
+		// On vide la table de jointure entre les itinéraires et les voyageurs
 		for (Itineraire itineraire : itineraireDAO.getAllItineraires()) {
 			itineraire.getVoyageurs().clear();
 		}
+		// On vide la table de jointure entre les trains et les voyageurs
 		for (Train train : trainDAO.getAllTrains()) {
 			if (train instanceof TrainAvecResa) {
 				((TrainAvecResa) train).getVoyageurs().clear();
 			}
 		}
+		// On vide la table de jointure entre les voyages et les voyageurs
 		for (Voyage voyage : voyageDAO.getAllVoyages()) {
 			voyage.getVoyageurs().clear();
 		}
+		// On vide toutes les tables dans le sens inverse de persistence
 		for (Voyageur voyageur : voyageurDAO.getAllVoyageurs()) {
 			em.remove(voyageur);
 		}
@@ -85,6 +89,10 @@ public class TestDatabase {
 			em.remove(gare);
 		}
 		em.getTransaction().commit();
+		// On remet tous les business id à 1 pour la cohérence des tests
+		Train.businessIdTrainCount = 1;
+		Itineraire.businessIdItineraireCount = 1;
+		Incident.businessIdIncidentCount = 1;
 	}
 
 }

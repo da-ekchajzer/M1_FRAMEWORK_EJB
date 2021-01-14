@@ -49,12 +49,14 @@ import fr.pantheonsorbonne.ufr27.miage.service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceItineraire;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajDecideur;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajExecuteur;
+import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajInfoGare;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceUtilisateur;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.BDDFillerServiceImpl;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceIncidentImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceItineraireImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajDecideurImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajExecuteurImp;
+import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceMajInfoGareImp;
 import fr.pantheonsorbonne.ufr27.miage.service.impl.ServiceUtilisateurImp;
 
 /**
@@ -85,6 +87,7 @@ public class Main {
 						bind(ServiceMajDecideurImp.class).to(ServiceMajDecideur.class);
 						bind(ServiceMajExecuteurImp.class).to(ServiceMajExecuteur.class);
 						bind(ServiceUtilisateurImp.class).to(ServiceUtilisateur.class);
+						bind(ServiceMajInfoGareImp.class).to(ServiceMajInfoGare.class);
 
 						bind(ArretDAO.class).to(ArretDAO.class);
 						bind(GareDAO.class).to(GareDAO.class);

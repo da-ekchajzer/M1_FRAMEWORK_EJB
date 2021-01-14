@@ -25,12 +25,6 @@ public abstract class Train {
 		this.marque = marque;
 	}
 
-	// Utile pour les TUs
-	public Train(String marque, String businessId) {
-		this.businessId = businessId;
-		this.marque = marque;
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;

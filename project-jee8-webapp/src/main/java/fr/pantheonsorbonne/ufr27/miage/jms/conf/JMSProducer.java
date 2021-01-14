@@ -23,8 +23,8 @@ public class JMSProducer {
 		Hashtable<String, String> jndiBindings = new Hashtable<>();
 		jndiBindings.put(Context.INITIAL_CONTEXT_FACTORY, ActiveMQInitialContextFactory.class.getName());
 		jndiBindings.put("connectionFactory.ConnectionFactory", "tcp://localhost:61616");
-		jndiBindings.put("app/jms/ItineraireAckQueue", "ItineraireAckQueue");
-		jndiBindings.put("app/jms/ItinerairePubQueue", "ItinerairePubQueue");
+		jndiBindings.put("queue.ItineraireAckQueue", "ItineraireAckQueue");
+		jndiBindings.put("queue.ItinerairePubQueue", "ItinerairePubQueue");
 
 		Context c = null;
 		try {
@@ -50,7 +50,7 @@ public class JMSProducer {
 	public Queue getInfoItineraireQueue() throws NamingException {
 		return (Queue) JNDI_CONTEXT.lookup("ItinerairePubQueue");
 	}
-	
+
 	@Produces
 	public ConnectionFactory getJMSConnectionFactory() throws NamingException {
 		return (ConnectionFactory) JNDI_CONTEXT.lookup("ConnectionFactory");
