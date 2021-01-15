@@ -203,8 +203,8 @@ public class TestItineraireRepository {
 		// Renvoie le nextArret si on est pas à la fin de l'itinéraire
 		i2.setArretActuel(this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()));
 		assertEquals("Gare2", i2.getArretActuel().getGare().getNom());
-		assertEquals("Gare3",
-				this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()).getGare().getNom());
+		assertEquals("Gare3", this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel())
+				.getGare().getNom());
 		// Renvoie null si on est au dernier arrêt (rien après)
 		i2.setArretActuel(this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()));
 		assertEquals("Gare3", i2.getArretActuel().getGare().getNom());
@@ -235,6 +235,12 @@ public class TestItineraireRepository {
 		int nbArrets = i2.getArretsDesservis().size();
 		i2 = this.itineraireRepository.supprimerArretDansUnItineraire(t.getId(), i2.getArretsDesservis().get(1));
 		assertEquals(nbArrets - 1, i2.getArretsDesservis().size());
+	}
+	
+	@Test
+	@Order(8)
+	void testGetAllItineraires() {
+		assertEquals(this.itineraireRepository.getAllItineraires().size(), 4); //ITS a été effacé dans le test2 --> plus que 4 itineraires
 	}
 
 	@AfterAll
