@@ -38,11 +38,6 @@ public class Itineraire {
 		this.train = train;
 	}
 
-	public Itineraire(Train train, List<Arret> arretsDesservis) {
-		this(train);
-		this.arretsDesservis = arretsDesservis;
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;

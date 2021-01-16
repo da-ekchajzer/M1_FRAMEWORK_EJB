@@ -204,7 +204,8 @@ public class TestVoyageurDAO {
 
 	@Test
 	@Order(2)
-	void testMajVoyageursDansTrainAvecResa() throws MulitpleResultsNotExpectedException {
+	void testMajVoyageursDansTrainAvecResa()
+			throws MulitpleResultsNotExpectedException, TrainSansResaNotExpectedException {
 		Train train = trainDAO.getTrainByBusinessId("T1");
 		Itineraire itineraire1 = itineraireDAO.getItineraireByTrainEtEtat(train.getId(),
 				CodeEtatItinieraire.EN_ATTENTE);
@@ -215,11 +216,7 @@ public class TestVoyageurDAO {
 			trainAvecResa = (TrainAvecResa) train;
 		}
 		int prevSize = trainAvecResa.getVoyageurs().size();
-		try {
-			voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire1, trajetsItineraire);
-		} catch (TrainSansResaNotExpectedException e) {
-			e.printStackTrace();
-		}
+		voyageurDAO.majVoyageursDansTrainAvecResa(trainAvecResa, itineraire1, trajetsItineraire);
 		assertTrue(trainAvecResa.getVoyageurs().size() > prevSize);
 	}
 

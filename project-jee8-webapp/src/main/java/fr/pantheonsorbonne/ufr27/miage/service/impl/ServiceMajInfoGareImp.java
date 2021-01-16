@@ -19,21 +19,14 @@ public class ServiceMajInfoGareImp implements ServiceMajInfoGare {
 	@Inject
 	ItineraireRepository itineraireRepository;
 
-//	@Override
-//	public void majHoraireTrain(int idTrain) {
-//		Itineraire i = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-//		messageGateway.publishMaj(i);
-//	}
-
 	@Override
 	public void majHoraireItineraire(Itineraire itineraire) {
 		messageGateway.publishMaj(itineraire);
 	}
-	
+
 	@Override
 	public void publishItineraire(Itineraire itineraire) {
-		messageGateway.publishCreation(itineraire);;
+		messageGateway.publishCreation(itineraire);
 	}
-
 
 }

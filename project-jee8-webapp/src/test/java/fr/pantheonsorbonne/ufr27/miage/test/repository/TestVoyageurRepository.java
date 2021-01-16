@@ -198,7 +198,7 @@ public class TestVoyageurRepository {
 		assertNotNull(voyage);
 		Itineraire it1 = voyage.getTrajets().get(0).getItineraire();
 		Itineraire it2 = voyage.getTrajets().get(3).getItineraire();
-		assertTrue(!it1.equals(it2));
+		assertFalse(it1.equals(it2));
 		assertTrue(voyageurRepository.isVoyageurCorrespondance(voyageurEnCorrespondance, it1, it2));
 		assertFalse(voyageurRepository.isVoyageurCorrespondance(voyageurSansVoyage, it1, it2));
 	}
