@@ -45,7 +45,7 @@ public class InfoGareProcessorBean {
 	private MessageConsumer consumerInfoPub;
 
 	private Topic defaultTopic;
-	
+
 	private InfoGare infoGare;
 
 	@PostConstruct
@@ -56,9 +56,9 @@ public class InfoGareProcessorBean {
 			connection = connectionFactory.createConnection("projet", "inf2");
 			connection.start();
 			session = connection.createSession();
-			
+
 			defaultTopic = session.createTopic("publishItineraire");
-			
+
 			consumerInfoPub = session.createConsumer(defaultTopic);
 			producerAck = session.createProducer(queueAck);
 
@@ -69,7 +69,6 @@ public class InfoGareProcessorBean {
 	}
 
 	public void onInfoPubMessage(TextMessage message) throws JAXBException, JMSException {
-		//System.out.println(infoGare.getGare()+ " - " + " ReceivingInfoPub" + " - " + message.getStringProperty("idItineraire"));
 		JAXBContext context = JAXBContext.newInstance(GareConcerneeJAXB.class);
 		StringReader reader = new StringReader(message.getText());
 
@@ -113,13 +112,12 @@ public class InfoGareProcessorBean {
 	}
 
 	private void ReceiveInfoItineraire(Queue tmpQueue) throws JMSException, JAXBException {
-		//System.out.println(infoGare.getGare()+ " - " + " ReceiveInfoItineraire");
 		MessageConsumer consumer = session.createConsumer(tmpQueue);
 		Message reply = consumer.receive();
 
 		TextMessage message = (TextMessage) reply;
-		
-		//Traitement de la reponse
+
+		// Traitement de la réponse
 		JAXBContext context = JAXBContext.newInstance(ItineraireInfoJAXB.class);
 		StringReader reader = new StringReader(message.getText());
 
@@ -129,9 +127,9 @@ public class InfoGareProcessorBean {
 		ItineraireInfoJAXB itineraireInfoJAXB = (ItineraireInfoJAXB) context.createUnmarshaller().unmarshal(reader);
 		Itineraire itineraireInfoGare = ItineraireMapper.mapItineraireJAXBToItineraire(itineraireInfoJAXB,
 				idItineraire);
-		
+
 		switch (callout) {
-		
+
 		case "majItineraire":
 			infoGare.updateStop(itineraireInfoGare);
 			break;

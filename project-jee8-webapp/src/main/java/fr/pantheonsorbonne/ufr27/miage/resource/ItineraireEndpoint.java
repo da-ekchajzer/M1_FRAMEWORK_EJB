@@ -33,9 +33,9 @@ public class ItineraireEndpoint {
 	ItineraireResponderBean responder;
 
 	@Produces(value = { MediaType.APPLICATION_XML })
-	@Path("{trainId}/{etatTrain}")
+	@Path("{trainId}")
 	@GET
-	public Response getItineraire(@PathParam("trainId") int trainId, @PathParam("etatTrain") int etatTrain) {
+	public Response getItineraire(@PathParam("trainId") int trainId) {
 		System.out.println("== Infocentre - getItineraire ==\nidTrain : T" + trainId);
 		int idTrain = trainRepository.getTrainByBusinessId(trainId).getId();
 		ItineraireJAXB itineraireJAXB = serviceItineraire.getItineraire(idTrain);

@@ -15,10 +15,10 @@ import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireJAXB;
 public class GatewayInfocentre {
 	public static Client client = ClientBuilder.newClient();
 
-	public static ItineraireJAXB getItineraire(int idTrain, int etatTrain) {
+	public static ItineraireJAXB getItineraire(int idTrain) {
 
 		WebTarget webTarget = client.target("http://localhost:8080");
-		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).path("" + etatTrain).getUri()).request()
+		Response resp = client.target(webTarget.path("itineraire").path("" + idTrain).getUri()).request()
 				.get(Response.class);
 		if (resp.getStatusInfo().getFamily().equals(Family.SUCCESSFUL)) {
 			if (resp.hasEntity()) {

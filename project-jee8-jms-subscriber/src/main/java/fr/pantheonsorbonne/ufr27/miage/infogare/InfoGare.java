@@ -1,7 +1,9 @@
 package fr.pantheonsorbonne.ufr27.miage.infogare;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.inject.se.SeContainer;
@@ -18,10 +20,12 @@ public class InfoGare implements Runnable {
 	String affichageNomGare;
 	InfoGareProcessorBean processor;
 	Map<String, Itineraire> itineraires;
+	List<String> itinerairesToRemove;
 
 	public InfoGare(String gare) {
 		this.gare = gare;
 		this.itineraires = new HashMap<String, Itineraire>();
+		this.itinerairesToRemove = new ArrayList<String>();
 		setUpAffichageNomGare();
 
 		SeContainerInitializer initializer = SeContainerInitializer.newInstance();
@@ -48,22 +52,27 @@ public class InfoGare implements Runnable {
 	}
 
 	private void update() {
+		itinerairesToRemove = new ArrayList<String>();
 		LocalDateTime now = LocalDateTime.now();
 		for (String s : itineraires.keySet()) {
 			if (itineraires.get(s).getHeureArriveeEnGare() == null) {
 				if (now.isAfter(itineraires.get(s).getHeureDepartDeGare().plusSeconds(45))) {
-					itineraires.remove(s);
+					itinerairesToRemove.add(s);
 				}
 			} else if (itineraires.get(s).getHeureDepartDeGare() == null) {
 				if (now.isAfter(itineraires.get(s).getHeureArriveeEnGare())) {
-					itineraires.remove(s);
+					itinerairesToRemove.add(s);
 				}
 			} else {
 				if (now.isAfter(itineraires.get(s).getHeureDepartDeGare())) {
-					itineraires.remove(s);
+					itinerairesToRemove.add(s);
 				}
 			}
 		}
+		for (String s : itinerairesToRemove) {
+			itineraires.remove(s);
+		}
+		itinerairesToRemove.clear();
 	}
 
 	private void affichage() {
@@ -85,18 +94,27 @@ public class InfoGare implements Runnable {
 			}
 			String tabDeparts = "\n----> Departs <----\n";
 			sb.append(tabDeparts);
+			total = sb.length();
 			for (String s : itineraires.keySet()) {
 				if (itineraires.get(s).getHeureDepartDeGare() != null) {
 					sb.append("\t" + itineraires.get(s).getIdItineraire() + " ( "
 							+ itineraires.get(s).getHeureDepartDeGare().toLocalTime() + " )\t\tDestination :");
+					int count = 0;
 					for (String gare : itineraires.get(s).getGaresDesservies()) {
-						sb.append("\n\t\t\t\t\t\t\t\t| " + gare);
+						if (count == 0) {
+							sb.append("\t\t| " + gare);
+							count++;
+						} else {
+							sb.append("\n\t\t\t\t\t\t\t\t| " + gare);
+						}
 					}
-					sb.append("\n\t\t\t\t\t\t\t\tv\n");
+					sb.append("\n\t\t\t\t\t\t\t\tv\n\n");
 				}
 			}
 			if (total == sb.length()) {
 				sb.delete(sb.length() - tabDeparts.length(), sb.length());
+			} else {
+				sb.delete(sb.length() - 1, sb.length());
 			}
 			System.out.println(sb.toString());
 		}
