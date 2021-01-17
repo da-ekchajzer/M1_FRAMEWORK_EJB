@@ -16,7 +16,7 @@ This project containts sur JAXB generated DTO to be used for communication in th
 
 ### project-jee8-webapp
 
-This project contains a REST API (JAXRS), the persistence layer (JPA), the service layer and make use of Messaging Queue (JMS) to calls to validate payments
+This project contains a REST API (JAXRS), the persistence layer (JPA), the service layer and make use of Messaging Queue (JMS) to modify trains during their journey
 
 ### project-jee8-rest-client
 
@@ -24,8 +24,24 @@ This project shows how to call a REST API using Jersey Client for JAXRS
 
 ### project-jee8-jms-subscriber
 
-This project consumes message produced by project-jee8-webapp to validate payment information
+This project consumes message produced by project-jee8-webapp to get train information print it in and display it in infogare
+
+## Launching
+
+This project must be launched in this order : 
+1) Main file in project-jee8-webapp
+2) InfogareLauncherApp in project-jee8-jms-subscriber
+3) RestTrainLauncherApp in project-jee8-rest-client
+
+You can launch the project either by hand but you have to do it quickly, or make a launch configuration to launch it in this order.
+
+![Launch configuration](launch_config.jpeg)
+
+## Simulation/Test run
+
+## Authors
+https://github.com/da-ekchajzer/M1_FRAMEWORK_EJB/contributors
 
 ## external interfaces sequence diagrams
 
-![](sec.png)
+![](diag_sequence.jpeg)
