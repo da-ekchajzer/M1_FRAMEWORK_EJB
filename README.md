@@ -37,9 +37,19 @@ You can launch the project either by hand but you have to do it quickly, or make
 
 ![Launch configuration](launch_config.jpeg)
 
-## Simulation/Test run
+## Train
 
 ## Authors
+
+* **David Ekchajzer** _alias_ [@da-ekchajzer](https://github.com/da-ekchajzer)
+  * Fork/Main Repository &#8594; https://github.com/da-ekchajzer/M1_FRAMEWORK_EJB
+* **Abdel Benamara** _alias_ [@Abdel-Benamara](https://github.com/Abdel-Benamara)
+  * Fork &#8594; https://github.com/Abdel-Benamara/M1_FRAMEWORK_EJB
+* **Mathieu Ridet** _alias_ [@mathieuridet](https://github.com/mathieuridet)
+  * Fork &#8594; https://github.com/mathieuridet/M1_FRAMEWORK_EJB
+* **Sophia Yalap** _alias_ [@sophiayalap](https://github.com/sophiayalap)
+  * Fork &#8594; https://github.com/sophiayalap/M1_FRAMEWORK_EJB
+  
 https://github.com/da-ekchajzer/M1_FRAMEWORK_EJB/contributors
 
 ## external interfaces sequence diagrams
