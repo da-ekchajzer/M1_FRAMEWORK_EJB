@@ -10,7 +10,7 @@ public class InfoGareLauncherApp {
 
 		String[] gare = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles",
 				"Dijon-Ville", "Lyon - Pardieu", "Narbonne", "Sete", "Perpignan", "Paris - Montparnasse", "Tours",
-				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes" };
+				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes", "Montpellier", "Cabries"};
 		int infogareId = 0;
 
 		Thread.sleep(4000);

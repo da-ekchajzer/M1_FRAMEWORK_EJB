@@ -9,8 +9,10 @@ import java.util.Map;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import fr.pantheonsorbonne.ufr27.miage.jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
@@ -26,6 +28,9 @@ import fr.pantheonsorbonne.ufr27.miage.service.BDDFillerService;
 @ApplicationScoped
 public class BDDFillerServiceImpl implements BDDFillerService {
 
+	@Inject
+	MessageGateway messageGateway;
+
 	private EntityManager em;
 
 	public BDDFillerServiceImpl(EntityManager em) {
@@ -39,7 +44,7 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 
 		String[] nomGares = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles",
 				"Dijon-Ville", "Lyon - Pardieu", "Narbonne", "Sete", "Perpignan", "Paris - Montparnasse", "Tours",
-				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes" };
+				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes", "Montpellier", "Cabries" };
 
 		Map<String, Gare> gares = new HashMap<>();
 		for (String nomGare : nomGares) {
@@ -58,8 +63,10 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		Train train7 = new TrainSansResa("TER");
 		Train train8 = new TrainAvecResa("TGV");
 		Train train9 = new TrainAvecResa("TGV");
+		Train train10 = new TrainAvecResa("TGV");
+		Train train11 = new TrainAvecResa("TER");
 
-		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
+		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9, train10, train11 };
 		for (Train t : trains)
 			em.persist(t);
 
@@ -125,9 +132,22 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		Arret arret28 = new Arret(gares.get("Bordeaux - Saint-Jean"), LocalDateTime.now().plus(60, ChronoUnit.SECONDS),
 				null);
 
+		Arret arret29 = new Arret(gares.get("Bordeaux - Saint-Jean"), null,
+				LocalDateTime.now().plus(70, ChronoUnit.SECONDS));
+		Arret arret30 = new Arret(gares.get("Montpellier"), LocalDateTime.now().plus(90, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(100, ChronoUnit.SECONDS));
+		Arret arret31 = new Arret(gares.get("Marseille - St Charles"),
+				LocalDateTime.now().plus(120, ChronoUnit.SECONDS), null);
+
+		Arret arret32 = new Arret(gares.get("Marseille - St Charles"), null,
+				LocalDateTime.now().plus(140, ChronoUnit.SECONDS));
+		Arret arret33 = new Arret(gares.get("Cabries"), LocalDateTime.now().plus(160, ChronoUnit.SECONDS),
+				LocalDateTime.now().plus(170, ChronoUnit.SECONDS));
+		Arret arret34 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plus(190, ChronoUnit.SECONDS), null);
+
 		Arret[] arrets = { arret1, arret2, arret3, arret4, arret5, arret6, arret7, arret8, arret9, arret10, arret11,
 				arret12, arret13, arret14, arret15, arret16, arret17, arret18, arret19, arret20, arret21, arret22,
-				arret23, arret24, arret25, arret26, arret27, arret28 };
+				arret23, arret24, arret25, arret26, arret27, arret28, arret29, arret30, arret31, arret32, arret33, arret34};
 
 		for (Arret a : arrets)
 			em.persist(a);
@@ -189,8 +209,21 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		itineraire9.addArret(arret28);
 		itineraire9.setArretActuel(itineraire9.getArretsDesservis().get(0));
 
+		Itineraire itineraire10 = new Itineraire(train10);
+		itineraire10.addArret(arret29);
+		itineraire10.addArret(arret30);
+		itineraire10.addArret(arret31);
+		itineraire10.setArretActuel(itineraire10.getArretsDesservis().get(0));
+		
+		Itineraire itineraire11 = new Itineraire(train11);
+		itineraire11.addArret(arret32);
+		itineraire11.addArret(arret33);
+		itineraire11.addArret(arret34);
+		itineraire11.setArretActuel(itineraire11.getArretsDesservis().get(0));
+
+		
 		Itineraire[] itineraires = { itineraire1, itineraire2, itineraire3, itineraire4, itineraire5, itineraire6,
-				itineraire7, itineraire8, itineraire9 };
+				itineraire7, itineraire8, itineraire9, itineraire10, itineraire11};
 
 		for (Itineraire i : itineraires) {
 			em.persist(i);
@@ -231,8 +264,18 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		Trajet trajet19 = new Trajet(gares.get("Paris - Montparnasse"), gares.get("Bordeaux - Saint-Jean"), itineraire9,
 				0);
 
+		Trajet trajet20 = new Trajet(gares.get("Bordeaux - Saint-Jean"), gares.get("Montpellier"), itineraire9,
+				0);
+		Trajet trajet21 = new Trajet(gares.get("Montpellier"), gares.get("Marseille - St Charles"), itineraire9,
+				1);
+		
+		Trajet trajet22 = new Trajet(gares.get("Marseille - St Charles"), gares.get("Cabries"), itineraire9,
+				0);
+		Trajet trajet23 = new Trajet(gares.get("Cabries"), gares.get("Aix en Provence"), itineraire9,
+				1);
+		
 		Trajet[] trajets = { trajet1, trajet2, trajet3, trajet4, trajet5, trajet6, trajet7, trajet8, trajet9, trajet10,
-				trajet11, trajet12, trajet13, trajet14, trajet15, trajet16, trajet17, trajet18, trajet19 };
+				trajet11, trajet12, trajet13, trajet14, trajet15, trajet16, trajet17, trajet18, trajet19, trajet20, trajet21, trajet22, trajet23 };
 
 		for (Trajet t : trajets)
 			em.persist(t);
@@ -282,8 +325,16 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		voyageTrajet7.add(trajet15);
 		voyageTrajet7.add(trajet16);
 		Voyage voyage7 = new Voyage(voyageTrajet7);
+		
+		List<Trajet> voyageTrajet8 = new LinkedList<Trajet>();
+		voyageTrajet8.add(trajet19);
+		voyageTrajet8.add(trajet20);
+		voyageTrajet8.add(trajet21);
+		voyageTrajet8.add(trajet22);
+		voyageTrajet8.add(trajet23);
+		Voyage voyage8 = new Voyage(voyageTrajet8);
 
-		Voyage[] voyages = { voyage1, voyage2, voyage3, voyage4, voyage5, voyage6, voyage7 };
+		Voyage[] voyages = { voyage1, voyage2, voyage3, voyage4, voyage5, voyage6, voyage7, voyage8 };
 
 		for (Voyage v : voyages)
 			em.persist(v);
@@ -293,12 +344,12 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		String[] prenomsVoyageurs = { "Mariah", "Marc", "Sophia", "Alyssia", "Antoine", "Doudouh", "Lucie", "Lucas",
 				"David", "Ben", "Maria", "Lucas", "Sophie", "Jean-Mi", "Jean", "Abdel", "Tatiana", "Charlotte",
 				"Charlotte", "Abdel", "Ben", "Ben", "Mathieu", "Louis", "Jean-Luc", "Luc", "Jean", "Sophia", "Marc",
-				"Manuel", "Abdel" };
+				"Manuel", "Abdel", "Jean-Pierre", "Joline", "Charmine", "Agathe" };
 
 		String[] nomsVoyageurs = { "Dupont", "Dupont", "Durand", "Martin", "Bernard", "Thomas", "Petit", "Grand",
 				"Robert", "Richard", "Richard", "Dubois", "Petit", "Petit", "Moreau", "Laurent", "Simon", "Michel",
 				"Lefevre", "Legrand", "Lefebvre", "Leroy", "Roux", "Leroi", "Morel", "Fournier", "Gerard", "Poirier",
-				"Pommier", "Rossignol", "Benamara" };
+				"Pommier", "Rossignol", "Benamara", "Remus", "Giso", "Rabougris", "Mwaka" };
 
 		for (int i = 0; i < prenomsVoyageurs.length; i++) {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
@@ -320,9 +371,12 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 			} else if (i >= 25 && i < 30) {
 				voyage6.addVoyageur(v);
 				v.setVoyageActuel(voyage6);
-			} else {
+			} else if (i >= 30 && i < 31) {
 				voyage7.addVoyageur(v);
 				v.setVoyageActuel(voyage7);
+			}else {
+				voyage8.addVoyageur(v);
+				v.setVoyageActuel(voyage8);
 			}
 			em.persist(v);
 		}
