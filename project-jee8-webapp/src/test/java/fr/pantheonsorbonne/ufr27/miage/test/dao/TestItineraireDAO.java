@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -217,42 +215,10 @@ public class TestItineraireDAO {
 		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret2ToAdd,
 				arret2ToAdd.getHeureArriveeEnGare().minusSeconds(30));
 		assertEquals(4, i1.getArretsDesservis().size());
-		// Ajouter en tant que départus
+		// Ajouter en tant que departus
 		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret3ToAdd,
 				arret3ToAdd.getHeureDepartDeGare().minusSeconds(30));
 		assertEquals(5, i1.getArretsDesservis().size());
-	}
-
-	@Test
-	void testRetarderTrain() {
-		LocalTime retard = LocalTime.of(0, 0, 5);
-		Arret arret1 = new Arret(null, LocalDateTime.now(), LocalDateTime.now().plus(10, ChronoUnit.SECONDS));
-		Arret arret2 = new Arret(null, LocalDateTime.now().plus(20, ChronoUnit.SECONDS),
-				LocalDateTime.now().plus(30, ChronoUnit.SECONDS));
-		Arret arret3 = new Arret(null, LocalDateTime.now().plus(40, ChronoUnit.SECONDS), null);
-		Itineraire itineraire = new Itineraire();
-		itineraire.addArret(arret1);
-		itineraire.addArret(arret2);
-		itineraire.addArret(arret3);
-		em.getTransaction().begin();
-		em.persist(arret1);
-		em.persist(arret2);
-		em.persist(arret3);
-		em.persist(itineraire);
-		em.getTransaction().commit();
-		LocalDateTime d1 = arret1.getHeureDepartDeGare();
-		LocalDateTime a2 = arret2.getHeureArriveeEnGare();
-		LocalDateTime d2 = arret2.getHeureDepartDeGare();
-		LocalDateTime a3 = arret3.getHeureArriveeEnGare();
-		itineraireDAO.retarderTrain(retard, arret2, itineraire);
-		assertEquals(d1, arret1.getHeureDepartDeGare());
-		assertEquals(a2.plus(5, ChronoUnit.SECONDS), arret2.getHeureArriveeEnGare());
-		assertEquals(d2.plus(5, ChronoUnit.SECONDS), arret2.getHeureDepartDeGare());
-		assertEquals(a3.plus(5, ChronoUnit.SECONDS), arret3.getHeureArriveeEnGare());
-		LocalTime retard2 = LocalTime.of(0, 0, 10);
-		itineraireDAO.retarderTrain(retard2, null, itineraire);
-		assertEquals(d2.plus(15, ChronoUnit.SECONDS), arret2.getHeureDepartDeGare());
-		assertEquals(a3.plus(15, ChronoUnit.SECONDS), arret3.getHeureArriveeEnGare());
 	}
 
 	@Test

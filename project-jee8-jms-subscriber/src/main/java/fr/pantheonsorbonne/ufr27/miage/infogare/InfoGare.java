@@ -77,6 +77,7 @@ public class InfoGare implements Runnable {
 
 	private void affichage() {
 		if (!itineraires.keySet().isEmpty()) {
+			String itineraire = "";
 			StringBuilder sb = new StringBuilder();
 			sb.append(affichageNomGare);
 			String tabArrivees = "\n---> Arrivées <----\n";
@@ -84,9 +85,10 @@ public class InfoGare implements Runnable {
 			int total = sb.length();
 			for (String s : itineraires.keySet()) {
 				if (itineraires.get(s).getHeureArriveeEnGare() != null) {
-					sb.append("\t" + itineraires.get(s).getIdItineraire() + " ( "
-							+ itineraires.get(s).getHeureArriveeEnGare().toLocalTime() + " )\t\tOrigine :\t\t# "
-							+ itineraires.get(s).getGareDepart() + "\n");
+					itineraire = itineraires.get(s).getIdItineraire();
+					itineraire = itineraire.length() == 3 ? itineraire + " " : itineraire;
+					sb.append("\t" + itineraire + " ( " + itineraires.get(s).getHeureArriveeEnGare().toLocalTime()
+							+ " )\t\tOrigine :\t\t# " + itineraires.get(s).getGareDepart() + "\n");
 				}
 			}
 			if (total == sb.length()) {
@@ -97,8 +99,10 @@ public class InfoGare implements Runnable {
 			total = sb.length();
 			for (String s : itineraires.keySet()) {
 				if (itineraires.get(s).getHeureDepartDeGare() != null) {
-					sb.append("\t" + itineraires.get(s).getIdItineraire() + " ( "
-							+ itineraires.get(s).getHeureDepartDeGare().toLocalTime() + " )\t\tDestination :");
+					itineraire = itineraires.get(s).getIdItineraire();
+					itineraire = itineraire.length() == 3 ? itineraire + " " : itineraire;
+					sb.append("\t" + itineraire + " ( " + itineraires.get(s).getHeureDepartDeGare().toLocalTime()
+							+ " )\t\tDestination :");
 					int count = 0;
 					for (String gare : itineraires.get(s).getGaresDesservies()) {
 						if (count == 0) {

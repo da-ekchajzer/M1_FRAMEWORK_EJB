@@ -91,6 +91,9 @@ public class Itineraire {
 
 	public void setArretsDesservis(List<Arret> arretsDesservis) {
 		this.arretsDesservis = arretsDesservis;
+		if (this.arretActuel == null) {
+			this.arretActuel = this.arretsDesservis.get(0);
+		}
 	}
 
 	public int getEtat() {
@@ -119,6 +122,9 @@ public class Itineraire {
 
 	public void addArret(Arret a) {
 		this.arretsDesservis.add(a);
+		if (this.arretActuel == null) {
+			this.arretActuel = a;
+		}
 	}
 
 	public String getBusinessId() {
@@ -126,12 +132,24 @@ public class Itineraire {
 	}
 
 	public Arret getNextArret() {
+		Arret result = null;
 		for (Arret arret : this.arretsDesservis) {
 			if (arret.isAfter(this.arretActuel)) {
-				return arret;
+				result = arret;
 			}
 		}
-		return null;
+		return result;
+	}
+
+	public boolean isGareDesservie(Gare gare) {
+		boolean result = false;
+		for (Arret a : arretsDesservis) {
+			if (a.getGare().equals(gare)) {
+				result = true;
+				break;
+			}
+		}
+		return result;
 	}
 
 	public enum CodeEtatItinieraire {
@@ -147,18 +165,6 @@ public class Itineraire {
 		public int getCode() {
 			return code;
 		}
-	}
-
-	public boolean isSameAs(Itineraire itineraire) {
-		if (arretsDesservis.size() != itineraire.getArretsDesservis().size()) {
-			return false;
-		}
-		for (int i = 0; i < arretsDesservis.size(); i++) {
-			if (!arretsDesservis.get(i).getGare().equals(itineraire.getArretsDesservis().get(i).getGare())) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 }

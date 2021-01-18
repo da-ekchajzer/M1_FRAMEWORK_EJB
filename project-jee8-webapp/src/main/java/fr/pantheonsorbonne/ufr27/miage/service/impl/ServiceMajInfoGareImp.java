@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
-import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajInfoGare;
 
 @ManagedBean
@@ -15,9 +14,6 @@ public class ServiceMajInfoGareImp implements ServiceMajInfoGare {
 
 	@Inject
 	MessageGateway messageGateway;
-
-	@Inject
-	ItineraireRepository itineraireRepository;
 
 	@Override
 	public void majHoraireItineraire(Itineraire itineraire) {

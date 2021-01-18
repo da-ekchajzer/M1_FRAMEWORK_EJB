@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,14 +113,12 @@ public class TestVoyageurDAO {
 		}
 		// --------------------------------- Arrêts
 
-		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null,
-				LocalDateTime.now().plus(20, ChronoUnit.SECONDS));
-		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plus(1, ChronoUnit.MINUTES),
-				LocalDateTime.now().plus(1, ChronoUnit.MINUTES).plus(30, ChronoUnit.SECONDS));
-		Arret arret3 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plus(3, ChronoUnit.MINUTES),
-				LocalDateTime.now().plus(3, ChronoUnit.MINUTES).plus(1, ChronoUnit.MINUTES));
-		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plus(5, ChronoUnit.MINUTES),
-				null);
+		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now().plusSeconds(20));
+		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plusMinutes(1),
+				LocalDateTime.now().plusMinutes(1).plusSeconds(30));
+		Arret arret3 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plusMinutes(3),
+				LocalDateTime.now().plusMinutes(3).plusMinutes(1));
+		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plusMinutes(5), null);
 
 		Arret[] arrets = { arret1, arret2, arret3, arret4 };
 
@@ -132,7 +129,6 @@ public class TestVoyageurDAO {
 
 		Itineraire itineraire1 = new Itineraire(train1);
 		itineraire1.addArret(arret1);
-		itineraire1.setArretActuel(arret1);
 		itineraire1.addArret(arret2);
 		itineraire1.addArret(arret3);
 		itineraire1.addArret(arret4);

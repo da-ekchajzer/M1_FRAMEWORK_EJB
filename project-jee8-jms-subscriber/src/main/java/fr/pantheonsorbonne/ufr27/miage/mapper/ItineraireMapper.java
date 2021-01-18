@@ -1,12 +1,12 @@
 package fr.pantheonsorbonne.ufr27.miage.mapper;
 
 import fr.pantheonsorbonne.ufr27.miage.pojos.Itineraire;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoJAXB;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.InfosItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.mapper.utils.MapperUtils;
 
 public class ItineraireMapper {
 
-	public static Itineraire mapItineraireJAXBToItineraire(ItineraireInfoJAXB itineraireInfoJAXB, String idTrain) {
+	public static Itineraire mapItineraireJAXBToItineraire(InfosItineraireJAXB itineraireInfoJAXB, String idTrain) {
 		Itineraire i = new Itineraire();
 
 		if (itineraireInfoJAXB.getHeureArrivee() != null) {

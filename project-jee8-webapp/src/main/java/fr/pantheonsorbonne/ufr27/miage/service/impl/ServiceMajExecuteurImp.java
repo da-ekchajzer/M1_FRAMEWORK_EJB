@@ -40,24 +40,21 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 
 	@Override
 	public void retarderItineraire(Itineraire itineraire, LocalTime tempsRetard) {
-		List<Arret> arretsSuivants = itineraireRepository.getAllNextArrets(itineraire);
+		List<Arret> arretsSuivants = itineraireRepository.getArretActuelAndAllNextArrets(itineraire);
 		for (Arret a : arretsSuivants) {
 			arretRepository.retarderHeureArriveeEnGare(a, tempsRetard.toSecondOfDay());
 			arretRepository.retarderHeureDepartDeGare(a, tempsRetard.toSecondOfDay());
 		}
-
 		serviceMajInfoGare.majHoraireItineraire(itineraire);
-
 	}
 
 	@Override
 	public void avancerItineraire(Itineraire itineraire, LocalTime tempsAvance) {
-		List<Arret> arretsSuivants = itineraireRepository.getAllNextArrets(itineraire);
+		List<Arret> arretsSuivants = itineraireRepository.getArretActuelAndAllNextArrets(itineraire);
 		for (Arret a : arretsSuivants) {
 			arretRepository.avancerHeureArriveeEnGare(a, tempsAvance.toSecondOfDay());
 			arretRepository.avancerHeureHeureDepartDeGare(a, tempsAvance.toSecondOfDay());
 		}
-
 		serviceMajInfoGare.majHoraireItineraire(itineraire);
 	}
 

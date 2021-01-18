@@ -21,8 +21,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.GareConcerneeJAXB;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoJAXB;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.GaresConcerneesJAXB;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.InfosItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.mapper.MapperUtils;
@@ -83,10 +83,10 @@ public class MessageGateway {
 		String idItineraire = incomingRequest.getStringProperty("idItineraire");
 		String nomGare = incomingRequest.getStringProperty("gare");
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(ItineraireInfoJAXB.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(InfosItineraireJAXB.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
-		ItineraireInfoJAXB itineraireInfoJAXB = new ItineraireInfoJAXB();
+		InfosItineraireJAXB itineraireInfoJAXB = new InfosItineraireJAXB();
 
 		Itineraire i = itineraireRepository.getItineraireByBusinessId(idItineraire);
 		Arret a = arretRepository.getArretParItineraireEtNomGare(i, nomGare);
@@ -144,10 +144,10 @@ public class MessageGateway {
 	}
 
 	private void publishItineraire(Itineraire itineraire, String callout) throws JAXBException, JMSException {
-		JAXBContext jaxbContext = JAXBContext.newInstance(GareConcerneeJAXB.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(GaresConcerneesJAXB.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
-		GareConcerneeJAXB gareConcerneeJAXB = new GareConcerneeJAXB();
+		GaresConcerneesJAXB gareConcerneeJAXB = new GaresConcerneesJAXB();
 
 		for (Arret a : itineraire.getArretsDesservis()) {
 			if (a.isAfter(itineraire.getArretActuel()) || a.equals(itineraire.getArretActuel())) {

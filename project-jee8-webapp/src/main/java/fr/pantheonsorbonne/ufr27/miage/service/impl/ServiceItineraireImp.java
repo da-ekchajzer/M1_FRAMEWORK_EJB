@@ -24,7 +24,7 @@ public class ServiceItineraireImp implements ServiceItineraire {
 
 	@Inject
 	ServiceMajInfoGare serviceMajInfoGareImp;
-	
+
 	@Inject
 	ItineraireRepository itineraireRepository;
 
@@ -34,7 +34,6 @@ public class ServiceItineraireImp implements ServiceItineraire {
 		if (itineraire != null) {
 			if (itineraire.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
 				itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.EN_COURS);
-				itineraireRepository.majArretActuel(itineraire, itineraire.getArretsDesservis().get(0));
 				serviceUtilisateur.initUtilisateursItineraire(idTrain);
 				serviceMajInfoGareImp.publishItineraire(itineraire);
 			}
@@ -44,27 +43,23 @@ public class ServiceItineraireImp implements ServiceItineraire {
 	}
 
 	@Override
-	public boolean majItineraire(int idTrain, ArretJAXB a) {
+	public boolean majItineraire(int idTrain, ArretJAXB arretJAXB) {
 		// Récupérer l'itinéraire associé à l'idTrain
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
 		// Récupérer l'arrêt de l'itinéraire qui a pour nom a.getGare().getNom()
-		Arret arret = getArretByItineraireAndNomGare(itineraire, a.getGare());
+		Arret arret = null;
+		for (Arret a : itineraire.getArretsDesservis()) {
+			if (a.getGare().getNom().equals(arretJAXB.getGare())) {
+				arret = a;
+				break;
+			}
+		}
 		itineraireRepository.majArretActuel(itineraire, arret);
 		serviceUtilisateur.majUtilisateursTrain(idTrain);
-		if (itineraireRepository.getNextArretByItineraireEtUnArret(itineraire, arret) == null) {
+		if (itineraire.getNextArret() == null) {
 			itineraireRepository.majEtatItineraire(itineraire, CodeEtatItinieraire.FIN);
 		}
 		return true;
-	}
-
-	private Arret getArretByItineraireAndNomGare(Itineraire itineraire, String nomGare) {
-		Arret arret = null;
-		for (Arret a : itineraire.getArretsDesservis()) {
-			if (a.getGare().getNom().equals(nomGare)) {
-				arret = a;
-			}
-		}
-		return arret;
 	}
 
 }

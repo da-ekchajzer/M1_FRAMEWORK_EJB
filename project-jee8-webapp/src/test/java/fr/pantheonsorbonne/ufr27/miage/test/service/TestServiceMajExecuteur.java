@@ -38,7 +38,6 @@ import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.repository.ArretRepository;
-import fr.pantheonsorbonne.ufr27.miage.repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
@@ -60,13 +59,15 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestServiceMajExecuteur {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class,
-			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, ServiceMajInfoGare.class, ServiceUtilisateur.class,
-			ServiceUtilisateurImp.class, ServiceMajInfoGareImp.class, TrainRepository.class, IncidentRepository.class,
-			ItineraireRepository.class, ArretRepository.class, TrajetRepository.class, VoyageurRepository.class,
-			VoyageRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class,
-			IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, MessageGateway.class, JMSProducer.class,
-			TestPersistenceProducer.class, TestDatabase.class).activate(RequestScoped.class).build();
+	private WeldInitiator weld = WeldInitiator
+			.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class, ServiceMajExecuteur.class,
+					ServiceMajExecuteurImp.class, ServiceMajInfoGare.class, ServiceMajInfoGareImp.class,
+					ServiceUtilisateur.class, ServiceUtilisateurImp.class, TrainRepository.class,
+					ItineraireRepository.class, ArretRepository.class, VoyageurRepository.class, VoyageRepository.class,
+					TrajetRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class,
+					IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, MessageGateway.class,
+					JMSProducer.class, TestPersistenceProducer.class, TestDatabase.class)
+			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
@@ -76,8 +77,6 @@ public class TestServiceMajExecuteur {
 	TrainRepository trainRepository;
 	@Inject
 	ItineraireRepository itineraireRepository;
-	@Inject
-	ArretRepository arretRepository;
 	@Inject
 	TestDatabase testDatabase;
 
@@ -105,7 +104,6 @@ public class TestServiceMajExecuteur {
 		itineraire1.setTrain(train1);
 		itineraire1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
 		itineraire1.setArretsDesservis(arretsItineraire1);
-		itineraire1.setArretActuel(arret1);
 
 		em.getTransaction().begin();
 		em.persist(train1);

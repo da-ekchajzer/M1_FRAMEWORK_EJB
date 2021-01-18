@@ -1,13 +1,13 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc">
 
-	<xsd:element name="itineraireJAXB" type="itineraireJAXB"></xsd:element>
-	<xsd:element name="arretJAXB" type="arretJAXB"></xsd:element>
-	<xsd:element name="incidentJAXB" type="incidentJAXB"></xsd:element>
-	<xsd:element name="GareConcerneeJAXB"
-		type="GareConcerneeJAXB"></xsd:element>
-	<xsd:element name="ItineraireInfoJAXB"
-		type="ItineraireInfoJAXB"></xsd:element>
+	<xsd:element name="ItineraireJAXB" type="ItineraireJAXB"></xsd:element>
+	<xsd:element name="ArretJAXB" type="ArretJAXB"></xsd:element>
+	<xsd:element name="IncidentJAXB" type="IncidentJAXB"></xsd:element>
+	<xsd:element name="GaresConcerneesJAXB"
+		type="GaresConcerneesJAXB"></xsd:element>
+	<xsd:element name="InfosItineraireJAXB"
+		type="InfosItineraireJAXB"></xsd:element>
 
 	<xsd:simpleType name="SimpleDate">
 		<xsd:annotation>
@@ -23,7 +23,7 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<xsd:complexType name="ItineraireInfoJAXB">
+	<xsd:complexType name="InfosItineraireJAXB">
 		<xsd:sequence>
 			<xsd:element name="heureArrivee" type="xsd:dateTime"></xsd:element>
 			<xsd:element name="heureDepart" type="xsd:dateTime"></xsd:element>
@@ -35,22 +35,22 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="GareConcerneeJAXB">
+	<xsd:complexType name="GaresConcerneesJAXB">
 		<xsd:sequence>
 			<xsd:element name="gares" type="xsd:string"
 				maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="itineraireJAXB">
+	<xsd:complexType name="ItineraireJAXB">
 		<xsd:sequence>
 			<xsd:element name="etat_itineraire" type="xsd:int"></xsd:element>
-			<xsd:element name="arrets" type="arretJAXB"
+			<xsd:element name="arrets" type="ArretJAXB"
 				maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="arretJAXB">
+	<xsd:complexType name="ArretJAXB">
 		<xsd:sequence>
 			<xsd:element name="gare" type="xsd:string"></xsd:element>
 			<xsd:element name="heureArrivee" type="xsd:dateTime"></xsd:element>
@@ -58,7 +58,7 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="incidentJAXB">
+	<xsd:complexType name="IncidentJAXB">
 		<xsd:sequence>
 			<xsd:element name="debut_incident" type="xsd:dateTime"></xsd:element>
 			<xsd:element name="type_incident" type="xsd:int"></xsd:element>

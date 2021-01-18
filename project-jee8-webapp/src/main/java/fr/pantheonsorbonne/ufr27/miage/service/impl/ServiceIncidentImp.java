@@ -43,6 +43,7 @@ public class ServiceIncidentImp implements ServiceIncident {
 		LocalTime estimationRetard = estimationTempsRetard(incidentJAXB.getTypeIncident());
 		Retard retard = new Retard(itineraire, estimationRetard);
 		serviceMajDecideur.decideRetard(retard, true);
+		// Si le temps de retard estimé est de plus de 2 heures
 		if (estimationRetard.isAfter(LocalTime.of(2, 0, 0, 0))) {
 			serviceMajDecideur.affecterUnAutreTrainAuxArretsDeItineraire(itineraire);
 		}
@@ -66,6 +67,7 @@ public class ServiceIncidentImp implements ServiceIncident {
 				incidentRepository.majHeureDeFinIncident(incident, oldEnd.plus(ajoutDuree, chronoUnitDuree));
 				LocalTime dureeProlongation = LocalTime.MIN.plus(ajoutDuree, chronoUnitDuree);
 				serviceMajDecideur.decideRetard(new Retard(itineraire, dureeProlongation), true);
+				// Si le temps de retard estimé est de plus de 2 heures
 				if (incident.getHeureTheoriqueDeFin()
 						.isAfter(now.plusSeconds(LocalTime.of(2, 0, 0, 0).toSecondOfDay()))) {
 					serviceMajDecideur.affecterUnAutreTrainAuxArretsDeItineraire(itineraire);
@@ -87,8 +89,9 @@ public class ServiceIncidentImp implements ServiceIncident {
 	}
 
 	/**
-	 * Récupérer l'estimation du temps de retard associée au type de retard
-	 * définie dans l'énumération CodeTypeIncident
+	 * Récupérer l'estimation du temps de retard associée au type de retard définie
+	 * dans l'énumération CodeTypeIncident
+	 * 
 	 * @param codeTypeIncident
 	 * @return
 	 */

@@ -3,7 +3,6 @@ package fr.pantheonsorbonne.ufr27.miage.test.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,12 +51,11 @@ public class TestArretRepository {
 
 	@Test
 	void testGetArretParItineraireEtNomGare() {
-		Arret arret1 = new Arret(new Gare("Gare1"), LocalDateTime.now(),
-				LocalDateTime.now().plus(1, ChronoUnit.MINUTES));
-		Arret arret2 = new Arret(new Gare("Gare2"), LocalDateTime.now().plus(2, ChronoUnit.MINUTES),
-				LocalDateTime.now().plus(3, ChronoUnit.MINUTES));
-		Arret arret3 = new Arret(new Gare("Gare3"), LocalDateTime.now().plus(4, ChronoUnit.MINUTES),
-				LocalDateTime.now().plus(5, ChronoUnit.MINUTES));
+		Arret arret1 = new Arret(new Gare("Gare1"), LocalDateTime.now(), LocalDateTime.now().plusMinutes(1));
+		Arret arret2 = new Arret(new Gare("Gare2"), LocalDateTime.now().plusMinutes(2),
+				LocalDateTime.now().plusMinutes(3));
+		Arret arret3 = new Arret(new Gare("Gare3"), LocalDateTime.now().plusMinutes(4),
+				LocalDateTime.now().plusMinutes(5));
 		List<Arret> arretsItineraire1 = new ArrayList<Arret>();
 		arretsItineraire1.add(arret1);
 		arretsItineraire1.add(arret2);

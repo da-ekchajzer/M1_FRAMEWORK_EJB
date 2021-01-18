@@ -82,25 +82,28 @@ public class Trajet implements Comparable<Trajet> {
 
 	@Override
 	public int compareTo(Trajet trajet2) {
-		if (this.numero > trajet2.getNumero()) {
-			return 1;
+		int res = 0;
+		if (this.numero == trajet2.getNumero()) {
+			res = 0;
+		} else if (this.numero > trajet2.getNumero()) {
+			res = 1;
 		} else if (this.numero < trajet2.getNumero()) {
-			return -1;
+			res = -1;
 		}
-		return 0;
+		return res;
 	}
 
 	public boolean isBefore(Trajet trajet2) {
-		if (this.compareTo(trajet2) >= 0) {
-			return false;
+		if (this.compareTo(trajet2) < 0) {
+			return true;
 		}
-		return true;
+		return false;
 	}
-	
+
 	public boolean isAfter(Trajet trajet2) {
-		if (this.compareTo(trajet2) <= 0) {
-			return false;
+		if (this.compareTo(trajet2) > 0) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 }
