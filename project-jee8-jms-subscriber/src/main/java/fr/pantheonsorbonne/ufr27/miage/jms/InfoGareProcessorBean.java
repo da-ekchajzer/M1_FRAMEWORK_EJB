@@ -21,8 +21,8 @@ import javax.xml.bind.JAXBException;
 
 import fr.pantheonsorbonne.ufr27.miage.infogare.InfoGare;
 import fr.pantheonsorbonne.ufr27.miage.mapper.ItineraireMapper;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.GareConcerneeJAXB;
-import fr.pantheonsorbonne.ufr27.miage.model.jaxb.ItineraireInfoJAXB;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.GaresConcerneesJAXB;
+import fr.pantheonsorbonne.ufr27.miage.model.jaxb.InfosItineraireJAXB;
 import fr.pantheonsorbonne.ufr27.miage.pojos.Itineraire;
 
 public class InfoGareProcessorBean {
@@ -69,16 +69,16 @@ public class InfoGareProcessorBean {
 	}
 
 	public void onInfoPubMessage(TextMessage message) throws JAXBException, JMSException {
-		JAXBContext context = JAXBContext.newInstance(GareConcerneeJAXB.class);
+		JAXBContext context = JAXBContext.newInstance(GaresConcerneesJAXB.class);
 		StringReader reader = new StringReader(message.getText());
 
 		String callout = message.getStringProperty("callout");
 		String idItineraire = message.getStringProperty("idItineraire");
 
-		GareConcerneeJAXB itineraireAck = (GareConcerneeJAXB) context.createUnmarshaller().unmarshal(reader);
-		List<String> garesConcernee = itineraireAck.getGares();
+		GaresConcerneesJAXB itineraireAck = (GaresConcerneesJAXB) context.createUnmarshaller().unmarshal(reader);
+		List<String> garesConcernees = itineraireAck.getGares();
 
-		if (infoGareIsConcerned(garesConcernee)) {
+		if (infoGareIsConcerned(garesConcernees)) {
 			Message outgoingMessage = this.session.createMessage();
 			outgoingMessage.setStringProperty("idItineraire", idItineraire);
 			outgoingMessage.setStringProperty("gare", infoGare.getGare());
@@ -118,13 +118,13 @@ public class InfoGareProcessorBean {
 		TextMessage message = (TextMessage) reply;
 
 		// Traitement de la réponse
-		JAXBContext context = JAXBContext.newInstance(ItineraireInfoJAXB.class);
+		JAXBContext context = JAXBContext.newInstance(InfosItineraireJAXB.class);
 		StringReader reader = new StringReader(message.getText());
 
 		String callout = message.getStringProperty("callout");
 		String idItineraire = message.getStringProperty("idItineraire");
 
-		ItineraireInfoJAXB itineraireInfoJAXB = (ItineraireInfoJAXB) context.createUnmarshaller().unmarshal(reader);
+		InfosItineraireJAXB itineraireInfoJAXB = (InfosItineraireJAXB) context.createUnmarshaller().unmarshal(reader);
 		Itineraire itineraireInfoGare = ItineraireMapper.mapItineraireJAXBToItineraire(itineraireInfoJAXB,
 				idItineraire);
 

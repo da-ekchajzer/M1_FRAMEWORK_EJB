@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +43,6 @@ import fr.pantheonsorbonne.ufr27.miage.repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.GareRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrainRepository;
-import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
@@ -56,10 +54,11 @@ public class TestItineraireRepository {
 	private final static LocalDateTime HEURE_ACTUELLE = LocalDateTime.now();
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(TrainRepository.class, ItineraireRepository.class,
-			ArretRepository.class, TrajetRepository.class, GareRepository.class, VoyageurDAO.class, VoyageDAO.class,
-			TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class,
-			TestPersistenceProducer.class, TestDatabase.class).activate(RequestScoped.class).build();
+	private WeldInitiator weld = WeldInitiator
+			.from(TrainRepository.class, ItineraireRepository.class, ArretRepository.class, GareRepository.class,
+					VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class,
+					ArretDAO.class, TrainDAO.class, GareDAO.class, TestPersistenceProducer.class, TestDatabase.class)
+			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
@@ -89,24 +88,21 @@ public class TestItineraireRepository {
 
 		Itineraire i2 = new Itineraire(t);
 		i2.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
-		Arret arret1 = new Arret(g1, null, HEURE_ACTUELLE.plus(1, ChronoUnit.MINUTES));
-		Arret arret2 = new Arret(g2, HEURE_ACTUELLE.plus(2, ChronoUnit.MINUTES),
-				HEURE_ACTUELLE.plus(3, ChronoUnit.MINUTES));
-		Arret arret3 = new Arret(g3, HEURE_ACTUELLE.plus(4, ChronoUnit.MINUTES), null);
+		Arret arret1 = new Arret(g1, null, HEURE_ACTUELLE.plusMinutes(1));
+		Arret arret2 = new Arret(g2, HEURE_ACTUELLE.plusMinutes(2), HEURE_ACTUELLE.plusMinutes(3));
+		Arret arret3 = new Arret(g3, HEURE_ACTUELLE.plusMinutes(4), null);
 		List<Arret> arretsI2 = new ArrayList<Arret>();
 		arretsI2.add(arret1);
 		arretsI2.add(arret2);
 		arretsI2.add(arret3);
 		i1.setArretsDesservis(arretsI2);
 		i2.setArretsDesservis(arretsI2);
-		i2.setArretActuel(arret1);
 
 		Itineraire i3 = new Itineraire(t);
 		i3.setEtat(CodeEtatItinieraire.EN_INCIDENT.getCode());
-		Arret arret4 = new Arret(g4, null, HEURE_ACTUELLE.plus(1, ChronoUnit.MINUTES));
-		Arret arret5 = new Arret(g2, HEURE_ACTUELLE.plus(2, ChronoUnit.MINUTES),
-				HEURE_ACTUELLE.plus(3, ChronoUnit.MINUTES));
-		Arret arret6 = new Arret(g6, HEURE_ACTUELLE.plus(4, ChronoUnit.MINUTES), null);
+		Arret arret4 = new Arret(g4, null, HEURE_ACTUELLE.plusMinutes(1));
+		Arret arret5 = new Arret(g2, HEURE_ACTUELLE.plusMinutes(2), HEURE_ACTUELLE.plusMinutes(3));
+		Arret arret6 = new Arret(g6, HEURE_ACTUELLE.plusMinutes(4), null);
 		List<Arret> arretsI3 = new ArrayList<Arret>();
 		arretsI3.add(arret4);
 		arretsI3.add(arret5);
@@ -118,9 +114,8 @@ public class TestItineraireRepository {
 
 		Itineraire i5 = new Itineraire(t);
 		i5.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
-		Arret arret7 = new Arret(g1, null, HEURE_ACTUELLE.plus(3, ChronoUnit.HOURS));
-		Arret arret8 = new Arret(g2, HEURE_ACTUELLE.plus(3, ChronoUnit.HOURS).plus(20, ChronoUnit.MINUTES),
-				HEURE_ACTUELLE.plus(4, ChronoUnit.HOURS));
+		Arret arret7 = new Arret(g1, null, HEURE_ACTUELLE.plusHours(3));
+		Arret arret8 = new Arret(g2, HEURE_ACTUELLE.plusHours(3).plusMinutes(20), HEURE_ACTUELLE.plusHours(4));
 		List<Arret> arretsI5 = new ArrayList<Arret>();
 		arretsI5.add(arret7);
 		arretsI5.add(arret8);
@@ -156,9 +151,9 @@ public class TestItineraireRepository {
 	@Test
 	@Order(1)
 	void testRecupItineraireEnCoursOuLeProchain() {
-		Train t = this.trainRepository.getTrainByBusinessId(1);
-		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		assertEquals(i2, this.itineraireRepository.recupItineraireEnCoursOuLeProchain(t.getId()));
+		Train t = trainRepository.getTrainByBusinessId(1);
+		Itineraire i2 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
+		assertEquals(i2, itineraireRepository.recupItineraireEnCoursOuLeProchain(t.getId()));
 	}
 
 	@Test
@@ -170,11 +165,17 @@ public class TestItineraireRepository {
 		List<Itineraire> itinerairesDansLes2H = itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard);
 		assertEquals(3, itinerairesDansLes2H.size());
 		// On vérifie qu'il y ait bien 2 itinéraires en attente pour le train t
-		Train t = this.trainRepository.getTrainByBusinessId(1);
-		List<Itineraire> its = this.itineraireRepository.getAllItinerairesByTrainEtEtat(t.getId(),
+		Train t = trainRepository.getTrainByBusinessId(1);
+		List<Itineraire> its = itineraireRepository.getAllItinerairesByTrainEtEtat(t.getId(),
 				CodeEtatItinieraire.EN_ATTENTE);
 		assertEquals(2, its.size());
-		Itineraire i5 = its.get(1);
+		Itineraire i5 = null;
+		for (Itineraire it : its) {
+			if (it.getBusinessId().equals("IT5")) {
+				i5 = it;
+				break;
+			}
+		}
 		// i5 n'est pas pris en compte car il part dans 3h > 2h
 		for (Itineraire i : itinerairesDansLes2H) {
 			assertNotEquals(i5, i);
@@ -188,59 +189,45 @@ public class TestItineraireRepository {
 	@Test
 	@Order(3)
 	void testGetItineraireByTrainEtEtatNullSiPlusieursResultats() {
-		Train t = this.trainRepository.getTrainByBusinessId(1);
-		Itineraire i1 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_ATTENTE);
-		this.itineraireRepository.majEtatItineraire(i1, CodeEtatItinieraire.EN_COURS);
-		assertNull(this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS));
-		this.itineraireRepository.majEtatItineraire(i1, CodeEtatItinieraire.FIN);
+		Train t = trainRepository.getTrainByBusinessId(1);
+		Itineraire i1 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_ATTENTE);
+		itineraireRepository.majEtatItineraire(i1, CodeEtatItinieraire.EN_COURS);
+		assertNull(itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS));
+		itineraireRepository.majEtatItineraire(i1, CodeEtatItinieraire.FIN);
 	}
 
 	@Test
 	@Order(4)
-	void testGetNextArretByItineraireEtUnArret() {
-		Train t = this.trainRepository.getTrainByBusinessId(1);
-		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		// Renvoie le nextArret si on est pas à la fin de l'itinéraire
-		i2.setArretActuel(this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()));
-		assertEquals("Gare2", i2.getArretActuel().getGare().getNom());
-		assertEquals("Gare3", this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel())
-				.getGare().getNom());
-		// Renvoie null si on est au dernier arrêt (rien après)
-		i2.setArretActuel(this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()));
-		assertEquals("Gare3", i2.getArretActuel().getGare().getNom());
-		assertEquals(null, this.itineraireRepository.getNextArretByItineraireEtUnArret(i2, i2.getArretActuel()));
+	void getArretActuelAndAllNextArrets() {
+		Train t = trainRepository.getTrainByBusinessId(1);
+		Itineraire i2 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
+		// Si on est au dernier arrêt, il n'y plus que l'arrêt actuel
+		itineraireRepository.majArretActuel(i2, i2.getArretsDesservis().get(i2.getArretsDesservis().size() - 1));
+		assertEquals(1, itineraireRepository.getArretActuelAndAllNextArrets(i2).size());
 	}
 
 	@Test
 	@Order(5)
-	void testGetAllNextArrets() {
-		Train t = this.trainRepository.getTrainByBusinessId(1);
-		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		// Si on est au dernier arrêt, il n'y plus que l'arrêt actuel
-		assertEquals(1, this.itineraireRepository.getAllNextArrets(i2).size());
+	void testGetItinerairesEnCoursOuEnIncidentByGare() {
+		Gare g = gareRepository.getGaresByNom("Gare2").get(0);
+		assertEquals(2, itineraireRepository.getItinerairesEnCoursOuEnIncidentByGare(g).size());
 	}
 
 	@Test
 	@Order(6)
-	void testGetItinerairesEnCoursOuEnIncidentByGare() {
-		Gare g = this.gareRepository.getGaresByNom("Gare2").get(0);
-		assertEquals(2, this.itineraireRepository.getItinerairesEnCoursOuEnIncidentByGare(g).size());
+	void testSupprimerArretDansUnItineraire() {
+		Train t = trainRepository.getTrainByBusinessId(1);
+		Itineraire i2 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
+		int nbArrets = i2.getArretsDesservis().size();
+		i2 = itineraireRepository.supprimerArretDansUnItineraire(t.getId(), i2.getArretsDesservis().get(1));
+		assertEquals(nbArrets - 1, i2.getArretsDesservis().size());
 	}
 
 	@Test
 	@Order(7)
-	void testSupprimerArretDansUnItineraire() {
-		Train t = this.trainRepository.getTrainByBusinessId(1);
-		Itineraire i2 = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		int nbArrets = i2.getArretsDesservis().size();
-		i2 = this.itineraireRepository.supprimerArretDansUnItineraire(t.getId(), i2.getArretsDesservis().get(1));
-		assertEquals(nbArrets - 1, i2.getArretsDesservis().size());
-	}
-	
-	@Test
-	@Order(8)
 	void testGetAllItineraires() {
-		assertEquals(this.itineraireRepository.getAllItineraires().size(), 4); //ITS a été effacé dans le test2 --> plus que 4 itineraires
+		// IT5 a été effacé dans le test2 --> plus que 4 itinéraires
+		assertEquals(itineraireRepository.getAllItineraires().size(), 4);
 	}
 
 	@AfterAll

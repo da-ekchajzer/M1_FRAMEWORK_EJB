@@ -40,7 +40,6 @@ import fr.pantheonsorbonne.ufr27.miage.repository.ArretRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrainRepository;
-import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestDatabase;
 import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 
@@ -50,10 +49,11 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestIncidentRepository {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(TrainRepository.class, ItineraireRepository.class,
-			ArretRepository.class, TrajetRepository.class, IncidentRepository.class, VoyageurDAO.class, VoyageDAO.class,
-			TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class,
-			TestPersistenceProducer.class, TestDatabase.class).activate(RequestScoped.class).build();
+	private WeldInitiator weld = WeldInitiator
+			.from(TrainRepository.class, ItineraireRepository.class, ArretRepository.class, IncidentRepository.class,
+					VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class,
+					ArretDAO.class, TrainDAO.class, GareDAO.class, TestPersistenceProducer.class, TestDatabase.class)
+			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;

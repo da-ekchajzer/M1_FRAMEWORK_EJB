@@ -41,7 +41,6 @@ import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.repository.ArretRepository;
-import fr.pantheonsorbonne.ufr27.miage.repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
@@ -66,18 +65,18 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestServiceMajDecideur {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class,
-			ServiceMajExecuteur.class, ServiceMajExecuteurImp.class, ServiceMajInfoGare.class, ServiceUtilisateur.class,
-			ServiceUtilisateurImp.class, ServiceMajInfoGareImp.class, TrainRepository.class, IncidentRepository.class,
-			ItineraireRepository.class, ArretRepository.class, TrajetRepository.class, VoyageurRepository.class,
-			VoyageRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class,
-			IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, MessageGateway.class, JMSProducer.class,
-			TestPersistenceProducer.class, TestDatabase.class).activate(RequestScoped.class).build();
+	private WeldInitiator weld = WeldInitiator
+			.from(ServiceMajDecideur.class, ServiceMajDecideurImp.class, ServiceMajExecuteur.class,
+					ServiceMajExecuteurImp.class, ServiceMajInfoGare.class, ServiceMajInfoGareImp.class,
+					ServiceUtilisateur.class, ServiceUtilisateurImp.class, TrainRepository.class,
+					ItineraireRepository.class, ArretRepository.class, VoyageurRepository.class, VoyageRepository.class,
+					TrajetRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class,
+					IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, MessageGateway.class,
+					JMSProducer.class, TestPersistenceProducer.class, TestDatabase.class)
+			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
-	@Inject
-	ServiceMajExecuteur serviceMajExecuteur;
 	@Inject
 	ServiceMajDecideur serviceMajDecideur;
 	@Inject
@@ -86,8 +85,6 @@ public class TestServiceMajDecideur {
 	TrainRepository trainRepository;
 	@Inject
 	ItineraireRepository itineraireRepository;
-	@Inject
-	ArretRepository arretRepository;
 	@Inject
 	TestDatabase testDatabase;
 
@@ -101,21 +98,20 @@ public class TestServiceMajDecideur {
 	@Test
 	@Order(1)
 	void testDecideRetard() {
-		Train t6 = this.trainRepository.getTrainByBusinessId(6);
-		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(t6.getId(), CodeEtatItinieraire.EN_ATTENTE);
+		Train t5 = trainRepository.getTrainByBusinessId(5);
+		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(t5.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertNotNull(it6);
 		itineraireRepository.majEtatItineraire(it6, CodeEtatItinieraire.EN_COURS);
-		it6.setArretActuel(it6.getArretsDesservis().get(0));
-		this.serviceUtilisateur.initUtilisateursItineraire(t6.getId());
+		serviceUtilisateur.initUtilisateursItineraire(t5.getId());
 		assertEquals(6, it6.getVoyageurs().size());
 		LocalTime heureArriveeTerminusItineraire6 = it6.getArretsDesservis().get(it6.getArretsDesservis().size() - 1)
 				.getHeureArriveeEnGare().toLocalTime();
-		Train t7 = this.trainRepository.getTrainByBusinessId(7);
-		Itineraire it7 = itineraireRepository.getItineraireByTrainEtEtat(t7.getId(), CodeEtatItinieraire.EN_ATTENTE);
+		Train t6 = trainRepository.getTrainByBusinessId(6);
+		Itineraire it7 = itineraireRepository.getItineraireByTrainEtEtat(t6.getId(), CodeEtatItinieraire.EN_ATTENTE);
 		assertNotNull(it7);
 		LocalTime heureArriveeTerminusItineraire7 = it7.getArretsDesservis().get(it7.getArretsDesservis().size() - 1)
 				.getHeureArriveeEnGare().toLocalTime();
-		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 30)), true);
+		serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 30)), true);
 		heureArriveeTerminusItineraire6 = heureArriveeTerminusItineraire6.plusMinutes(30);
 		heureArriveeTerminusItineraire7 = heureArriveeTerminusItineraire7.plusMinutes(30);
 		assertEquals(heureArriveeTerminusItineraire6, it6.getArretsDesservis().get(it6.getArretsDesservis().size() - 1)
@@ -126,7 +122,7 @@ public class TestServiceMajDecideur {
 		it6.setArretActuel(it6.getArretsDesservis().get(1));
 		LocalTime heureDepartPremierGareItineraire6 = it6.getArretsDesservis().get(1).getHeureArriveeEnGare()
 				.toLocalTime();
-		this.serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 15)), true);
+		serviceMajDecideur.decideRetard(new Retard(it6, LocalTime.of(0, 15)), true);
 		heureDepartPremierGareItineraire6 = heureDepartPremierGareItineraire6.plusMinutes(15);
 		heureArriveeTerminusItineraire7 = heureArriveeTerminusItineraire7.plusMinutes(15);
 		assertNotEquals(heureDepartPremierGareItineraire6,
@@ -143,20 +139,20 @@ public class TestServiceMajDecideur {
 	@Test
 	@Order(2)
 	void testGetRetardsItineraireEnCorespondance() {
-		Train t = this.trainRepository.getTrainByBusinessId(6);
-		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
+		Train t5 = trainRepository.getTrainByBusinessId(5);
+		Itineraire it6 = itineraireRepository.getItineraireByTrainEtEtat(t5.getId(), CodeEtatItinieraire.EN_COURS);
 		assertNotNull(it6);
 		Retard r1 = new Retard(it6, LocalTime.of(0, 30));
-		assertEquals(1, this.serviceMajDecideur.getRetardsItineraireEnCorespondance(r1).size());
+		assertEquals(1, serviceMajDecideur.getRetardsItineraireEnCorespondance(r1).size());
 	}
 
 	@Test
 	@Order(3)
 	void testFactoriseRetard() {
 		Itineraire it1 = itineraireRepository.getItineraireByTrainEtEtat(
-				this.trainRepository.getTrainByBusinessId(1).getId(), CodeEtatItinieraire.EN_ATTENTE);
+				trainRepository.getTrainByBusinessId(1).getId(), CodeEtatItinieraire.EN_ATTENTE);
 		Itineraire it2 = itineraireRepository.getItineraireByTrainEtEtat(
-				this.trainRepository.getTrainByBusinessId(2).getId(), CodeEtatItinieraire.EN_ATTENTE);
+				trainRepository.getTrainByBusinessId(2).getId(), CodeEtatItinieraire.EN_ATTENTE);
 		Retard r1 = new Retard(it1, LocalTime.of(0, 10));
 		Retard r2 = new Retard(it1, LocalTime.of(0, 20));
 		Retard r3 = new Retard(it2, LocalTime.of(0, 15));
@@ -166,7 +162,7 @@ public class TestServiceMajDecideur {
 		retards.add(r2);
 		retards.add(r3);
 		int nbRetards = 3;
-		this.serviceMajDecideur.factoriseRetard(retards);
+		serviceMajDecideur.factoriseRetard(retards);
 		assertEquals(--nbRetards, retards.size());
 		assertFalse(retards.contains(r1));
 		assertTrue(retards.contains(r2));

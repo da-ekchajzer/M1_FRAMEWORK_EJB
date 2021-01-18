@@ -3,7 +3,6 @@ package fr.pantheonsorbonne.ufr27.miage.test.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -52,8 +51,8 @@ public class TestArretDAO {
 	void testAvancerHeureArriveeEnGare() {
 		Gare gare = new Gare("Avignon-Centre");
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime hArriveeEnGare = now.plus(30, ChronoUnit.SECONDS);
-		LocalDateTime hDepartDeGare = now.plus(40, ChronoUnit.SECONDS);
+		LocalDateTime hArriveeEnGare = now.plusSeconds(30);
+		LocalDateTime hDepartDeGare = now.plusSeconds(40);
 		Arret arret = new Arret(gare, hArriveeEnGare, hDepartDeGare);
 		em.getTransaction().begin();
 		em.persist(gare);
@@ -67,8 +66,8 @@ public class TestArretDAO {
 	void testAvancerHeureDepartDeGare() {
 		Gare gare = new Gare("Avignon-Centre");
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime hArriveeEnGare = now.plus(30, ChronoUnit.SECONDS);
-		LocalDateTime hDepartDeGare = now.plus(40, ChronoUnit.SECONDS);
+		LocalDateTime hArriveeEnGare = now.plusSeconds(30);
+		LocalDateTime hDepartDeGare = now.plusSeconds(40);
 		Arret arret = new Arret(gare, hArriveeEnGare, hDepartDeGare);
 		em.getTransaction().begin();
 		em.persist(gare);
@@ -81,8 +80,8 @@ public class TestArretDAO {
 	void testRetarderHeureArriveeEnGare() {
 		Gare gare = new Gare("Avignon-Centre");
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime hArriveeEnGare = now.plus(30, ChronoUnit.SECONDS);
-		LocalDateTime hDepartDeGare = now.plus(40, ChronoUnit.SECONDS);
+		LocalDateTime hArriveeEnGare = now.plusSeconds(30);
+		LocalDateTime hDepartDeGare = now.plusSeconds(40);
 		Arret arret = new Arret(gare, hArriveeEnGare, hDepartDeGare);
 		em.getTransaction().begin();
 		em.persist(gare);
@@ -96,8 +95,8 @@ public class TestArretDAO {
 	void testRetardHeureDepartDeGare() {
 		Gare gare = new Gare("Avignon-Centre");
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime hArriveeEnGare = now.plus(30, ChronoUnit.SECONDS);
-		LocalDateTime hDepartDeGare = now.plus(40, ChronoUnit.SECONDS);
+		LocalDateTime hArriveeEnGare = now.plusSeconds(30);
+		LocalDateTime hDepartDeGare = now.plusSeconds(40);
 		Arret arret = new Arret(gare, hArriveeEnGare, hDepartDeGare);
 		em.getTransaction().begin();
 		em.persist(gare);

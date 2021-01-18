@@ -9,14 +9,16 @@ import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 public interface ServiceMajExecuteur {
 
 	/**
-	 * Ajouter un arrêt au 'milieu' d'un itinéraire
+	 * Ajouter un arrêt au sein d'un itinéraire
+	 * 
 	 * @param idTrain
 	 * @param Arret
 	 */
 	public void ajouterUnArretEnCoursItineraire(int idTrain, Arret Arret);
 
 	/**
-	 * Ajouter un arrêt à l'extrémité d'un itinéraire (départ/terminus)
+	 * Ajouter un arrêt à une extrémité d'un itinéraire (départ/terminus)
+	 * 
 	 * @param idTrain
 	 * @param Arret
 	 * @param heure
@@ -25,6 +27,7 @@ public interface ServiceMajExecuteur {
 
 	/**
 	 * Retarder l'itinéraire de tempsRetard heure(s)/minute(s)/seconde(s)
+	 * 
 	 * @param itineraire
 	 * @param tempsRetard
 	 */
@@ -32,6 +35,7 @@ public interface ServiceMajExecuteur {
 
 	/**
 	 * Avancer l'itinéraire de tempsAvance heure(s)/minute(s)/seconde(s)
+	 * 
 	 * @param itineraire
 	 * @param tempsAvance
 	 */

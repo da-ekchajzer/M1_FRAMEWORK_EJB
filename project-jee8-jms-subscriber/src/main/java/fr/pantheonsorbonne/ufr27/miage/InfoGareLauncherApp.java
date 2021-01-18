@@ -13,7 +13,7 @@ public class InfoGareLauncherApp {
 				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes", "Montpellier", "Cabries"};
 		int infogareId = 0;
 
-		Thread.sleep(4000);
+		Thread.sleep(10000);
 
 		while (infogareId < gare.length) {
 			InfoGare infoGare = new InfoGare(gare[infogareId]);

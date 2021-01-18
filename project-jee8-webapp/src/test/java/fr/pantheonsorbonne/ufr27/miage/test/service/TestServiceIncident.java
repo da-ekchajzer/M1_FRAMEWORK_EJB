@@ -81,8 +81,8 @@ public class TestServiceIncident {
 	private WeldInitiator weld = WeldInitiator.from(ServiceIncident.class, ServiceIncidentImp.class,
 			ServiceMajDecideur.class, ServiceMajDecideurImp.class, ServiceMajExecuteur.class,
 			ServiceMajExecuteurImp.class, ServiceMajInfoGare.class, ServiceMajInfoGareImp.class, TrainRepository.class,
-			IncidentRepository.class, ItineraireRepository.class, ArretRepository.class, TrajetRepository.class,
-			VoyageurRepository.class, VoyageRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class,
+			IncidentRepository.class, ItineraireRepository.class, ArretRepository.class, VoyageurRepository.class,
+			VoyageRepository.class, TrajetRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class,
 			ItineraireDAO.class, IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, MessageGateway.class,
 			JMSProducer.class, TestPersistenceProducer.class, TestDatabase.class).activate(RequestScoped.class).build();
 
@@ -112,18 +112,15 @@ public class TestServiceIncident {
 
 		Itineraire i2 = new Itineraire(t2);
 		i2.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
-		Arret arret1 = new Arret(g1, null, HEURE_ACTUELLE.plus(1, ChronoUnit.MINUTES));
-		Arret arret2 = new Arret(g2, HEURE_ACTUELLE.plus(2, ChronoUnit.MINUTES),
-				HEURE_ACTUELLE.plus(3, ChronoUnit.MINUTES));
-		Arret arret3 = new Arret(g3, HEURE_ACTUELLE.plus(4, ChronoUnit.MINUTES), null);
+		Arret arret1 = new Arret(g1, null, HEURE_ACTUELLE.plusMinutes(1));
+		Arret arret2 = new Arret(g2, HEURE_ACTUELLE.plusMinutes(2), HEURE_ACTUELLE.plusMinutes(3));
+		Arret arret3 = new Arret(g3, HEURE_ACTUELLE.plusMinutes(4), null);
 		List<Arret> arretsI2 = new ArrayList<Arret>();
 		arretsI2.add(arret1);
 		arretsI2.add(arret2);
 		arretsI2.add(arret3);
 		i1.setArretsDesservis(arretsI2);
 		i2.setArretsDesservis(arretsI2);
-		i1.setArretActuel(arret1);
-		i2.setArretActuel(arret1);
 
 		em.getTransaction().begin();
 		em.persist(g1);
@@ -144,7 +141,7 @@ public class TestServiceIncident {
 	@Test
 	@Order(1)
 	void testCreerIncident() throws DatatypeConfigurationException {
-		Train t = this.trainRepository.getTrainByBusinessId(1);
+		Train t = trainRepository.getTrainByBusinessId(1);
 		IncidentJAXB incidentJAXB = new IncidentJAXB();
 
 		GregorianCalendar c = new GregorianCalendar();
@@ -156,7 +153,7 @@ public class TestServiceIncident {
 
 		assertTrue(serviceIncident.creerIncident(t.getId(), incidentJAXB));
 
-		Incident incidentCree = this.incidentRepository.getIncidentByIdTrain(t.getId());
+		Incident incidentCree = incidentRepository.getIncidentByIdTrain(t.getId());
 		assertEquals(incidentCree.getHeureDebut().plusMinutes(5), incidentCree.getHeureTheoriqueDeFin());
 		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), incidentCree.getTypeIncident());
 	}
@@ -166,16 +163,16 @@ public class TestServiceIncident {
 	void testMajEtatIncident() {
 		long ajoutDureeIncident = 5;
 		ChronoUnit chronoUnitIncident = ChronoUnit.MINUTES;
-		Train t = this.trainRepository.getTrainByBusinessId(1);
-		Itineraire itineraire = this.itineraireRepository.getItineraireByTrainEtEtat(t.getId(),
+		Train t = trainRepository.getTrainByBusinessId(1);
+		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(t.getId(),
 				CodeEtatItinieraire.EN_INCIDENT);
 		assertEquals(2, itineraire.getEtat());
-		assertTrue(this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
-				ajoutDureeIncident, chronoUnitIncident));
+		assertTrue(serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(), ajoutDureeIncident,
+				chronoUnitIncident));
 		assertNotNull(itineraire);
 		// Itinéraire = EN_COURS + Incident = EN_COURS --> on set l'etat à EN_INCIDENT
 		assertEquals(2, itineraire.getEtat());
-		Incident incident = this.incidentRepository.getIncidentByIdTrain(t.getId());
+		Incident incident = incidentRepository.getIncidentByIdTrain(t.getId());
 		// Type 1 -- Animal sur voie
 		assertEquals(CodeTypeIncident.ANIMAL_SUR_VOIE.getCode(), incident.getTypeIncident());
 		LocalDateTime heureDebutIncident = incident.getHeureDebut();
@@ -187,15 +184,15 @@ public class TestServiceIncident {
 		LocalDateTime heureTheoriqueDeFin = LocalDateTime.now().minusSeconds(1);
 		incident.setHeureTheoriqueDeFin(heureTheoriqueDeFin);
 		System.out.println(incident.getHeureTheoriqueDeFin());
-		assertTrue(this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(),
-				ajoutDureeIncident, chronoUnitIncident));
+		assertTrue(serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.EN_COURS.getCode(), ajoutDureeIncident,
+				chronoUnitIncident));
 		System.out.println(incident.getHeureTheoriqueDeFin());
 		assertEquals(heureTheoriqueDeFin.plus(ajoutDureeIncident, chronoUnitIncident),
 				incident.getHeureTheoriqueDeFin());
 
 		assertEquals(2, itineraire.getEtat());
-		assertTrue(this.serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode(),
-				ajoutDureeIncident, chronoUnitIncident));
+		assertTrue(serviceIncident.majEtatIncident(t.getId(), CodeEtatIncident.RESOLU.getCode(), ajoutDureeIncident,
+				chronoUnitIncident));
 		assertEquals(1, itineraire.getEtat());
 
 		// TODO : Finir ce cas de test
@@ -204,7 +201,7 @@ public class TestServiceIncident {
 		// 2. Voir l'impact de la terminaison de l'incident avant les 5min de
 		// rallongement sur it2
 
-		// NB : it2 est après itineraire (ptetre init des données à revoir dans le
+		// NB : it2 est après itinéraire (peut-être init des données à revoir dans le
 		// BeforeAll)
 
 		// ==> Voir comment tester la dernière partie de la méthode

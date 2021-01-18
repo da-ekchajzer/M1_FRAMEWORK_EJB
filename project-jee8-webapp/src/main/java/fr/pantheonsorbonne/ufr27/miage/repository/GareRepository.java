@@ -15,15 +15,15 @@ public class GareRepository {
 
 	@Inject
 	GareDAO gareDAO;
-	
+
 	/**
 	 * Récupérer une gare par son nom
+	 * 
 	 * @param nom
 	 * @return
 	 */
 	public List<Gare> getGaresByNom(String nom) {
 		return gareDAO.getGaresByNom(nom);
 	}
-	
-	
+
 }

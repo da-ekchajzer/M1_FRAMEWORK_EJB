@@ -59,13 +59,14 @@ import fr.pantheonsorbonne.ufr27.miage.tests.utils.TestPersistenceProducer;
 public class TestServiceItineraire {
 
 	@WeldSetup
-	private WeldInitiator weld = WeldInitiator.from(ServiceItineraire.class, ServiceItineraireImp.class,
-			ServiceUtilisateur.class, ServiceUtilisateurImp.class, ServiceMajInfoGare.class,
-			ServiceMajInfoGareImp.class, TrainRepository.class, ItineraireRepository.class, ArretRepository.class,
-			TrajetRepository.class, TrajetDAO.class, VoyageurRepository.class, VoyageRepository.class,
-			VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class, IncidentDAO.class, ArretDAO.class,
-			TrainDAO.class, GareDAO.class, MessageGateway.class, JMSProducer.class, TestPersistenceProducer.class,
-			TestDatabase.class).activate(RequestScoped.class).build();
+	private WeldInitiator weld = WeldInitiator
+			.from(ServiceItineraire.class, ServiceItineraireImp.class, ServiceUtilisateur.class,
+					ServiceUtilisateurImp.class, ServiceMajInfoGare.class, ServiceMajInfoGareImp.class,
+					TrainRepository.class, ItineraireRepository.class, ArretRepository.class, VoyageurRepository.class,
+					VoyageRepository.class, TrajetRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class,
+					ItineraireDAO.class, IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class,
+					MessageGateway.class, JMSProducer.class, TestPersistenceProducer.class, TestDatabase.class)
+			.activate(RequestScoped.class).build();
 
 	@Inject
 	EntityManager em;
@@ -105,7 +106,6 @@ public class TestServiceItineraire {
 		itineraire1.setTrain(train1);
 		itineraire1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
 		itineraire1.setArretsDesservis(arretsItineraire1);
-		itineraire1.setArretActuel(arret1);
 
 		em.getTransaction().begin();
 		em.persist(train1);
