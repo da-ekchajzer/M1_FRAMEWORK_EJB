@@ -43,7 +43,8 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 
 		String[] nomGares = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles",
 				"Dijon-Ville", "Lyon - Pardieu", "Narbonne", "Sete", "Perpignan", "Paris - Montparnasse", "Tours",
-				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes", "Montpellier", "Cabries" };
+				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes", "Montpellier", "Cabries", "Le Creusot",
+				"Lyon - Perrache" };
 
 		Map<String, Gare> gares = new HashMap<>();
 		for (String nomGare : nomGares) {
@@ -62,8 +63,10 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		Train train7 = new TrainAvecResa("TGV");
 		Train train8 = new TrainAvecResa("TGV");
 		Train train9 = new TrainAvecResa("TER");
+		Train train10 = new TrainAvecResa("OUIGO");
+		Train train11 = new TrainAvecResa("TER");
 
-		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9 };
+		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9, train10, train11 };
 		for (Train t : trains)
 			em.persist(t);
 
@@ -126,10 +129,22 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 				LocalDateTime.now().plusSeconds(190));
 		Arret arret34 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plusSeconds(210), null);
 
+		Arret arret35 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now().plusSeconds(100));
+		Arret arret36 = new Arret(gares.get("Le Creusot"), LocalDateTime.now().plusSeconds(120),
+				LocalDateTime.now().plusSeconds(130));
+		Arret arret37 = new Arret(gares.get("Lyon - Pardieu"), LocalDateTime.now().plusSeconds(150),
+				LocalDateTime.now().plusSeconds(160));
+		Arret arret38 = new Arret(gares.get("Lyon - Perrache"), LocalDateTime.now().plusSeconds(180), null);
+		
+		Arret arret39 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now().plusSeconds(160));
+		Arret arret40 = new Arret(gares.get("Le Creusot"), LocalDateTime.now().plusSeconds(180),
+				LocalDateTime.now().plusSeconds(190));
+		Arret arret41 = new Arret(gares.get("Lyon - Perrache"), LocalDateTime.now().plusSeconds(210), null);
+
 		Arret[] arrets = { arret1, arret2, arret3, arret4, arret5, arret6, arret7, arret8, arret9, arret10, arret11,
 				arret12, arret13, arret14, arret15, arret16, arret17, arret18, arret19, arret20, arret21, arret22,
 				arret23, arret24, arret25, arret26, arret27, arret28, arret29, arret30, arret31, arret32, arret33,
-				arret34 };
+				arret34, arret35, arret36, arret37, arret38, arret39, arret40, arret41 };
 
 		for (Arret a : arrets)
 			em.persist(a);
@@ -191,9 +206,20 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		itineraire11.addArret(arret32);
 		itineraire11.addArret(arret33);
 		itineraire11.addArret(arret34);
+		
+		Itineraire itineraire12 = new Itineraire(train9);
+		itineraire11.addArret(arret35);
+		itineraire11.addArret(arret36);
+		itineraire11.addArret(arret37);
+		itineraire11.addArret(arret38);
+		
+		Itineraire itineraire13 = new Itineraire(train9);
+		itineraire11.addArret(arret39);
+		itineraire11.addArret(arret40);
+		itineraire11.addArret(arret41);
 
 		Itineraire[] itineraires = { itineraire1, itineraire2, itineraire3, itineraire4, itineraire5, itineraire6,
-				itineraire7, itineraire8, itineraire9, itineraire10, itineraire11 };
+				itineraire7, itineraire8, itineraire9, itineraire10, itineraire11, itineraire12, itineraire13 };
 
 		for (Itineraire i : itineraires) {
 			em.persist(i);
