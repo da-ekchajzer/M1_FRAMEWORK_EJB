@@ -177,31 +177,27 @@ public class ItineraireRepository {
 	}
 
 	/**
-	 * Ajouter un arrêt au 'milieu' de l'itinéraire EN COURS associé au train d'id
-	 * idTrain
+	 * Ajouter un arrêt au sein de l'itinéraire passé en paramètre
 	 * 
-	 * @param idTrain
+	 * @param itineraire
 	 * @param arret
 	 * @return
 	 */
-	public Itineraire ajouterUnArretEnCoursItineraire(int idTrain, Arret arret) {
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
+	public Itineraire ajouterUnArretEnCoursItineraire(Itineraire itineraire, Arret arret) {
 		itineraireDAO.ajouterUnArretEnCoursItineraire(itineraire, arret);
 		return itineraire;
 	}
 
 	/**
-	 * Ajouter un arrêt comme départ ou terminus de l'itinéraire EN COURS associé au
-	 * train d'id idTrain
+	 * Ajouter un arrêt à la fin de l'itinéraire passé en paramètre
 	 * 
-	 * @param idTrain
+	 * @param itineraire
 	 * @param arret
-	 * @param heure   heureDeDepart de l'ancienne gare d'arrivée ou heureArrivee de
-	 *                l'ancienne gare de départ
+	 * @param heureDepartToAdd
 	 */
-	public Itineraire ajouterUnArretEnBoutItineraire(int idTrain, Arret arret, LocalDateTime heure) {
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		itineraireDAO.ajouterUnArretEnBoutItineraire(itineraire, arret, heure);
+	public Itineraire ajouterUnArretEnFinItineraire(Itineraire itineraire, Arret arret,
+			LocalDateTime heureDepartToAdd) {
+		itineraireDAO.ajouterUnArretEnFinItineraire(itineraire, arret, heureDepartToAdd);
 		return itineraire;
 	}
 
@@ -274,9 +270,7 @@ public class ItineraireRepository {
 		List<Itineraire> itineraires = new ArrayList<Itineraire>();
 		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_COURS));
 		itineraires.addAll(itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_INCIDENT));
-		System.out.println("****** " + itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE).size());
 		for (Itineraire i : itineraireDAO.getAllItinerairesByEtat(CodeEtatItinieraire.EN_ATTENTE)) {
-
 			if (i.getArretsDesservis().get(0).getHeureDepartDeGare()
 					.isBefore(LocalDateTime.now().plusSeconds(duration.toSecondOfDay()))) {
 				itineraires.add(i);

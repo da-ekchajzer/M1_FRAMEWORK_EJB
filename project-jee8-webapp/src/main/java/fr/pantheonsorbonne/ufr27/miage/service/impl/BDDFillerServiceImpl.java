@@ -62,9 +62,9 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		Train train6 = new TrainSansResa("TER");
 		Train train7 = new TrainAvecResa("TGV");
 		Train train8 = new TrainAvecResa("TGV");
-		Train train9 = new TrainAvecResa("TER");
+		Train train9 = new TrainAvecResa("OUIGO");
 		Train train10 = new TrainAvecResa("OUIGO");
-		Train train11 = new TrainAvecResa("TER");
+		Train train11 = new TrainAvecResa("TGV");
 
 		Train[] trains = { train1, train2, train3, train4, train5, train6, train7, train8, train9, train10, train11 };
 		for (Train t : trains)
@@ -72,74 +72,61 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 
 		// --------------------------------- Remplissage de la table Arrêt
 
-		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now().plusSeconds(40));
-		Arret arret2 = new Arret(gares.get("Avignon-Centre"), LocalDateTime.now().plusSeconds(60),
-				LocalDateTime.now().plusSeconds(70));
-		Arret arret3 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plusSeconds(90),
-				LocalDateTime.now().plusSeconds(100));
-		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plusSeconds(120), null);
+		LocalDateTime now = LocalDateTime.now();
 
-		Arret arret5 = new Arret(gares.get("Perpignan"), null, LocalDateTime.now().plusSeconds(40));
-		Arret arret6 = new Arret(gares.get("Sete"), LocalDateTime.now().plusSeconds(60),
-				LocalDateTime.now().plusSeconds(70));
-		Arret arret7 = new Arret(gares.get("Narbonne"), LocalDateTime.now().plusSeconds(90),
-				LocalDateTime.now().plusSeconds(100));
-		Arret arret8 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plusSeconds(120), null);
+		Arret arret1 = new Arret(gares.get("Paris - Gare de Lyon"), null, now.plusSeconds(40));
+		Arret arret2 = new Arret(gares.get("Avignon-Centre"), now.plusSeconds(60), now.plusSeconds(70));
+		Arret arret3 = new Arret(gares.get("Aix en Provence"), now.plusSeconds(90), now.plusSeconds(100));
+		Arret arret4 = new Arret(gares.get("Marseille - St Charles"), now.plusSeconds(120), null);
 
-		Arret arret9 = new Arret(gares.get("Marseille - St Charles"), null, LocalDateTime.now().plusSeconds(130));
-		Arret arret10 = new Arret(gares.get("Dijon-Ville"), LocalDateTime.now().plusSeconds(150),
-				LocalDateTime.now().plusSeconds(160));
-		Arret arret11 = new Arret(gares.get("Lyon - Pardieu"), LocalDateTime.now().plusSeconds(180), null);
+		Arret arret5 = new Arret(gares.get("Perpignan"), null, now.plusSeconds(40));
+		Arret arret6 = new Arret(gares.get("Sete"), now.plusSeconds(60), now.plusSeconds(70));
+		Arret arret7 = new Arret(gares.get("Narbonne"), now.plusSeconds(90), now.plusSeconds(100));
+		Arret arret8 = new Arret(gares.get("Marseille - St Charles"), now.plusSeconds(120), null);
 
-		Arret arret12 = new Arret(gares.get("Lyon - Pardieu"), null, LocalDateTime.now().plusSeconds(40));
-		Arret arret13 = new Arret(gares.get("Dijon-Ville"), LocalDateTime.now().plusSeconds(60),
-				LocalDateTime.now().plusSeconds(70));
-		Arret arret14 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plusSeconds(90), null);
+		Arret arret9 = new Arret(gares.get("Marseille - St Charles"), null, now.plusSeconds(130));
+		Arret arret10 = new Arret(gares.get("Dijon-Ville"), now.plusSeconds(150), now.plusSeconds(160));
+		Arret arret11 = new Arret(gares.get("Lyon - Pardieu"), now.plusSeconds(180), null);
 
-		Arret arret15 = new Arret(gares.get("Marseille - St Charles"), null, LocalDateTime.now().plusSeconds(100));
-		Arret arret16 = new Arret(gares.get("Narbonne"), LocalDateTime.now().plusSeconds(120),
-				LocalDateTime.now().plusSeconds(130));
-		Arret arret17 = new Arret(gares.get("Sete"), LocalDateTime.now().plusSeconds(150),
-				LocalDateTime.now().plusSeconds(160));
-		Arret arret18 = new Arret(gares.get("Perpignan"), LocalDateTime.now().plusSeconds(180), null);
+		Arret arret12 = new Arret(gares.get("Lyon - Pardieu"), null, now.plusSeconds(40));
+		Arret arret13 = new Arret(gares.get("Dijon-Ville"), now.plusSeconds(60), now.plusSeconds(70));
+		Arret arret14 = new Arret(gares.get("Marseille - St Charles"), now.plusSeconds(90), null);
 
-		Arret arret19 = new Arret(gares.get("Paris - Montparnasse"), null, LocalDateTime.now().plusSeconds(40));
-		Arret arret20 = new Arret(gares.get("Tours"), LocalDateTime.now().plusSeconds(60),
-				LocalDateTime.now().plusSeconds(70));
-		Arret arret21 = new Arret(gares.get("Bordeaux - Saint-Jean"), LocalDateTime.now().plusSeconds(90), null);
+		Arret arret15 = new Arret(gares.get("Marseille - St Charles"), null, now.plusSeconds(100));
+		Arret arret16 = new Arret(gares.get("Narbonne"), now.plusSeconds(120), now.plusSeconds(130));
+		Arret arret17 = new Arret(gares.get("Sete"), now.plusSeconds(150), now.plusSeconds(160));
+		Arret arret18 = new Arret(gares.get("Perpignan"), now.plusSeconds(180), null);
 
-		Arret arret22 = new Arret(gares.get("Bordeaux - Saint-Jean"), null, LocalDateTime.now().plusSeconds(100));
-		Arret arret23 = new Arret(gares.get("Pessac"), LocalDateTime.now().plusSeconds(120),
-				LocalDateTime.now().plusSeconds(130));
-		Arret arret24 = new Arret(gares.get("Arcachon-Centre"), LocalDateTime.now().plusSeconds(150), null);
+		Arret arret19 = new Arret(gares.get("Paris - Montparnasse"), null, now.plusSeconds(40));
+		Arret arret20 = new Arret(gares.get("Tours"), now.plusSeconds(60), now.plusSeconds(70));
+		Arret arret21 = new Arret(gares.get("Bordeaux - Saint-Jean"), now.plusSeconds(90), null);
 
-		Arret arret25 = new Arret(gares.get("Nantes"), null, LocalDateTime.now().plusSeconds(40));
-		Arret arret26 = new Arret(gares.get("Paris - Montparnasse"), LocalDateTime.now().plusSeconds(60), null);
+		Arret arret22 = new Arret(gares.get("Bordeaux - Saint-Jean"), null, now.plusSeconds(100));
+		Arret arret23 = new Arret(gares.get("Pessac"), now.plusSeconds(120), now.plusSeconds(130));
+		Arret arret24 = new Arret(gares.get("Arcachon-Centre"), now.plusSeconds(150), null);
 
-		Arret arret27 = new Arret(gares.get("Paris - Montparnasse"), null, LocalDateTime.now().plusSeconds(70));
-		Arret arret28 = new Arret(gares.get("Bordeaux - Saint-Jean"), LocalDateTime.now().plusSeconds(90), null);
+		Arret arret25 = new Arret(gares.get("Nantes"), null, now.plusSeconds(40));
+		Arret arret26 = new Arret(gares.get("Paris - Montparnasse"), now.plusSeconds(60), null);
 
-		Arret arret29 = new Arret(gares.get("Bordeaux - Saint-Jean"), null, LocalDateTime.now().plusSeconds(100));
-		Arret arret30 = new Arret(gares.get("Montpellier"), LocalDateTime.now().plusSeconds(120),
-				LocalDateTime.now().plusSeconds(130));
-		Arret arret31 = new Arret(gares.get("Marseille - St Charles"), LocalDateTime.now().plusSeconds(150), null);
+		Arret arret27 = new Arret(gares.get("Paris - Montparnasse"), null, now.plusSeconds(70));
+		Arret arret28 = new Arret(gares.get("Bordeaux - Saint-Jean"), now.plusSeconds(90), null);
 
-		Arret arret32 = new Arret(gares.get("Marseille - St Charles"), null, LocalDateTime.now().plusSeconds(160));
-		Arret arret33 = new Arret(gares.get("Cabries"), LocalDateTime.now().plusSeconds(180),
-				LocalDateTime.now().plusSeconds(190));
-		Arret arret34 = new Arret(gares.get("Aix en Provence"), LocalDateTime.now().plusSeconds(210), null);
+		Arret arret29 = new Arret(gares.get("Bordeaux - Saint-Jean"), null, now.plusSeconds(100));
+		Arret arret30 = new Arret(gares.get("Montpellier"), now.plusSeconds(120), now.plusSeconds(130));
+		Arret arret31 = new Arret(gares.get("Marseille - St Charles"), now.plusSeconds(150), null);
 
-		Arret arret35 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now().plusSeconds(100));
-		Arret arret36 = new Arret(gares.get("Le Creusot"), LocalDateTime.now().plusSeconds(120),
-				LocalDateTime.now().plusSeconds(130));
-		Arret arret37 = new Arret(gares.get("Lyon - Pardieu"), LocalDateTime.now().plusSeconds(150),
-				LocalDateTime.now().plusSeconds(160));
-		Arret arret38 = new Arret(gares.get("Lyon - Perrache"), LocalDateTime.now().plusSeconds(180), null);
-		
-		Arret arret39 = new Arret(gares.get("Paris - Gare de Lyon"), null, LocalDateTime.now().plusSeconds(160));
-		Arret arret40 = new Arret(gares.get("Le Creusot"), LocalDateTime.now().plusSeconds(180),
-				LocalDateTime.now().plusSeconds(190));
-		Arret arret41 = new Arret(gares.get("Lyon - Perrache"), LocalDateTime.now().plusSeconds(210), null);
+		Arret arret32 = new Arret(gares.get("Marseille - St Charles"), null, now.plusSeconds(160));
+		Arret arret33 = new Arret(gares.get("Cabries"), now.plusSeconds(180), now.plusSeconds(190));
+		Arret arret34 = new Arret(gares.get("Aix en Provence"), now.plusSeconds(210), null);
+
+		Arret arret35 = new Arret(gares.get("Paris - Gare de Lyon"), null, now.plusSeconds(100));
+		Arret arret36 = new Arret(gares.get("Le Creusot"), now.plusSeconds(120), now.plusSeconds(130));
+		Arret arret37 = new Arret(gares.get("Lyon - Pardieu"), now.plusSeconds(150), now.plusSeconds(160));
+		Arret arret38 = new Arret(gares.get("Lyon - Perrache"), now.plusSeconds(180), null);
+
+		Arret arret39 = new Arret(gares.get("Paris - Gare de Lyon"), null, now.plusSeconds(160));
+		Arret arret40 = new Arret(gares.get("Le Creusot"), now.plusSeconds(180), now.plusSeconds(190));
+		Arret arret41 = new Arret(gares.get("Lyon - Perrache"), now.plusSeconds(210), null);
 
 		Arret[] arrets = { arret1, arret2, arret3, arret4, arret5, arret6, arret7, arret8, arret9, arret10, arret11,
 				arret12, arret13, arret14, arret15, arret16, arret17, arret18, arret19, arret20, arret21, arret22,
@@ -206,17 +193,17 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 		itineraire11.addArret(arret32);
 		itineraire11.addArret(arret33);
 		itineraire11.addArret(arret34);
-		
-		Itineraire itineraire12 = new Itineraire(train9);
-		itineraire11.addArret(arret35);
-		itineraire11.addArret(arret36);
-		itineraire11.addArret(arret37);
-		itineraire11.addArret(arret38);
-		
-		Itineraire itineraire13 = new Itineraire(train9);
-		itineraire11.addArret(arret39);
-		itineraire11.addArret(arret40);
-		itineraire11.addArret(arret41);
+
+		Itineraire itineraire12 = new Itineraire(train10);
+		itineraire12.addArret(arret35);
+		itineraire12.addArret(arret36);
+		itineraire12.addArret(arret37);
+		itineraire12.addArret(arret38);
+
+		Itineraire itineraire13 = new Itineraire(train11);
+		itineraire13.addArret(arret39);
+		itineraire13.addArret(arret40);
+		itineraire13.addArret(arret41);
 
 		Itineraire[] itineraires = { itineraire1, itineraire2, itineraire3, itineraire4, itineraire5, itineraire6,
 				itineraire7, itineraire8, itineraire9, itineraire10, itineraire11, itineraire12, itineraire13 };

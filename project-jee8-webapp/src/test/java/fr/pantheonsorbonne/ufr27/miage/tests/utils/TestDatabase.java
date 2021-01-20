@@ -89,6 +89,7 @@ public class TestDatabase {
 			em.remove(gare);
 		}
 		em.getTransaction().commit();
+		em.clear();
 		// On remet tous les business id à 1 pour la cohérence des tests
 		Train.businessIdTrainCount = 1;
 		Itineraire.businessIdItineraireCount = 1;

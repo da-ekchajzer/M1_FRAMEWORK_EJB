@@ -45,7 +45,7 @@ public class ServiceIncidentImp implements ServiceIncident {
 		serviceMajDecideur.decideRetard(retard, true);
 		// Si le temps de retard estimé est de plus de 2 heures
 		if (estimationRetard.isAfter(LocalTime.of(2, 0, 0, 0))) {
-			serviceMajDecideur.affecterUnAutreTrainAuxArretsDeItineraire(itineraire);
+			serviceMajDecideur.selectionnerUnItineraireDeSecours(itineraire);
 		}
 		return true;
 	}
@@ -70,7 +70,7 @@ public class ServiceIncidentImp implements ServiceIncident {
 				// Si le temps de retard estimé est de plus de 2 heures
 				if (incident.getHeureTheoriqueDeFin()
 						.isAfter(now.plusSeconds(LocalTime.of(2, 0, 0, 0).toSecondOfDay()))) {
-					serviceMajDecideur.affecterUnAutreTrainAuxArretsDeItineraire(itineraire);
+					serviceMajDecideur.selectionnerUnItineraireDeSecours(itineraire);
 				}
 			}
 			res = true;

@@ -208,17 +208,13 @@ public class TestItineraireDAO {
 		assertEquals(3, i1.getArretsDesservis().size());
 		// Ajouter en tant que terminus (fonctionne pas car arret1ToAdd n'est pas un
 		// terminus)
-		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret1ToAdd,
+		itineraireDAO.ajouterUnArretEnFinItineraire(i1, arret1ToAdd,
 				arret1ToAdd.getHeureArriveeEnGare().minusSeconds(30));
 		assertEquals(3, i1.getArretsDesservis().size());
 		// Ajouter en tant que terminus
-		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret2ToAdd,
+		itineraireDAO.ajouterUnArretEnFinItineraire(i1, arret2ToAdd,
 				arret2ToAdd.getHeureArriveeEnGare().minusSeconds(30));
 		assertEquals(4, i1.getArretsDesservis().size());
-		// Ajouter en tant que departus
-		itineraireDAO.ajouterUnArretEnBoutItineraire(i1, arret3ToAdd,
-				arret3ToAdd.getHeureDepartDeGare().minusSeconds(30));
-		assertEquals(5, i1.getArretsDesservis().size());
 	}
 
 	@Test
