@@ -16,7 +16,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainSansResa;
@@ -90,7 +89,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 			// L'itinéraire lié au retard sera contenu dans la liste des itinéraires partant
 			// dans - de 2h
 			if (!i.equals(itineraire)) {
-				Arret1Loop: for (Arret a1 : itineraireRepository.getArretActuelAndAllNextArrets(i)) {
+				ArretLoop: for (Arret a1 : itineraireRepository.getArretActuelAndAllNextArrets(i)) {
 					for (Arret a2 : arretRestants) {
 						if (a1.getGare().equals(a2.getGare())) {
 							count = 0;
@@ -103,7 +102,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 							// prochain itinéraire pour qu'ils puissent avoir leur train
 							if (count > n) {
 								retards.add(new Retard(i, tempsRetard));
-								break Arret1Loop;
+								break ArretLoop;
 							}
 						}
 					}
@@ -133,15 +132,18 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		retards.addAll(mapRetards.values());
 	}
 
-	// TODO : à finir, cette méthode est bientôt achevée...
 	@Override
-	public void affecterUnAutreTrainAuxArretsDeItineraire(Itineraire itineraire) {
+	public Itineraire selectionnerUnItineraireDeSecours(Itineraire itineraire) {
 		List<Itineraire> allItineraires = itineraireRepository.getAllItineraires();
 		allItineraires.remove(itineraire);
 		allItineraires.removeAll(itineraireRepository.getAllItinerairesByEtat(CodeEtatItinieraire.FIN));
+
 		LocalDateTime inTwoHours = LocalDateTime.now().plusSeconds(LocalTime.of(2, 0, 0, 0).toSecondOfDay());
+
+		Itineraire chosedItineraire = null;
+
 		// Sélection des potentiels itinéraires de secours
-		List<Itineraire> itinerairesCandidates = new ArrayList<Itineraire>();
+		List<Itineraire> itinerairesOnTheSameLine = new ArrayList<Itineraire>();
 		boolean isItInLessThanTwoHours = false;
 		for (Itineraire it : allItineraires) {
 			isItInLessThanTwoHours = it.getArretsDesservis().get(0).getHeureDepartDeGare().isBefore(inTwoHours);
@@ -150,63 +152,125 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 			if (it.isGareDesservie(itineraire.getArretActuel().getGare()) && isItInLessThanTwoHours) {
 				for (Arret a : itineraireRepository.getArretActuelAndAllNextArrets(it)) {
 					if (a.getGare().equals(itineraire.getArretActuel().getGare())) {
-						itinerairesCandidates.add(it);
+						itinerairesOnTheSameLine.add(it);
+						break;
 					}
 				}
 			}
 		}
-		// Premier tri parmi les potentiels itinéraires de secours s'il y en a
-		if (!itinerairesCandidates.isEmpty()) {
-			List<Arret> arretsToReplace = itineraireRepository.getArretActuelAndAllNextArrets(itineraire);
-			arretsToReplace.remove(itineraire.getArretActuel());
-			List<Gare> garesToServe = new ArrayList<Gare>();
-			for (Arret a : arretsToReplace) {
-				garesToServe.add(a.getGare());
+		allItineraires.clear();
+		allItineraires.addAll(itinerairesOnTheSameLine);
+		List<Arret> oldArretsItineraire = itineraire.getArretsDesservis();
+		List<Arret> nextArretsItineraire = itineraireRepository.getArretActuelAndAllNextArrets(itineraire);
+		oldArretsItineraire.removeAll(nextArretsItineraire);
+
+		// Vérification que les itinéraires potentiels sélectionnés sont bien dans le
+		// même sens que l'itinéraire accidenté
+		List<Arret> oldArretsIt = new ArrayList<Arret>();
+		List<Arret> nextArretsIt = new ArrayList<Arret>();
+		for (Itineraire it : allItineraires) {
+			oldArretsIt = it.getArretsDesservis();
+			nextArretsIt = itineraireRepository.getArretActuelAndAllNextArrets(it);
+			oldArretsIt.removeAll(nextArretsIt);
+			ArretLoop: for (Arret a1 : oldArretsItineraire) {
+				for (Arret a2 : nextArretsIt) {
+					if (a1.getGare().equals(a2.getGare())) {
+						itinerairesOnTheSameLine.remove(it);
+						break ArretLoop;
+					}
+				}
 			}
+			if (itinerairesOnTheSameLine.contains(it)) {
+				ArretLoop: for (Arret a1 : nextArretsItineraire) {
+					for (Arret a2 : oldArretsIt) {
+						if (a1.getGare().equals(a2.getGare())) {
+							itinerairesOnTheSameLine.remove(it);
+							break ArretLoop;
+						}
+					}
+				}
+			}
+			if (itinerairesOnTheSameLine.contains(it)) {
+				for (int i = 0; i < Math.min(nextArretsItineraire.size(), nextArretsIt.size()); i++) {
+					if (!nextArretsItineraire.get(i).getGare().equals(nextArretsIt.get(i).getGare())) {
+						itinerairesOnTheSameLine.remove(it);
+						break;
+					}
+				}
+			}
+			oldArretsIt.clear();
+			nextArretsIt.clear();
+		}
+
+		// Premier tri parmi les potentiels itinéraires de secours s'il y en a
+		if (!itinerairesOnTheSameLine.isEmpty()) {
+			// De préférence on réduit les itinéraires à seulement les itinéraires EN_COURS
 			List<Itineraire> itBestCandidates = new ArrayList<Itineraire>();
-			for (Itineraire it : itinerairesCandidates) {
+			for (Itineraire it : itinerairesOnTheSameLine) {
 				if (it.getEtat() == CodeEtatItinieraire.EN_COURS.getCode()) {
 					itBestCandidates.add(it);
 				}
 			}
+			// S'il n'y a pas d'itinéraires EN_COURS dans les itinéraires, on réduit les
+			// itinéraires à seulement les itinéraires EN_ATTENTE
 			if (itBestCandidates.isEmpty()) {
-				for (Itineraire it : itinerairesCandidates) {
-					if (it.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
-						itBestCandidates.add(it);
-					}
-				}
-			}
-			if (itBestCandidates.isEmpty()) {
-				for (Itineraire it : itinerairesCandidates) {
+				for (Itineraire it : itinerairesOnTheSameLine) {
 					if (it.getEtat() == CodeEtatItinieraire.EN_ATTENTE.getCode()) {
 						itBestCandidates.add(it);
 					}
 				}
 			}
-			itinerairesCandidates.clear();
-			itinerairesCandidates.addAll(itBestCandidates);
+			// S'il n'y a pas d'itinéraires EN_ATTENTE non plus dans les itinéraires, on
+			// réduit les itinéraires à seulement les itinéraires EN_INCIDENT
+			if (itBestCandidates.isEmpty()) {
+				for (Itineraire it : itinerairesOnTheSameLine) {
+					if (it.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
+						itBestCandidates.add(it);
+					}
+				}
+			}
+
+			// Second tri parmi les potentiels itinéraires de secours
+			itinerairesOnTheSameLine.clear();
+			itinerairesOnTheSameLine.addAll(itBestCandidates);
 			itBestCandidates.clear();
-			for (Itineraire it : itinerairesCandidates) {
+			// De préférence on réduit les itinéraires à seulement ceux qui sont au même
+			// arrêt que l'itinéraire accidenté
+			for (Itineraire it : itinerairesOnTheSameLine) {
 				if (it.getArretActuel().getGare().equals(itineraire.getArretActuel().getGare())) {
 					itBestCandidates.add(it);
 				}
 			}
+			// S'il n'y a pas d'itinéraire au même arrêt que l'itinéraire accidenté alors on
+			// continue avec tous les itinéraires issus du premier tri
 			if (itBestCandidates.isEmpty()) {
-				itBestCandidates.addAll(itinerairesCandidates);
+				itBestCandidates.addAll(itinerairesOnTheSameLine);
 			}
-			// Second tri parmi les potentiels itinéraires de secours
-			Itineraire chosedItineraire = itBestCandidates.get(0);
+			// Sélection de l'itinéraie de secours qui va desservir les nouveaux arrêts
+			chosedItineraire = itBestCandidates.get(0);
+			itBestCandidates.remove(chosedItineraire);
+			Arret arretToCompare = null;
 			for (Itineraire it : itBestCandidates) {
-				if (chosedItineraire.getArretActuel().isBefore(it.getArretActuel())) {
-					chosedItineraire = it;
+				// arretToCompare va stocker l'arrêt actuel de l'itinéraire accidenté
+				for (Arret a : itineraireRepository.getArretActuelAndAllNextArrets(chosedItineraire)) {
+					if (a.getGare().equals(itineraire.getArretActuel().getGare())) {
+						arretToCompare = a;
+						break;
+					}
+				}
+				for (Arret a : itineraireRepository.getArretActuelAndAllNextArrets(it)) {
+					if (a.getGare().equals(itineraire.getArretActuel().getGare())) {
+						// Si l'itinéraire it arrive à l'arrêt actuel de l'itinéraire accidenté avant le
+						// chosedItineraire alors l'itinéraie de secours chosedItineraire devient it
+						if (a.isBefore(arretToCompare)) {
+							chosedItineraire = it;
+							break;
+						}
+					}
 				}
 			}
-			// TODO
-			// Créer des arrêts cohérents à partir de la liste garesToServe
-			// Penser à vérifier les codes des méthodes ajouterUnArretEnCoursItineraire et
-			// ajouterUnArretEnBoutItineraire, notamment dans la classe de DAO
-			// Ajouter les nouveaux arrêts à l'itineraire de secours chosedItineraire
 		}
+		return chosedItineraire;
 	}
 
 }

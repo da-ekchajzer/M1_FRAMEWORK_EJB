@@ -1,29 +1,10 @@
 package fr.pantheonsorbonne.ufr27.miage.service;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 
 public interface ServiceMajExecuteur {
-
-	/**
-	 * Ajouter un arrêt au sein d'un itinéraire
-	 * 
-	 * @param idTrain
-	 * @param Arret
-	 */
-	public void ajouterUnArretEnCoursItineraire(int idTrain, Arret Arret);
-
-	/**
-	 * Ajouter un arrêt à une extrémité d'un itinéraire (départ/terminus)
-	 * 
-	 * @param idTrain
-	 * @param Arret
-	 * @param heure
-	 */
-	public void ajouterUnArretEnBoutItineraire(int idTrain, Arret Arret, LocalDateTime heure);
 
 	/**
 	 * Retarder l'itinéraire de tempsRetard heure(s)/minute(s)/seconde(s)
@@ -40,4 +21,13 @@ public interface ServiceMajExecuteur {
 	 * @param tempsAvance
 	 */
 	public void avancerItineraire(Itineraire itineraire, LocalTime tempsAvance);
+
+	/**
+	 * Ajoute des arrêts au nouvelIt passé en paramètre basé sur les arrêts qui
+	 * n'ont pas pu être desservis par l'ancienIt passé en paramètre
+	 * 
+	 * @param ancienIt
+	 * @param nouvelIt
+	 */
+	public void transfererLesArretsSurItineraireDeSecours(Itineraire ancienIt, Itineraire nouvelIt);
 }
