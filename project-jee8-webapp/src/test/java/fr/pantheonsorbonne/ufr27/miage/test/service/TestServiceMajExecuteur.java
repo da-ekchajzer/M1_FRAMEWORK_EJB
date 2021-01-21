@@ -16,6 +16,7 @@ import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -38,6 +39,7 @@ import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.repository.ArretRepository;
+import fr.pantheonsorbonne.ufr27.miage.repository.GareRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
@@ -78,13 +80,15 @@ public class TestServiceMajExecuteur {
 	@Inject
 	ItineraireRepository itineraireRepository;
 	@Inject
+	ArretRepository arretRepository;
+	@Inject
 	TestDatabase testDatabase;
 
 	@BeforeAll
 	void initVarInDB() {
 		LocalDateTime now = LocalDateTime.now();
 		Train train1 = new TrainAvecResa("Marque");
-
+		
 		Gare g1 = new Gare("Gare1");
 		Gare g2 = new Gare("Gare2");
 		Gare g3 = new Gare("Gare3");
@@ -122,6 +126,7 @@ public class TestServiceMajExecuteur {
 	}
 
 	@Test
+	@Order(1)
 	void testRetarderItineraire() {
 		Train t = trainRepository.getTrainByBusinessId(1);
 		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
@@ -133,6 +138,40 @@ public class TestServiceMajExecuteur {
 				it.getArretsDesservis().get(it.getArretsDesservis().size() - 1).getHeureArriveeEnGare());
 	}
 
+	@Test
+	@Order(2)
+	void testAvancerItineraire() {
+		Train t = trainRepository.getTrainByBusinessId(1);
+		Itineraire it = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
+		LocalDateTime heureArriveeDernierArret = it.getArretsDesservis().get(it.getArretsDesservis().size() - 1)
+				.getHeureArriveeEnGare();
+		LocalTime tmpsRetard = LocalTime.of(0, 0, 45);
+		serviceMajExecuteur.retarderItineraire(it, tmpsRetard);
+		assertEquals(heureArriveeDernierArret.plusSeconds(45),
+				it.getArretsDesservis().get(it.getArretsDesservis().size() - 1).getHeureArriveeEnGare());
+	}
+	
+	@Test
+	@Order(3)
+	void testTransfererArretsSurItineraireSecours() {
+		Itineraire itAccidente = itineraireRepository.getItineraireByTrainEtEtat(trainRepository.getTrainByBusinessId(1).getId(), CodeEtatItinieraire.EN_COURS);
+
+		// On crée un itinéraire direct (seulement 2 arrêts) pour voir s'il en aura 4 après l'appel de la méthode
+		Itineraire itSecours = new Itineraire();
+		Arret departus = this.arretRepository.getArretParItineraireEtNomGare(itAccidente, "Gare1");
+		Arret terminus = this.arretRepository.getArretParItineraireEtNomGare(itAccidente, "Gare4");
+		itSecours.addArret(departus);
+		itSecours.addArret(terminus);
+		
+		em.getTransaction().begin();
+		em.persist(itSecours);
+		em.getTransaction().commit();
+		
+		int nbArrets = itSecours.getArretsDesservis().size();
+		this.serviceMajExecuteur.transfererArretsSurItineraireSecours(itAccidente, itSecours);
+		assertEquals(nbArrets+2, itSecours.getArretsDesservis().size());
+	}
+	
 	@AfterAll
 	void nettoyageDonnees() {
 		testDatabase.clear();
