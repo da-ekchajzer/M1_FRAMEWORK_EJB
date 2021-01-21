@@ -45,6 +45,7 @@ public class Train implements Runnable {
 		this.idTrain = idTrain;
 		this.etatTrain = 0;
 		this.curentIdArret = 0;
+		this.arrets = new LinkedList<ArretTrain>();
 		this.retardTotal = LocalTime.MIN;
 		this.retardActuel = LocalTime.MIN;
 		this.initialDepartureTime = null;
@@ -79,7 +80,7 @@ public class Train implements Runnable {
 				GatewayInfocentre.sendCurrenArret(arrets.get(curentIdArret).getXMLArret(), idTrain);
 				System.out.println("[ " + idTrain + " ] >> arret actuel : " + arrets.get(curentIdArret).getNomGare());
 				initialDepartureTime = arrets.get(0).getHeureDepart();
-				initialArrivalTime = arrets.get(arrets.size() - 1).getheureArrivee();
+				initialArrivalTime = arrets.get(arrets.size() - 1).getHeureArrivee();
 				System.out.println(
 						"[ " + idTrain + " ] >> arrivee prevue au terminus : " + initialArrivalTime.toLocalTime());
 				printRetardTotal();
@@ -88,7 +89,7 @@ public class Train implements Runnable {
 			break;
 
 		case 1:
-			if (now.isAfter(arrets.get(curentIdArret + 1).getheureArrivee())) {
+			if (now.isAfter(arrets.get(curentIdArret + 1).getHeureArrivee())) {
 				GatewayInfocentre.sendCurrenArret(arrets.get(++curentIdArret).getXMLArret(), idTrain);
 				System.out.println("[ " + idTrain + " ] >> arret actuel : " + arrets.get(curentIdArret).getNomGare());
 				printRetardTotal();
@@ -99,7 +100,7 @@ public class Train implements Runnable {
 				etatTrain = 0;
 				System.out.println("[ " + idTrain + " ] -- Fin de l'itineraire");
 				System.out.println("[ " + idTrain + " ] >> arrivee reelle au terminus : "
-						+ arrets.get(curentIdArret).getheureArrivee().toLocalTime() + " ( " + now.toLocalTime() + " )");
+						+ arrets.get(curentIdArret).getHeureArrivee().toLocalTime() + " ( " + now.toLocalTime() + " )");
 			} else {
 				genererRandomIncident();
 			}
@@ -161,7 +162,7 @@ public class Train implements Runnable {
 		if (itineraireJAXB == null) {
 			return false;
 		}
-		arrets = new LinkedList<ArretTrain>();
+		arrets.clear();
 		List<ArretJAXB> arretsJAXB = itineraireJAXB.getArrets();
 
 		for (int i = 0; i < arretsJAXB.size(); i++) {
@@ -170,7 +171,7 @@ public class Train implements Runnable {
 					xmlGregorianCalendar2LocalDateTime(arreti.getHeureDepart())));
 		}
 		if (initialArrivalTime != null && initialArrivalTime.isAfter(arrets.get(0).getHeureDepart())) {
-			retardActuel = arrets.get(arrets.size() - 1).getheureArrivee().toLocalTime()
+			retardActuel = arrets.get(arrets.size() - 1).getHeureArrivee().toLocalTime()
 					.minusSeconds(initialArrivalTime.toLocalTime().toSecondOfDay());
 		}
 		return true;

@@ -14,14 +14,6 @@ public class ArretRepository {
 	ArretDAO arretDAO;
 
 	/**
-	 * Supprimer un arrêt
-	 * @param arret
-	 */
-	public void supprimerArret(Arret arret) {
-		arretDAO.supprimerArret(arret);
-	}
-
-	/**
 	 * Avancer l'heure d'arrivée en gare de tempsAvance heure(s)/minute(s)/seconde(s)
 	 * pour l'arrêt passé en paramètre
 	 * @param a

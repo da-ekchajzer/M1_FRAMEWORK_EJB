@@ -150,7 +150,7 @@ public class MessageGateway {
 		GaresConcerneesJAXB gareConcerneeJAXB = new GaresConcerneesJAXB();
 
 		for (Arret a : itineraire.getArretsDesservis()) {
-			if (a.isAfter(itineraire.getArretActuel()) || a.equals(itineraire.getArretActuel())) {
+			if (a.equals(itineraire.getArretActuel()) || itineraire.getArretActuel().isBefore(a)) {
 				gareConcerneeJAXB.getGares().add(a.getGare().getNom());
 			}
 		}

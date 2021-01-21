@@ -334,28 +334,28 @@ public class BDDFillerServiceImpl implements BDDFillerService {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
 			if (i < 5) {
 				voyage1.addVoyageur(v);
-				v.setVoyageActuel(voyage1);
+				v.setVoyage(voyage1);
 			} else if (i >= 5 && i < 10) {
 				voyage2.addVoyageur(v);
-				v.setVoyageActuel(voyage2);
+				v.setVoyage(voyage2);
 			} else if (i >= 10 && i < 15) {
 				voyage3.addVoyageur(v);
-				v.setVoyageActuel(voyage3);
+				v.setVoyage(voyage3);
 			} else if (i >= 15 && i < 20) {
 				voyage4.addVoyageur(v);
-				v.setVoyageActuel(voyage4);
+				v.setVoyage(voyage4);
 			} else if (i >= 20 && i < 25) {
 				voyage5.addVoyageur(v);
-				v.setVoyageActuel(voyage5);
+				v.setVoyage(voyage5);
 			} else if (i >= 25 && i < 30) {
 				voyage6.addVoyageur(v);
-				v.setVoyageActuel(voyage6);
+				v.setVoyage(voyage6);
 			} else if (i >= 30 && i < 31) {
 				voyage7.addVoyageur(v);
-				v.setVoyageActuel(voyage7);
+				v.setVoyage(voyage7);
 			} else {
 				voyage8.addVoyageur(v);
-				v.setVoyageActuel(voyage8);
+				v.setVoyage(voyage8);
 			}
 			em.persist(v);
 		}

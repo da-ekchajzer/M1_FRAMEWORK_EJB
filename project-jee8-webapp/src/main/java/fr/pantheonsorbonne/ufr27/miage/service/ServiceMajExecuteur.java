@@ -29,5 +29,5 @@ public interface ServiceMajExecuteur {
 	 * @param ancienIt
 	 * @param nouvelIt
 	 */
-	public void transfererLesArretsSurItineraireDeSecours(Itineraire ancienIt, Itineraire nouvelIt);
+	public void transfererArretsSurItineraireSecours(Itineraire ancienIt, Itineraire nouvelIt);
 }

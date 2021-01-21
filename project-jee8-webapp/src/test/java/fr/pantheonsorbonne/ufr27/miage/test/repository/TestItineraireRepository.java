@@ -215,16 +215,6 @@ public class TestItineraireRepository {
 
 	@Test
 	@Order(6)
-	void testSupprimerArretDansUnItineraire() {
-		Train t = trainRepository.getTrainByBusinessId(1);
-		Itineraire i2 = itineraireRepository.getItineraireByTrainEtEtat(t.getId(), CodeEtatItinieraire.EN_COURS);
-		int nbArrets = i2.getArretsDesservis().size();
-		i2 = itineraireRepository.supprimerArretDansUnItineraire(t.getId(), i2.getArretsDesservis().get(1));
-		assertEquals(nbArrets - 1, i2.getArretsDesservis().size());
-	}
-
-	@Test
-	@Order(7)
 	void testGetAllItineraires() {
 		// IT5 a été effacé dans le test2 --> plus que 4 itinéraires
 		assertEquals(itineraireRepository.getAllItineraires().size(), 4);

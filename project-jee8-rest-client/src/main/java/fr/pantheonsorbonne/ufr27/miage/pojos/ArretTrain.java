@@ -35,15 +35,15 @@ public class ArretTrain {
 	}
 
 	public XMLGregorianCalendar localDateTimeToXmlGregorianCalendar(LocalDateTime ldt) {
-		if (ldt == null)
-			return null;
-		ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
-		GregorianCalendar gc = GregorianCalendar.from(zdt);
 		XMLGregorianCalendar xgc = null;
-		try {
-			xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
-		} catch (DatatypeConfigurationException e) {
-			e.printStackTrace();
+		if (ldt != null) {
+			ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
+			GregorianCalendar gc = GregorianCalendar.from(zdt);
+			try {
+				xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
+			} catch (DatatypeConfigurationException e) {
+				e.printStackTrace();
+			}
 		}
 		return xgc;
 	}
@@ -64,7 +64,7 @@ public class ArretTrain {
 		this.heureDepart = heureDepart;
 	}
 
-	public LocalDateTime getheureArrivee() {
+	public LocalDateTime getHeureArrivee() {
 		return heureArrivee;
 	}
 

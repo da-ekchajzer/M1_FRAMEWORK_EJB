@@ -16,6 +16,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainSansResa;
@@ -60,7 +61,6 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 				} else {
 					serviceMajExecuteur.avancerItineraire(retardEnTraitement.getItineraire(), tempsRetard);
 				}
-				continue;
 			} else {
 				if (isRetard) {
 					serviceMajExecuteur.retarderItineraire(retardEnTraitement.getItineraire(), tempsRetard);
@@ -77,8 +77,8 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 	public Set<Retard> getRetardsItineraireEnCorespondance(Retard retard) {
 		Itineraire itineraire = retard.getItineraire();
 		LocalTime tempsRetard = retard.getTempsDeRetard();
-		int count = 0;
 		Set<Retard> retards = new HashSet<Retard>();
+		int count = 0;
 
 		LocalTime conditionRetard = LocalTime.of(2, 0, 0);
 
@@ -86,8 +86,8 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 
 		for (Itineraire i : itineraireRepository.getAllItinerairesAtLeastIn(conditionRetard)) {
 			int n = 3;
-			// L'itinéraire lié au retard sera contenu dans la liste des itinéraires partant
-			// dans - de 2h
+			// L'itinéraire à l'origine du retard sera contenu dans la liste des itinéraires
+			// partant dans - de 2h
 			if (!i.equals(itineraire)) {
 				ArretLoop: for (Arret a1 : itineraireRepository.getArretActuelAndAllNextArrets(i)) {
 					for (Arret a2 : arretRestants) {
@@ -148,8 +148,11 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		for (Itineraire it : allItineraires) {
 			isItInLessThanTwoHours = it.getArretsDesservis().get(0).getHeureDepartDeGare().isBefore(inTwoHours);
 			// Si l'itinéraire i passe par la même gare que celle de l'arrêt actuel de
-			// l'itinéraire en paramètre et qu'il passe dans moins de 2 heures
-			if (it.isGareDesservie(itineraire.getArretActuel().getGare()) && isItInLessThanTwoHours) {
+			// l'itinéraire en paramètre et qu'il passe dans moins de 2 heures et l'arret
+			// actuel de l'itinéraire accidenté ne doit pas être à la gare d'arrivée de l'it
+			if (it.isGareDesservie(itineraire.getArretActuel().getGare()) && !it.getArretsDesservis()
+					.get(it.getArretsDesservis().size() - 1).getGare().equals(itineraire.getArretActuel().getGare())
+					&& isItInLessThanTwoHours) {
 				for (Arret a : itineraireRepository.getArretActuelAndAllNextArrets(it)) {
 					if (a.getGare().equals(itineraire.getArretActuel().getGare())) {
 						itinerairesOnTheSameLine.add(it);
@@ -160,7 +163,8 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		}
 		allItineraires.clear();
 		allItineraires.addAll(itinerairesOnTheSameLine);
-		List<Arret> oldArretsItineraire = itineraire.getArretsDesservis();
+		List<Arret> oldArretsItineraire = new ArrayList<Arret>();
+		oldArretsItineraire.addAll(itineraire.getArretsDesservis());
 		List<Arret> nextArretsItineraire = itineraireRepository.getArretActuelAndAllNextArrets(itineraire);
 		oldArretsItineraire.removeAll(nextArretsItineraire);
 
@@ -169,7 +173,7 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 		List<Arret> oldArretsIt = new ArrayList<Arret>();
 		List<Arret> nextArretsIt = new ArrayList<Arret>();
 		for (Itineraire it : allItineraires) {
-			oldArretsIt = it.getArretsDesservis();
+			oldArretsIt.addAll(it.getArretsDesservis());
 			nextArretsIt = itineraireRepository.getArretActuelAndAllNextArrets(it);
 			oldArretsIt.removeAll(nextArretsIt);
 			ArretLoop: for (Arret a1 : oldArretsItineraire) {
@@ -190,13 +194,25 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 					}
 				}
 			}
-			if (itinerairesOnTheSameLine.contains(it)) {
-				for (int i = 0; i < Math.min(nextArretsItineraire.size(), nextArretsIt.size()); i++) {
-					if (!nextArretsItineraire.get(i).getGare().equals(nextArretsIt.get(i).getGare())) {
-						itinerairesOnTheSameLine.remove(it);
-						break;
-					}
+			// Paris - Dijon - Marseille -> ne fonctionne pas
+			// Paris - Marseille - Montpellier -> fonctionne
+			// Paris - Reims - Marseille -> accidenté
+			oldArretsIt.clear();
+			oldArretsIt.addAll(nextArretsIt);
+			nextArretsIt.clear();
+			List<Gare> nextGaresItineraire = new LinkedList<Gare>();
+			for (Arret a : nextArretsItineraire) {
+				nextGaresItineraire.add(a.getGare());
+			}
+			for (Arret a : oldArretsIt) {
+				if (nextGaresItineraire.contains(a.getGare())) {
+					nextArretsIt.add(a);
+				} else {
+					break;
 				}
+			}
+			if (itinerairesOnTheSameLine.contains(it) && nextArretsIt.size() < 2) {
+				itinerairesOnTheSameLine.remove(it);
 			}
 			oldArretsIt.clear();
 			nextArretsIt.clear();
@@ -219,13 +235,13 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 						itBestCandidates.add(it);
 					}
 				}
-			}
-			// S'il n'y a pas d'itinéraires EN_ATTENTE non plus dans les itinéraires, on
-			// réduit les itinéraires à seulement les itinéraires EN_INCIDENT
-			if (itBestCandidates.isEmpty()) {
-				for (Itineraire it : itinerairesOnTheSameLine) {
-					if (it.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
-						itBestCandidates.add(it);
+				// S'il n'y a pas d'itinéraires EN_ATTENTE non plus dans les itinéraires, on
+				// réduit les itinéraires à seulement les itinéraires EN_INCIDENT
+				if (itBestCandidates.isEmpty()) {
+					for (Itineraire it : itinerairesOnTheSameLine) {
+						if (it.getEtat() == CodeEtatItinieraire.EN_INCIDENT.getCode()) {
+							itBestCandidates.add(it);
+						}
 					}
 				}
 			}
@@ -234,10 +250,11 @@ public class ServiceMajDecideurImp implements ServiceMajDecideur {
 			itinerairesOnTheSameLine.clear();
 			itinerairesOnTheSameLine.addAll(itBestCandidates);
 			itBestCandidates.clear();
-			// De préférence on réduit les itinéraires à seulement ceux qui sont au même
-			// arrêt que l'itinéraire accidenté
+			// De préférence on réduit les itinéraires à seulement ceux qui seront à la même
+			// gare que l'itinéraire accidenté à leur prochain arrêt
 			for (Itineraire it : itinerairesOnTheSameLine) {
-				if (it.getArretActuel().getGare().equals(itineraire.getArretActuel().getGare())) {
+				if (it.getNextArret() != null
+						&& it.getNextArret().getGare().equals(itineraire.getArretActuel().getGare())) {
 					itBestCandidates.add(it);
 				}
 			}

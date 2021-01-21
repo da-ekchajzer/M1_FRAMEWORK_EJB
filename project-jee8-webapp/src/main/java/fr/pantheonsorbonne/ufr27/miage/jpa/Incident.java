@@ -107,22 +107,22 @@ public class Incident {
 			this.code = code;
 		}
 
-		public static LocalTime getTempEstimation(int code) {
+		public LocalTime getTempEstimation() {
 			switch (code) {
 			case 1:
-				return LocalTime.of(0, 5, 0, 0);
+				return LocalTime.of(0, 15, 0, 0);
 
 			case 2:
 				return LocalTime.of(3, 0, 0, 0);
 
 			case 3:
-				return LocalTime.of(1, 0, 0, 0);
+				return LocalTime.of(1, 15, 0, 0);
 
 			case 4:
 				return LocalTime.of(1, 30, 0, 0);
 
 			case 5:
-				return LocalTime.of(2, 0, 0, 0);
+				return LocalTime.of(2, 15, 0, 0);
 
 			case 6:
 				return LocalTime.of(0, 30, 0, 0);
@@ -135,6 +135,17 @@ public class Incident {
 
 		public int getCode() {
 			return code;
+		}
+
+		public static CodeTypeIncident valueOf(int codeTypeIncident) {
+			CodeTypeIncident result = null;
+			for (CodeTypeIncident c : CodeTypeIncident.values()) {
+				if (c.getCode() == codeTypeIncident) {
+					result = c;
+					break;
+				}
+			}
+			return result;
 		}
 	}
 }

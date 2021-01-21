@@ -18,18 +18,9 @@ public class ArretDAO {
 	EntityManager em;
 
 	/**
-	 * Supprimer un arrêt en BD
-	 * @param arret
-	 */
-	public void supprimerArret(Arret arret) {
-		em.getTransaction().begin();
-		em.remove(arret);
-		em.getTransaction().commit();
-	}
-
-	/**
-	 * Avancer l'heure d'arrivée en gare de tempsAvance seconde(s)
-	 * pour l'arrêt passé en paramètre
+	 * Avancer l'heure d'arrivée en gare de tempsAvance seconde(s) pour l'arrêt
+	 * passé en paramètre
+	 * 
 	 * @param a
 	 * @param tempsAvance
 	 */
@@ -41,8 +32,9 @@ public class ArretDAO {
 	}
 
 	/**
-	 * Avancer l'heure de départ de gare de tempsAvance seconde(s)
-	 * pour l'arrêt passé en paramètre
+	 * Avancer l'heure de départ de gare de tempsAvance seconde(s) pour l'arrêt
+	 * passé en paramètre
+	 * 
 	 * @param a
 	 * @param tempsAvance
 	 */
@@ -54,8 +46,9 @@ public class ArretDAO {
 	}
 
 	/**
-	 * Reculer l'heure d'arrivée en gare de tempsAvance seconde(s)
-	 * pour l'arrêt passé en paramètre
+	 * Reculer l'heure d'arrivée en gare de tempsAvance seconde(s) pour l'arrêt
+	 * passé en paramètre
+	 * 
 	 * @param a
 	 * @param tempsAvance
 	 */
@@ -67,8 +60,9 @@ public class ArretDAO {
 	}
 
 	/**
-	 * Reculer l'heure de départ de gare de tempsAvance seconde(s)
-	 * pour l'arrêt passé en paramètre
+	 * Reculer l'heure de départ de gare de tempsAvance seconde(s) pour l'arrêt
+	 * passé en paramètre
+	 * 
 	 * @param a
 	 * @param tempsAvance
 	 */

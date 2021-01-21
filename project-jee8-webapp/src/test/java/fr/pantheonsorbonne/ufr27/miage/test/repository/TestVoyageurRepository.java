@@ -177,11 +177,11 @@ public class TestVoyageurRepository {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
 			if (i < 5) {
 				if (i == 0) {
-					v.setVoyageActuel(voyage1);
+					v.setVoyage(voyage1);
 				}
 				voyage1.addVoyageur(v);
 			} else if (i == 15) {
-				v.setVoyageActuel(voyage2);
+				v.setVoyage(voyage2);
 				voyage2.addVoyageur(v);
 			}
 			em.persist(v);
@@ -193,7 +193,7 @@ public class TestVoyageurRepository {
 	void testIsVoyageurCorrespondance() {
 		Voyageur voyageurEnCorrespondance = voyageurRepository.getAllVoyageurs().get(0);
 		Voyageur voyageurSansVoyage = voyageurRepository.getAllVoyageurs().get(15);
-		Voyage voyage = voyageurEnCorrespondance.getVoyageActuel();
+		Voyage voyage = voyageurEnCorrespondance.getVoyage();
 		assertNotNull(voyage);
 		Itineraire it1 = voyage.getTrajets().get(0).getItineraire();
 		Itineraire it2 = voyage.getTrajets().get(3).getItineraire();
