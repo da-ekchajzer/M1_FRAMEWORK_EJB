@@ -6,8 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import javax.enterprise.context.RequestScoped;
@@ -37,10 +41,15 @@ import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
 import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Incident;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Incident.CodeTypeIncident;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 import fr.pantheonsorbonne.ufr27.miage.repository.ArretRepository;
+import fr.pantheonsorbonne.ufr27.miage.repository.GareRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrainRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.TrajetRepository;
@@ -70,7 +79,7 @@ public class TestServiceMajDecideur {
 					ServiceMajExecuteurImp.class, ServiceMajInfoGare.class, ServiceMajInfoGareImp.class,
 					ServiceUtilisateur.class, ServiceUtilisateurImp.class, TrainRepository.class,
 					ItineraireRepository.class, ArretRepository.class, VoyageurRepository.class, VoyageRepository.class,
-					TrajetRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class,
+					TrajetRepository.class, GareRepository.class, VoyageurDAO.class, VoyageDAO.class, TrajetDAO.class, ItineraireDAO.class,
 					IncidentDAO.class, ArretDAO.class, TrainDAO.class, GareDAO.class, MessageGateway.class,
 					JMSProducer.class, TestPersistenceProducer.class, TestDatabase.class)
 			.activate(RequestScoped.class).build();
@@ -81,6 +90,8 @@ public class TestServiceMajDecideur {
 	ServiceMajDecideur serviceMajDecideur;
 	@Inject
 	ServiceUtilisateur serviceUtilisateur;
+	@Inject
+	GareRepository gareRepository;
 	@Inject
 	TrainRepository trainRepository;
 	@Inject
@@ -132,10 +143,6 @@ public class TestServiceMajDecideur {
 
 	}
 
-	// TODO : suppr la méthode getItineraireByTrainEtEtat et n'utiliser que
-	// getAllItinerairesByTrainEtEtat (renvoyer une liste à chaque fois)
-	// TODO : s'assurer qu'on ne peut pas avoir, pour le mm train, un itinéraire en
-	// cours et un en incident
 	@Test
 	@Order(2)
 	void testGetRetardsItineraireEnCorespondance() {
@@ -169,6 +176,84 @@ public class TestServiceMajDecideur {
 		assertTrue(retards.contains(r3));
 	}
 
+	@Test
+	@Order(4)
+	void testSelectionnerUnItineraireDeSecours() {		
+		// Pour ce test on ne veut pas que les itinéraires du service BddFillerService puissent interférer
+		// (car ils sont paramétrés en seconde donc pourraient fausser les résultats)
+		testDatabase.clear();
+		
+		LocalDateTime now = LocalDateTime.now();
+		String[] nomGares = { "Paris - Gare de Lyon", "Avignon-Centre", "Aix en Provence", "Marseille - St Charles",
+				"Dijon-Ville", "Lyon - Pardieu", "Narbonne", "Sete", "Perpignan", "Paris - Montparnasse", "Tours",
+				"Bordeaux - Saint-Jean", "Pessac", "Arcachon-Centre", "Nantes", "Montpellier", "Cabries", "Le Creusot",
+				"Lyon - Perrache" };
+
+		Map<String, Gare> gares = new HashMap<>();
+		for (String nomGare : nomGares) {
+			Gare g = new Gare(nomGare);
+			gares.put(nomGare, g);
+			em.persist(g);
+		}
+		
+		Arret arret1 = new Arret(gares.get("Paris - Montparnasse"), null, now.plusMinutes(15));
+		Arret arret2 = new Arret(gares.get("Tours"), now.plusMinutes(20), now.plusMinutes(25));
+		Arret arret3 = new Arret(gares.get("Bordeaux - Saint-Jean"), now.plusMinutes(30), null);
+		
+		Arret arret4 = new Arret(gares.get("Paris - Montparnasse"), null, now.plusMinutes(30));
+		Arret arret5 = new Arret(gares.get("Bordeaux - Saint-Jean"), now.plusMinutes(35), null);
+		
+		Arret arret6 = new Arret(gares.get("Paris - Montparnasse"), null, now.plusMinutes(12));
+		Arret arret7 = new Arret(gares.get("Avignon-Centre"), now.plusMinutes(20), now.plusMinutes(22));
+		Arret arret8 = new Arret(gares.get("Bordeaux - Saint-Jean"), now.plusMinutes(32), null);
+		
+		Itineraire itAccidente = new Itineraire();
+		itAccidente.addArret(arret1);
+		itAccidente.addArret(arret2);
+		itAccidente.addArret(arret3);
+		
+		Itineraire itSecours = new Itineraire();
+		itSecours.addArret(arret4);
+		itSecours.addArret(arret5);
+		
+		Itineraire itSecoursFini = new Itineraire();
+		itSecoursFini.addArret(arret4);
+		itSecoursFini.addArret(arret5);
+		itSecoursFini.setEtat(CodeEtatItinieraire.FIN.getCode());
+		
+		Itineraire itSecoursPossible = new Itineraire();
+		itSecoursPossible.addArret(arret6);
+		itSecoursPossible.addArret(arret7);
+		itSecoursPossible.addArret(arret8);
+		
+		em.getTransaction().begin();
+		em.persist(arret1);
+		em.persist(arret2);
+		em.persist(arret3);
+		em.persist(itAccidente);
+		em.persist(arret4);
+		em.persist(arret5);
+		em.persist(itSecours);
+		em.persist(itSecoursFini);
+		em.persist(arret6);
+		em.persist(arret7);
+		em.persist(arret8);
+		em.persist(itSecoursPossible);
+		em.getTransaction().commit();
+		
+		// Cet itinéraire a les bonnes gares d'arrêt pour remplacer itAccidente mais il est déjà terminé
+		assertNotEquals(itSecoursFini, this.serviceMajDecideur.selectionnerUnItineraireDeSecours(itAccidente));
+		
+		// Cet itinéraire a presque les bonnes gares d'arrêt pour remplacer itAccidente mais
+		// il dessert une autre ville (Avignon) sur son chemin
+		assertNotEquals(itSecoursPossible, this.serviceMajDecideur.selectionnerUnItineraireDeSecours(itAccidente));
+
+		// Inutile de tester qu'un itinéraire n'ayant pas les mêmes départus & terminus ne sera pas choisi
+		
+		// L'itinéraire accidenté subit un retard trop important, il doit être remplacé
+		assertEquals(itSecours, this.serviceMajDecideur.selectionnerUnItineraireDeSecours(itAccidente));
+	}
+	
 	@AfterAll
 	void nettoyageDonnees() {
 		testDatabase.clear();
