@@ -56,8 +56,8 @@ You can launch the project either by hand but you have to do it quickly, or make
 ![Launch configuration](launch_config.jpeg)
 
 ## Modelling
-![](Itineraires.PNG)
+![](itineraires-scheme.png)
 
-## external interfaces sequence diagrams
+## External interfaces sequence diagrams
 
 ![](diag_sequence.jpeg)
