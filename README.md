@@ -53,11 +53,11 @@ This project must be launched in this order :
 
 You can launch the project either by hand but you have to do it quickly, or make a launch configuration to launch it in this order
 
-![Launch configuration](launch_config.jpeg)
+![](launch-config.png)
 
 ## Modelling
 ![](itineraires-scheme.png)
 
 ## External interfaces sequence diagrams
 
-![](diag_sequence.jpeg)
+![](diag-sequence.png)
