@@ -1,6 +1,6 @@
 # INF2 Project
 
-Infocentre - Train - Infogare
+![](itineraires-scheme.png)
 
 ## Authors
 
@@ -55,8 +55,6 @@ You can launch the project either by hand but you have to do it quickly, or make
 
 ![](launch-config.png)
 
-## Modelling
-![](itineraires-scheme.png)
 
 ## External interfaces sequence diagrams
 
