@@ -30,6 +30,7 @@ import fr.pantheonsorbonne.ufr27.miage.dao.VoyageDAO;
 import fr.pantheonsorbonne.ufr27.miage.dao.VoyageurDAO;
 import fr.pantheonsorbonne.ufr27.miage.jms.MessageGateway;
 import fr.pantheonsorbonne.ufr27.miage.jms.conf.JMSProducer;
+import fr.pantheonsorbonne.ufr27.miage.jms.utils.BrokerUtils;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
@@ -104,7 +105,7 @@ public class TestServiceItineraire {
 
 		Itineraire itineraire1 = new Itineraire();
 		itineraire1.setTrain(train1);
-		itineraire1.setEtat(CodeEtatItinieraire.EN_COURS.getCode());
+		itineraire1.setEtat(CodeEtatItinieraire.EN_ATTENTE.getCode());
 		itineraire1.setArretsDesservis(arretsItineraire1);
 
 		em.getTransaction().begin();
@@ -119,12 +120,14 @@ public class TestServiceItineraire {
 		em.persist(arret4);
 		em.persist(itineraire1);
 		em.getTransaction().commit();
+
+		BrokerUtils.startBroker();
 	}
 
 	@Test
 	void testGetItineraireJaxbByIdTrain() {
 		Train t = trainRepository.getTrainByBusinessId(1);
-		ItineraireJAXB itineraireJAXB = this.serviceItineraire.getItineraire(t.getId());
+		ItineraireJAXB itineraireJAXB = serviceItineraire.getItineraire(t.getId());
 		assertEquals(CodeEtatItinieraire.EN_COURS.getCode(), itineraireJAXB.getEtatItineraire());
 		assertEquals("Gare1", itineraireJAXB.getArrets().get(0).getGare());
 		assertEquals(4, itineraireJAXB.getArrets().size());
@@ -143,11 +146,15 @@ public class TestServiceItineraire {
 		arretJAXB = ArretMapper.mapArretToArretJAXB(newArret);
 		serviceItineraire.majItineraire(t.getId(), arretJAXB);
 		assertEquals("Gare2", it.getArretActuel().getGare().getNom());
+		arretJAXB = ArretMapper.mapArretToArretJAXB(it.getArretsDesservis().get(it.getArretsDesservis().size() - 1));
+		serviceItineraire.majItineraire(t.getId(), arretJAXB);
+		assertEquals(CodeEtatItinieraire.FIN.getCode(), it.getEtat());
 	}
 
 	@AfterAll
 	void nettoyageDonnees() {
 		testDatabase.clear();
+		BrokerUtils.stopBroker();
 	}
 
 }

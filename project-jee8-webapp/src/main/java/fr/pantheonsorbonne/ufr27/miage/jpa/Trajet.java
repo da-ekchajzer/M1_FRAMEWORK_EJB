@@ -92,18 +92,4 @@ public class Trajet implements Comparable<Trajet> {
 		}
 		return res;
 	}
-
-	public boolean isBefore(Trajet trajet2) {
-		if (this.compareTo(trajet2) < 0) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isAfter(Trajet trajet2) {
-		if (this.compareTo(trajet2) > 0) {
-			return true;
-		}
-		return false;
-	}
 }

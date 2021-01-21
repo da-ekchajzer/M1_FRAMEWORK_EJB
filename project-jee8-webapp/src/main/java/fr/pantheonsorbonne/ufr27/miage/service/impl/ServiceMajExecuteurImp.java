@@ -51,13 +51,15 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 	}
 
 	@Override
-	public void transfererLesArretsSurItineraireDeSecours(Itineraire ancienIt, Itineraire nouvelIt) {
-		List<Arret> arretsToDuplicate = itineraireRepository.getArretActuelAndAllNextArrets(ancienIt);
-		arretsToDuplicate.remove(ancienIt.getArretActuel());
+	public void transfererArretsSurItineraireSecours(Itineraire ancienIt, Itineraire nouvelIt) {
+		List<Arret> arretsToReproduce = itineraireRepository.getArretActuelAndAllNextArrets(ancienIt);
+		arretsToReproduce.remove(ancienIt.getArretActuel());
 
-		List<Arret> nextArretsNouvelIt = itineraireRepository.getArretActuelAndAllNextArrets(nouvelIt);
+		List<Arret> allnextArretsNouvelIt = itineraireRepository.getArretActuelAndAllNextArrets(nouvelIt);
+		List<Arret> nextArretsNouvelIt = allnextArretsNouvelIt;
 		Arret junctionArret = null;
-		for (Arret a : nextArretsNouvelIt) {
+		for (Arret a : allnextArretsNouvelIt) {
+			allnextArretsNouvelIt.remove(a);
 			if (a.getGare().equals(ancienIt.getArretActuel().getGare())) {
 				junctionArret = a;
 				break;
@@ -67,53 +69,60 @@ public class ServiceMajExecuteurImp implements ServiceMajExecuteur {
 		// Les arrêts sont figés dans le temps donc seules les gares de ces arrêts sont
 		// retenues pour créer de nouveaux arrêts à ces gares qu'il faut desservir
 		List<Gare> garesToServe = new ArrayList<Gare>();
-		int averageTimeBetweenTwoArrets = 0, averageTimeOnThePlatform = 0;
-
-		for (int i = 0; i < arretsToDuplicate.size(); i++) {
-			garesToServe.add(arretsToDuplicate.get(i).getGare());
-			for (Arret a : nextArretsNouvelIt) {
-				if (a.getGare().equals(arretsToDuplicate.get(i).getGare())) {
+		ArretLoop: for (Arret a1 : arretsToReproduce) {
+			garesToServe.add(a1.getGare());
+			for (Arret a2 : nextArretsNouvelIt) {
+				if (a2.getGare().equals(a1.getGare())) {
 					garesToServe.remove(garesToServe.size() - 1);
-					junctionArret = a;
-					break;
-				}
-			}
-			if (i < arretsToDuplicate.size() - 1) {
-				averageTimeBetweenTwoArrets += arretsToDuplicate.get(i + 1).getHeureArriveeEnGare().toLocalTime()
-						.minusSeconds(arretsToDuplicate.get(i).getHeureDepartDeGare().toLocalTime().toSecondOfDay())
-						.toSecondOfDay();
-				if (arretsToDuplicate.get(i).getHeureArriveeEnGare() != null) {
-					averageTimeOnThePlatform += arretsToDuplicate.get(i).getHeureDepartDeGare().toLocalTime()
-							.minusSeconds(
-									arretsToDuplicate.get(i).getHeureArriveeEnGare().toLocalTime().toSecondOfDay())
-							.toSecondOfDay();
+					break ArretLoop;
 				}
 			}
 		}
-		averageTimeBetweenTwoArrets /= (arretsToDuplicate.size() - 1);
-		averageTimeOnThePlatform /= (arretsToDuplicate.size() - 1);
+		// Pour éviter de coder le temps entre les arrêts et passé à quai d'une gare en
+		// dur, le code ci-dessus calcule la moyenne des temps entre arrêts et à quais
+		int averageTimeBetweenTwoArrets = 0, averageTimeOnThePlatform = 0, i = 0;
+		for (Arret a : nouvelIt.getArretsDesservis()) {
+			if (a.getHeureDepartDeGare() != null) {
+				averageTimeBetweenTwoArrets += nouvelIt.getArretsDesservis().get(i + 1).getHeureArriveeEnGare()
+						.toLocalTime().minusSeconds(a.getHeureDepartDeGare().toLocalTime().toSecondOfDay())
+						.toSecondOfDay();
+				if (a.getHeureArriveeEnGare() != null) {
+					averageTimeOnThePlatform += a.getHeureDepartDeGare().toLocalTime()
+							.minusSeconds(a.getHeureArriveeEnGare().toLocalTime().toSecondOfDay()).toSecondOfDay();
+				}
+			}
+			i++;
+		}
+		averageTimeBetweenTwoArrets = averageTimeBetweenTwoArrets == 0 ? 0
+				: averageTimeBetweenTwoArrets / (arretsToReproduce.size() - 1);
+		averageTimeOnThePlatform = averageTimeOnThePlatform == 0 ? averageTimeBetweenTwoArrets / 2
+				: averageTimeOnThePlatform / (arretsToReproduce.size() - 2);
 
 		// Créer des arrêts cohérents à partir de la liste garesToServe
-		LocalDateTime heureArrivee = junctionArret.getHeureDepartDeGare() == null
-				? junctionArret.getHeureArriveeEnGare()
-						.plusSeconds(averageTimeOnThePlatform + averageTimeBetweenTwoArrets)
-				: junctionArret.getHeureDepartDeGare().plusSeconds(averageTimeBetweenTwoArrets);
+		LocalDateTime heureArrivee = junctionArret.getHeureDepartDeGare().plusSeconds(averageTimeBetweenTwoArrets);
+		LocalDateTime heureDepart = heureArrivee.plusSeconds(averageTimeOnThePlatform);
 		List<Arret> newArrets = new ArrayList<Arret>();
-		newArrets.add(new Arret(garesToServe.get(0), heureArrivee, heureArrivee.plusSeconds(averageTimeOnThePlatform)));
+		newArrets.add(new Arret(garesToServe.get(0), heureArrivee, heureDepart));
 
-		for (int i = 1; i < garesToServe.size(); i++) {
-			if (i < garesToServe.size() - 1) {
-				heureArrivee = newArrets.get(i - 1).getHeureDepartDeGare().plusSeconds(averageTimeBetweenTwoArrets);
-				newArrets.add(new Arret(garesToServe.get(i), heureArrivee,
-						heureArrivee.plusSeconds(averageTimeOnThePlatform)));
-			} else {
-				heureArrivee = newArrets.get(i - 1).getHeureDepartDeGare().plusSeconds(averageTimeBetweenTwoArrets);
-				newArrets.add(new Arret(garesToServe.get(i), heureArrivee, null));
-			}
+		for (i = 1; i < garesToServe.size(); i++) {
+			heureArrivee = newArrets.get(i - 1).getHeureDepartDeGare().plusSeconds(averageTimeBetweenTwoArrets);
+			heureDepart = heureArrivee.plusSeconds(averageTimeOnThePlatform);
+			newArrets.add(new Arret(garesToServe.get(i), heureArrivee, heureDepart));
 		}
 
 		// TODO
 		// Ajouter les nouveaux arrêts à l'itineraire de secours chosedItineraire
+		for (Arret a : nextArretsNouvelIt) {
+			heureArrivee = a.getHeureArriveeEnGare().plusSeconds(averageTimeBetweenTwoArrets * garesToServe.size());
+			a.setHeureArriveeEnGare(heureArrivee);
+			if (a.getHeureDepartDeGare() != null) {
+				heureDepart = heureArrivee.plusSeconds(averageTimeOnThePlatform);
+				a.setHeureDepartDeGare(heureDepart);
+			}
+		}
+		for (Arret a : newArrets) {
+			itineraireRepository.ajouterUnArretDansItineraire(nouvelIt, a);
+		}
 	}
 
 }

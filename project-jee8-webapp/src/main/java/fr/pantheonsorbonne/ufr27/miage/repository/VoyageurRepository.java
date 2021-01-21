@@ -86,7 +86,7 @@ public class VoyageurRepository {
 	 */
 	public boolean isVoyageurCorrespondance(Voyageur v, Itineraire itActuel, Itineraire itCorrespondance) {
 		int count = 0, idxItActuel = 0, idxItCorresp = 0;
-		for (Trajet t : v.getVoyageActuel().getTrajets()) {
+		for (Trajet t : v.getVoyage().getTrajets()) {
 			if (t.getItineraire().equals(itActuel)) {
 				idxItActuel = ++count;
 			} else if (t.getItineraire().equals(itCorrespondance)) {

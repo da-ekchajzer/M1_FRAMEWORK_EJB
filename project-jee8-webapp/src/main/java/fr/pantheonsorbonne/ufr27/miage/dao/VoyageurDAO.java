@@ -15,7 +15,6 @@ import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Train;
 import fr.pantheonsorbonne.ufr27.miage.jpa.TrainAvecResa;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Trajet;
-import fr.pantheonsorbonne.ufr27.miage.jpa.Voyage;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Voyageur;
 
 @ManagedBean
@@ -26,9 +25,10 @@ public class VoyageurDAO {
 	EntityManager em;
 
 	/**
-	 * Ajouter/Supprimer les voyageurs du train AVEC RESA passé en paramètre
-	 * et de l'itinéraire passé en paramètre en fonction des étapes de leur voyage 
-	 * (gares de départ/d'arrivée/de correspondance)
+	 * Ajouter/Supprimer les voyageurs du train AVEC RESA passé en paramètre et de
+	 * l'itinéraire passé en paramètre en fonction des étapes de leur voyage (gares
+	 * de départ/d'arrivée/de correspondance)
+	 * 
 	 * @param train
 	 */
 	public void majVoyageursDansTrainAvecResa(Train train, Itineraire itineraire, Set<Trajet> trajetsItineraire)
@@ -50,7 +50,7 @@ public class VoyageurDAO {
 			List<Voyageur> voyageursToRemove = new ArrayList<Voyageur>();
 			for (Voyageur voyageur : itineraire.getVoyageurs()) {
 				// Les voyageurs qui doivent descendre
-				trajetsVoyageur = voyageur.getVoyageActuel().getTrajets();
+				trajetsVoyageur = voyageur.getVoyage().getTrajets();
 				it = trajetsVoyageur.iterator();
 
 				while (it.hasNext()) {
@@ -67,7 +67,7 @@ public class VoyageurDAO {
 					}
 				}
 				// Les voyageurs qui doivent descendre
-				if (voyageur.getVoyageActuel().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
+				if (voyageur.getVoyage().getGareArrivee().equals(itineraire.getArretActuel().getGare())) {
 					trainAvecResa.removeVoyageur(voyageur);
 					voyageursToRemove.add(voyageur);
 				}
@@ -81,28 +81,15 @@ public class VoyageurDAO {
 	}
 
 	/**
-	 * Ajouter les voyageurs contenus dans la liste passée en 2ème paramètre à l'itinéraire en 1er paramètre
+	 * Ajouter les voyageurs contenus dans la liste passée en 2ème paramètre à
+	 * l'itinéraire en 1er paramètre
+	 * 
 	 * @param itineraire
 	 * @param voyageursToAdd
 	 */
 	public void mettreVoyageursDansItineraire(Itineraire itineraire, List<Voyageur> voyageursToAdd) {
 		em.getTransaction().begin();
 		itineraire.setVoyageurs(voyageursToAdd);
-		em.getTransaction().commit();
-	}
-
-	// TODO : utile ??
-	/**
-	 * Mettre à jour le voyage actuel des voyageurs en 2ème paramètre en leur passant
-	 * comme nouveau voyage le 1er paramètre
-	 * @param newVoyageActuel
-	 * @param voyageursToUpdate
-	 */
-	public void majVoyageActuelDesVoyageurs(Voyage newVoyageActuel, List<Voyageur> voyageursToUpdate) {
-		em.getTransaction().begin();
-		for (Voyageur v : voyageursToUpdate) {
-			v.setVoyageActuel(newVoyageActuel);
-		}
 		em.getTransaction().commit();
 	}
 
@@ -118,9 +105,10 @@ public class VoyageurDAO {
 		}
 
 	}
-	
+
 	/**
 	 * Récupérer l'ensemble des voyages existants en BD
+	 * 
 	 * @return
 	 */
 	public List<Voyageur> getAllVoyageurs() {

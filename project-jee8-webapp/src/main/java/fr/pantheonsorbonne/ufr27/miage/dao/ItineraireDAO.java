@@ -1,14 +1,15 @@
 package fr.pantheonsorbonne.ufr27.miage.dao;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
+
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import fr.pantheonsorbonne.ufr27.miage.jpa.Arret;
+import fr.pantheonsorbonne.ufr27.miage.jpa.Gare;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire;
 import fr.pantheonsorbonne.ufr27.miage.jpa.Itineraire.CodeEtatItinieraire;
 
@@ -78,52 +79,41 @@ public class ItineraireDAO {
 		em.getTransaction().commit();
 	}
 
-	public void ajouterUnArretEnCoursItineraire(Itineraire itineraire, Arret arret) {
-		List<Arret> arretsDeTransition = new LinkedList<Arret>();
-
+	public void ajouterUnArretDansItineraire(Itineraire itineraire, Arret arret) {
 		// Ajouter l'arrêt à la fin de l'itinéraire
 		if (arret.getHeureDepartDeGare() == null) {
-			System.err.println("Veuillez utiliser la méthode 'ajouterUnArretEnFinItineraire()'");
+			System.err.println("Le nouvel arret ne doit pas etre un arret de fin d'itineraire");
 			return;
 		}
 		// Ajouter l'arrêt en cours d'itinéraire
 		else {
+			em.getTransaction().begin();
+			em.persist(arret);
 			// Déterminer la position à laquelle on doit ajouter l'arrêt
-			for (int i = 0; i < itineraire.getArretsDesservis().size(); i++) {
-				if (itineraire.getArretsDesservis().get(i).getHeureDepartDeGare() != null && itineraire
-						.getArretsDesservis().get(i).getHeureDepartDeGare().isBefore(arret.getHeureDepartDeGare())) {
-					arretsDeTransition.add(itineraire.getArretsDesservis().get(i));
-				} else {
-					arretsDeTransition.add(arret);
-					for (int j = i; j < itineraire.getArretsDesservis().size(); j++) {
-						arretsDeTransition.add(itineraire.getArretsDesservis().get(j));
-					}
-					break;
+			itineraire.addArret(arret);
+			int lastIndex = itineraire.getArretsDesservis().size() - 1;
+			for (int i = 1; i < lastIndex; i++) {
+				// L'ordre des id des arrêts de la table de jointure avec les itinéraires ne
+				// peut être changé, ce sont donc les données des arrêts qui sont déplacées et
+				// pas les objets directement
+				if (itineraire.getArretsDesservis().get(i).isAfter(itineraire.getArretsDesservis().get(lastIndex))) {
+					Gare gi = itineraire.getArretsDesservis().get(i).getGare();
+					LocalDateTime hai = itineraire.getArretsDesservis().get(i).getHeureArriveeEnGare();
+					LocalDateTime hdi = itineraire.getArretsDesservis().get(i).getHeureDepartDeGare();
+					itineraire.getArretsDesservis().get(i)
+							.setGare(itineraire.getArretsDesservis().get(lastIndex).getGare());
+					itineraire.getArretsDesservis().get(i).setHeureArriveeEnGare(
+							itineraire.getArretsDesservis().get(lastIndex).getHeureArriveeEnGare());
+					itineraire.getArretsDesservis().get(i).setHeureDepartDeGare(
+							itineraire.getArretsDesservis().get(lastIndex).getHeureDepartDeGare());
+					itineraire.getArretsDesservis().get(lastIndex).setGare(gi);
+					itineraire.getArretsDesservis().get(lastIndex).setHeureArriveeEnGare(hai);
+					itineraire.getArretsDesservis().get(lastIndex).setHeureDepartDeGare(hdi);
 				}
 			}
+			em.getTransaction().commit();
 		}
 
-		em.getTransaction().begin();
-		itineraire.setArretsDesservis(arretsDeTransition);
-		em.getTransaction().commit();
-	}
-
-	public void ajouterUnArretEnFinItineraire(Itineraire itineraire, Arret arret, LocalDateTime heureDepartToAdd) {
-		List<Arret> arretsDeTransition = new LinkedList<Arret>();
-
-		if (arret.getHeureDepartDeGare() == null) {
-			Arret ancienTerminus = itineraire.getArretsDesservis().get(itineraire.getArretsDesservis().size() - 1);
-			ancienTerminus.setHeureDepartDeGare(heureDepartToAdd);
-			arretsDeTransition.addAll(itineraire.getArretsDesservis());
-			arretsDeTransition.add(arret);
-		} else {
-			System.err.println("Veuillez utiliser la méthode 'ajouterUnArretEnCoursItineraire()'");
-			return;
-		}
-
-		em.getTransaction().begin();
-		itineraire.setArretsDesservis(arretsDeTransition);
-		em.getTransaction().commit();
 	}
 
 	public class MulitpleResultsNotExpectedException extends Exception {

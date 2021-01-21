@@ -177,11 +177,11 @@ public class TestVoyageurDAO {
 			Voyageur v = new Voyageur(prenomsVoyageurs[i], nomsVoyageurs[i]);
 			if (i < 5) {
 				voyage1.addVoyageur(v);
-				v.setVoyageActuel(voyage1);
+				v.setVoyage(voyage1);
 			}
 			if (i >= 5 && i < 8) {
 				voyage2.addVoyageur(v);
-				v.setVoyageActuel(voyage2);
+				v.setVoyage(voyage2);
 			}
 			em.persist(v);
 		}

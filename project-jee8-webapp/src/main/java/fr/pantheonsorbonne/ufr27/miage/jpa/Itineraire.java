@@ -77,14 +77,6 @@ public class Itineraire {
 		this.voyageurs = voyageurs;
 	}
 
-	public void addVoyageur(Voyageur voyageur) {
-		this.voyageurs.add(voyageur);
-	}
-
-	public void removeVoyageur(Voyageur voyageur) {
-		this.voyageurs.remove(voyageur);
-	}
-
 	public List<Arret> getArretsDesservis() {
 		return arretsDesservis;
 	}

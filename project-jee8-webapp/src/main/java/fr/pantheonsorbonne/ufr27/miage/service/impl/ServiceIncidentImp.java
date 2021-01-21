@@ -19,6 +19,7 @@ import fr.pantheonsorbonne.ufr27.miage.repository.IncidentRepository;
 import fr.pantheonsorbonne.ufr27.miage.repository.ItineraireRepository;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceIncident;
 import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajDecideur;
+import fr.pantheonsorbonne.ufr27.miage.service.ServiceMajExecuteur;
 import fr.pantheonsorbonne.ufr27.miage.service.utils.Retard;
 
 @ManagedBean
@@ -27,6 +28,9 @@ public class ServiceIncidentImp implements ServiceIncident {
 
 	@Inject
 	ServiceMajDecideur serviceMajDecideur;
+
+	@Inject
+	ServiceMajExecuteur serviceMajExecuteur;
 
 	@Inject
 	IncidentRepository incidentRepository;
@@ -41,12 +45,15 @@ public class ServiceIncidentImp implements ServiceIncident {
 		Itineraire itineraire = itineraireRepository.getItineraireByTrainEtEtat(idTrain,
 				CodeEtatItinieraire.EN_INCIDENT);
 		LocalTime estimationRetard = estimationTempsRetard(incidentJAXB.getTypeIncident());
-		Retard retard = new Retard(itineraire, estimationRetard);
-		serviceMajDecideur.decideRetard(retard, true);
 		// Si le temps de retard estimé est de plus de 2 heures
 		if (estimationRetard.isAfter(LocalTime.of(2, 0, 0, 0))) {
-			serviceMajDecideur.selectionnerUnItineraireDeSecours(itineraire);
+			Itineraire itSecours = serviceMajDecideur.selectionnerUnItineraireDeSecours(itineraire);
+			if (itSecours != null) {
+				serviceMajExecuteur.transfererArretsSurItineraireSecours(itineraire, itSecours);
+			}
 		}
+		Retard retard = new Retard(itineraire, estimationRetard);
+		serviceMajDecideur.decideRetard(retard, true);
 		return true;
 	}
 
@@ -66,12 +73,15 @@ public class ServiceIncidentImp implements ServiceIncident {
 				LocalDateTime oldEnd = incident.getHeureTheoriqueDeFin();
 				incidentRepository.majHeureDeFinIncident(incident, oldEnd.plus(ajoutDuree, chronoUnitDuree));
 				LocalTime dureeProlongation = LocalTime.MIN.plus(ajoutDuree, chronoUnitDuree);
-				serviceMajDecideur.decideRetard(new Retard(itineraire, dureeProlongation), true);
 				// Si le temps de retard estimé est de plus de 2 heures
 				if (incident.getHeureTheoriqueDeFin()
 						.isAfter(now.plusSeconds(LocalTime.of(2, 0, 0, 0).toSecondOfDay()))) {
-					serviceMajDecideur.selectionnerUnItineraireDeSecours(itineraire);
+					Itineraire itSecours = serviceMajDecideur.selectionnerUnItineraireDeSecours(itineraire);
+					if (itSecours != null) {
+						serviceMajExecuteur.transfererArretsSurItineraireSecours(itineraire, itSecours);
+					}
 				}
+				serviceMajDecideur.decideRetard(new Retard(itineraire, dureeProlongation), true);
 			}
 			res = true;
 		} else if (etatIncident == CodeEtatIncident.RESOLU.getCode()) {
@@ -96,6 +106,6 @@ public class ServiceIncidentImp implements ServiceIncident {
 	 * @return
 	 */
 	private LocalTime estimationTempsRetard(int codeTypeIncident) {
-		return CodeTypeIncident.getTempEstimation(codeTypeIncident);
+		return CodeTypeIncident.valueOf(codeTypeIncident).getTempEstimation();
 	}
 }

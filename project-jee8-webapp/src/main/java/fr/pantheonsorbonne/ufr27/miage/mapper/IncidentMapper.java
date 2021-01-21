@@ -10,7 +10,7 @@ public class IncidentMapper {
 		Incident incident = new Incident(i.getTypeIncident());
 		incident.setEtat(i.getEtatIncident());
 		incident.setHeureDebut(MapperUtils.xmlGregorianCalendarToLocalDateTime(i.getDebutIncident()));
-		incident.initHeureTheoriqueDeFin(CodeTypeIncident.getTempEstimation(i.getTypeIncident()));
+		incident.initHeureTheoriqueDeFin(CodeTypeIncident.valueOf(i.getTypeIncident()).getTempEstimation());
 		return incident;
 	}
 }

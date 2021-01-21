@@ -163,41 +163,14 @@ public class ItineraireRepository {
 	}
 
 	/**
-	 * Supprimer un arrêt de l'itinéraire EN COURS associé au train d'id idTrain
-	 * 
-	 * @param idTrain
-	 * @param arret
-	 * @return
-	 */
-	public Itineraire supprimerArretDansUnItineraire(int idTrain, Arret arret) {
-		Itineraire itineraire = getItineraireByTrainEtEtat(idTrain, CodeEtatItinieraire.EN_COURS);
-		itineraireDAO.supprimerArretDansUnItineraire(itineraire, arret);
-		arretRepository.supprimerArret(arret);
-		return itineraire;
-	}
-
-	/**
 	 * Ajouter un arrêt au sein de l'itinéraire passé en paramètre
 	 * 
 	 * @param itineraire
 	 * @param arret
 	 * @return
 	 */
-	public Itineraire ajouterUnArretEnCoursItineraire(Itineraire itineraire, Arret arret) {
-		itineraireDAO.ajouterUnArretEnCoursItineraire(itineraire, arret);
-		return itineraire;
-	}
-
-	/**
-	 * Ajouter un arrêt à la fin de l'itinéraire passé en paramètre
-	 * 
-	 * @param itineraire
-	 * @param arret
-	 * @param heureDepartToAdd
-	 */
-	public Itineraire ajouterUnArretEnFinItineraire(Itineraire itineraire, Arret arret,
-			LocalDateTime heureDepartToAdd) {
-		itineraireDAO.ajouterUnArretEnFinItineraire(itineraire, arret, heureDepartToAdd);
+	public Itineraire ajouterUnArretDansItineraire(Itineraire itineraire, Arret arret) {
+		itineraireDAO.ajouterUnArretDansItineraire(itineraire, arret);
 		return itineraire;
 	}
 
