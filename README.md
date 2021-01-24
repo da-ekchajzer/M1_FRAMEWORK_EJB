@@ -44,7 +44,11 @@ This project shows how to call a REST API using Jersey Client for JAXRS
 
 This project consumes message produced by project-jee8-webapp to get train information and display it in infogare
 
-## Launching
+## Compiling - Launching
+
+First of all :
+1) Execute following command in the project directory : "mvn install"
+2) In Eclipse, right click on the project directory : Maven > Update Project...
 
 This project must be launched in this order : 
 1) Main file in project-jee8-webapp
